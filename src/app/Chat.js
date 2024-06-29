@@ -7,7 +7,7 @@ const Chat = () => {
 
   const sendMessage = async () => {
     try {
-      const apiUrl = 'https://api.openai.com';
+      const apiUrl = 'https://api.openai.com/v1/chat/completions';
       const apiKey = 'sk-proj-H7aoCYVa8rWEkp4EmwAcT3BlbkFJFHtpUahhOvfKCbsE9LWL';
       const headers = {
         'Content-Type': 'application/json',
