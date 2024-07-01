@@ -1,68 +1,97 @@
 import React from 'react';
-import { Text, View } from 'react-native';
+import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
-import { Button, Image, Paragraph, YStack } from 'tamagui';
+import { Button, Image } from 'tamagui';
 
 type Props = {
-  navigation: NavigationProp<any>; // Adjust 'any' if you know the specific type of navigation prop
+  navigation: NavigationProp<any>;
 };
 
 const StartScreen: React.FC<Props> = ({ navigation }) => {
   const goToLogin = () => {
-    navigation.navigate('Test'); // Navigate to the 'Login' screen
+    navigation.navigate('Login');
   };
 
   const goToSignUp = () => {
-    navigation.navigate('Test'); // Navigate to the 'SignUp' screen
+    navigation.navigate('SignUp');
   };
 
   return (
-    <YStack>
-      <View id="start-screen" style={{ backgroundColor: '#fff' }}>
-        <View id="title">
-          <Image
-            source={{
-              uri: 'https://t3.ftcdn.net/jpg/02/48/42/64/360_F_248426448_NVKLywWqArG2ADUxDq6QprtIzsF82dMF.jpg',
-            }}
-            style={styles.image}
-          />
-          <Text
-            id="sc1"
-            style={{ textAlign: 'center', marginTop: 350, fontSize: 25 }}
-          >
-            App Name
-          </Text>
-        </View>
-        <Button id="login" style={styles.button1} onPress={goToLogin}>
-          <Text style={styles.font}>Login</Text>
+    <ImageBackground
+      //source={require('./<place image here>.jpeg')}
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <View style={styles.container}>
+        <Image style={styles.logo} source={require('./placeholder.jpg')} />
+        <Text style={styles.title}>Welcome to [App Name]</Text>
+        <Text style={styles.subtitle}>Where [App Description] goes here</Text>
+        <Button style={styles.button} onPress={goToLogin}>
+          <Text style={styles.buttonText}>Login</Text>
         </Button>
-        <Button id="signup" style={styles.button2} onPress={goToSignUp}>
-          <Text style={styles.font}>Sign Up</Text>
+        <Button
+          style={[styles.button, styles.signUpButton]}
+          onPress={goToSignUp}
+        >
+          <Text style={styles.buttonText}>Sign Up</Text>
         </Button>
       </View>
-    </YStack>
+    </ImageBackground>
   );
 };
 
-const styles = {
-  button1: {
-    margin: 75,
-    marginTop: 65,
-    blockSize: 55,
+const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
-
-  button2: {
-    margin: 75,
-    marginTop: -50,
-    marginBottom: 1000,
-    blockSize: 55,
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)', // Semi-transparent white background
+    borderRadius: 10,
+    maxWidth: 400,
+    width: '80%',
+    marginBottom: 100, // Adjust based on your design needs
   },
-
-  font: {
-    fontSize: 30,
+  logo: {
+    width: 120,
+    height: 120,
+    borderRadius: 60, // Rounded image
+    marginBottom: 20,
   },
-
-  image: { marginTop: 10, width: 50 },
-};
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontSize: 16,
+    textAlign: 'center',
+    marginBottom: 30,
+    color: '#666', // Dark gray text
+  },
+  button: {
+    width: '100%',
+    height: 55,
+    marginTop: 10,
+    borderRadius: 10,
+    backgroundColor: 'blue',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  buttonText: {
+    fontSize: 20,
+    color: '#FFFFFF', // White button text color
+  },
+  signUpButton: {
+    marginTop: 20,
+    backgroundColor: '#444', // Dark gray button background color for Sign Up
+  },
+});
 
 export default StartScreen;
