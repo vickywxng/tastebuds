@@ -1,10 +1,19 @@
-import { Home } from '@tamagui/lucide-icons';
-import { Button, YStack } from 'tamagui';
+import * as React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 
-export default function App() {
+import StartScreen from './pages/StartScreen';
+import TestScreen from './pages/test_page';
+
+const Stack = createStackNavigator();
+
+function App() {
   return (
-    <YStack flex={1} justifyContent="center" alignItems="center">
-      <Button icon={<Home />}>Hello world!</Button>
-    </YStack>
+    <Stack.Navigator initialRouteName="Start">
+      <Stack.Screen name="Start" component={StartScreen} />
+      <Stack.Screen name="Test" component={TestScreen} />
+    </Stack.Navigator>
   );
 }
+
+export default App;
