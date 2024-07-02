@@ -18,7 +18,7 @@ const StartScreen: React.FC<Props> = ({ navigation }) => {
 
   return (
     <ImageBackground
-      //source={require('./<place image here>.jpeg')}
+      //source={require('./food_background_tile')}
       style={styles.background}
       resizeMode="cover"
     >
