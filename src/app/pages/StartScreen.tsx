@@ -1,6 +1,7 @@
 import React from 'react';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
+import * as Font from 'expo-font';
 import { Button, Image } from 'tamagui';
 
 type Props = {
@@ -16,16 +17,28 @@ const StartScreen: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('SignUp');
   };
 
+  React.useEffect(() => {
+    // Load the custom font when the component mounts
+    Font.loadAsync({
+      'Jua-Regular': require('../fonts/Jua-Regular.ttf'),
+    });
+  }, []);
+
   return (
     <ImageBackground
-      //source={require('./food_background_tile')}
+      source={require('../images/food_background_tile.png')}
       style={styles.background}
       resizeMode="cover"
     >
       <View style={styles.container}>
-        <Image style={styles.logo} source={require('./placeholder.jpg')} />
-        <Text style={styles.title}>Welcome to [App Name]</Text>
-        <Text style={styles.subtitle}>Where [App Description] goes here</Text>
+        <Image
+          style={styles.logo}
+          source={require('../images/carrot_filled.png')}
+        />
+        <Text style={styles.title}>Welcome to [App Name]!</Text>
+        <Text style={styles.subtitle}>
+          Plan your meals, find easy recipes and more!
+        </Text>
         <Button style={styles.button} onPress={goToLogin}>
           <Text style={styles.buttonText}>Login</Text>
         </Button>
@@ -33,7 +46,9 @@ const StartScreen: React.FC<Props> = ({ navigation }) => {
           style={[styles.button, styles.signUpButton]}
           onPress={goToSignUp}
         >
-          <Text style={styles.buttonText}>Sign Up</Text>
+          <Text style={[styles.buttonText, styles.signUpButtonText]}>
+            Sign Up
+          </Text>
         </Button>
       </View>
     </ImageBackground>
@@ -51,46 +66,54 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)', // Semi-transparent white background
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     borderRadius: 10,
     maxWidth: 400,
     width: '80%',
-    marginBottom: 100, // Adjust based on your design needs
+    marginBottom: 80,
+    marginTop: 80,
   },
   logo: {
-    width: 120,
-    height: 120,
-    borderRadius: 60, // Rounded image
-    marginBottom: 20,
+    marginLeft: 20,
+    width: 230,
+    height: 230,
   },
   title: {
-    fontSize: 28,
+    color: '#BC301D',
+    fontFamily: 'Jua',
+    fontSize: 34,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 10,
+    marginBottom: 30,
   },
   subtitle: {
     fontSize: 16,
     textAlign: 'center',
     marginBottom: 30,
-    color: '#666', // Dark gray text
+    color: '#000000',
   },
   button: {
     width: '100%',
     height: 55,
     marginTop: 10,
     borderRadius: 10,
-    backgroundColor: 'blue',
+    backgroundColor: '#E63922',
     justifyContent: 'center',
     alignItems: 'center',
   },
   buttonText: {
-    fontSize: 20,
-    color: '#FFFFFF', // White button text color
+    fontFamily: 'Jua-Regular',
+    fontSize: 32,
+    color: '#FFFFFF',
+  },
+  signUpButtonText: {
+    color: '#E63922',
   },
   signUpButton: {
     marginTop: 20,
-    backgroundColor: '#444', // Dark gray button background color for Sign Up
+    backgroundColor: '#fff',
+    borderColor: '#E63922',
+    borderWidth: 2.5,
   },
 });
 

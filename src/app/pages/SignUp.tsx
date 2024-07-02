@@ -1,5 +1,11 @@
 import React from 'react';
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  ImageBackground,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
 import { Button, YStack } from 'tamagui';
 
@@ -18,8 +24,11 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <YStack style={styles.container}>
-      <View style={styles.content}>
+    <ImageBackground
+      source={require('../images/food_background_tile.png')}
+      style={styles.background}
+    >
+      <View style={styles.container}>
         <Text style={styles.title}>Create an Account</Text>
         <TextInput
           style={styles.input}
@@ -49,26 +58,36 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
           </Text>
         </Text>
       </View>
-    </YStack>
+    </ImageBackground>
   );
 };
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#f0f0f0', // Background color of the screen
-  },
-  content: {
-    width: '80%',
+    paddingHorizontal: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 10,
     maxWidth: 400,
-    alignItems: 'center',
+    width: '80%',
+    marginBottom: 80,
+    marginTop: 80,
   },
   title: {
-    fontSize: 24,
+    color: '#BC301D',
+    fontFamily: 'Jua',
+    fontSize: 34,
     fontWeight: 'bold',
-    marginBottom: 20,
+    textAlign: 'center',
+    marginBottom: 50,
+    marginTop: 50,
   },
   input: {
     width: '100%',
@@ -77,13 +96,13 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingLeft: 15,
     marginBottom: 15,
-    borderWidth: 1,
-    borderColor: '#ccc',
+    borderWidth: 2.5,
+    borderColor: '#E63922',
   },
   button: {
     width: '100%',
     height: 50,
-    backgroundColor: 'blue', // Example button background color
+    backgroundColor: '#E63922',
     borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
@@ -91,15 +110,15 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 18,
-    color: '#fff', // Example button text color
+    color: '#fff',
   },
   loginText: {
     marginTop: 10,
     fontSize: 16,
-    color: '#333',
+    color: '#000',
   },
   loginLink: {
-    color: 'blue',
+    color: '#BC301D',
     textDecorationLine: 'underline',
   },
 });

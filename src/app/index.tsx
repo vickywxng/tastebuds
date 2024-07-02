@@ -14,17 +14,17 @@ function App() {
       <Stack.Screen
         name="Start"
         component={StartScreen}
-        //options={{ headerShown: false }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="Login"
         component={LoginScreen}
-        //options={{ headerShown: false }}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="SignUp"
         component={SignUpScreen}
-        //options={{ headerShown: false }}
+        options={{ headerShown: false }}
       />
     </Stack.Navigator>
   );
