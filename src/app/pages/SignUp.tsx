@@ -19,8 +19,8 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   const handleSignUp = () => {
-    // Implement sign-up logic here
-    console.log('Sign Up button pressed');
+    // Implement sign up logic here
+    navigation.navigate('MainPage');
   };
 
   return (

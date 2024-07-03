@@ -20,7 +20,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
   const handleLogin = () => {
     // Implement login logic here
-    console.log('Login button pressed');
+    navigation.navigate('MainPage');
   };
 
   return (

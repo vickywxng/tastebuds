@@ -1,8 +1,10 @@
 import * as React from 'react';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 import LoginScreen from './pages/Login';
+import MainPage from './pages/MainPage';
 import SignUpScreen from './pages/SignUp';
 import StartScreen from './pages/StartScreen';
 
@@ -24,6 +26,11 @@ function App() {
       <Stack.Screen
         name="SignUp"
         component={SignUpScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="MainPage"
+        component={MainPage}
         options={{ headerShown: false }}
       />
     </Stack.Navigator>
