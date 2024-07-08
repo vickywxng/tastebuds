@@ -2,7 +2,9 @@ import * as React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+import { collection, getDocs } from 'firebase/firestore/lite';
 
+import { db } from './firebase';
 import LoginScreen from './pages/Login';
 import MainPage from './pages/MainPage';
 import RecipeCollection from './pages/RecipeCollection';
