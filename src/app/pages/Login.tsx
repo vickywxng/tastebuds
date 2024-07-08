@@ -7,7 +7,10 @@ import {
   View,
 } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
-import { Button, YStack } from 'tamagui';
+import { collection, doc, setDoc } from 'firebase/firestore/lite';
+import { Button } from 'tamagui';
+
+import { db } from '../firebase';
 
 type Props = {
   navigation: NavigationProp<any>;
@@ -18,9 +21,19 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('SignUp');
   };
 
-  const handleLogin = () => {
-    // Implement login logic here
-    navigation.navigate('MainPage');
+  const handleLogin = async () => {
+    try {
+      const docRef = doc(db, 'testing', 'eVEA3qYOeSqhEnqSONil'); // Replace 'test-doc-id' with an actual document ID
+      await setDoc(docRef, {
+        testing: 'new value',
+      });
+
+      console.log('Document successfully updated!');
+
+      navigation.navigate('MainPage');
+    } catch (error) {
+      console.error('Error updating document:', error);
+    }
   };
 
   return (
