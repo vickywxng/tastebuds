@@ -39,7 +39,7 @@ function App() {
             open: { animation: 'timing', config: { duration: 0 } },
             close: { animation: 'timing', config: { duration: 0 } },
           },
-          headerShown: false,
+          headerShown: true,
         }}
       />
       <Stack.Screen
