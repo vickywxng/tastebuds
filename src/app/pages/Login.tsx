@@ -20,7 +20,6 @@ type Props = {
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  let userExists = false;
 
   const goToSignUp = () => {
     navigation.navigate('SignUp');
@@ -33,7 +32,6 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
 
       querySnapshot.forEach((doc) => {
         if (doc.data().username == username) {
-          userExists = true;
           if (doc.data().password == password) {
             navigation.navigate('Generator');
           } else {
@@ -42,11 +40,9 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         }
       });
 
-      if (!userExists) {
-        Alert.alert(
-          'Username does not exist. Please check your spelling or create a new account.',
-        );
-      }
+      Alert.alert(
+        'Username does not exist. Please check your spelling or create a new account.',
+      );
 
       console.log('Document successfully checked!');
     } catch (error) {
