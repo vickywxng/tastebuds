@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -31,15 +32,15 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
         <View></View>
       </ImageBackground>
       <View style={styles.buttons}>
-        <Button style={styles.button}>
+        <TouchableOpacity style={styles.button}>
           <Ionicons name="create" size={40} color={'#FFF5CD'} />
-        </Button>
-        <Button style={styles.button} onPress={goToPlanner}>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={goToPlanner}>
           <Ionicons name="calendar-outline" size={40} color={'#FFF5CD'} />
-        </Button>
-        <Button style={styles.button} onPress={goToCollection}>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={goToCollection}>
           <Ionicons name="basket-outline" size={40} color={'#FFF5CD'} />
-        </Button>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -58,6 +59,7 @@ const styles = StyleSheet.create({
     right: 0,
     flexDirection: 'row',
     height: 100,
+    paddingBottom: 30,
   },
   button: {
     flex: 1,

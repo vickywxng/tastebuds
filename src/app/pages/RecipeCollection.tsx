@@ -1,28 +1,27 @@
 import React, { useState } from 'react';
 import {
-  Dimensions,
-  ImageBackground,
   Modal,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
-  TouchableHighlight,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
-import { Button, YStack } from 'tamagui';
 
 type Props = {
   navigation: NavigationProp<any>;
 };
 
 const RecipeCollection: React.FC<Props> = ({ navigation }) => {
-  const [folders, setFolders] = useState<React.ReactElement[]>([]);
+  const [folders, setFolders] = useState<string[][]>([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [buttonName, setButtonName] = useState('New Folder');
   const [selectedIcon, setSelectedIcon] = useState('star-o');
+  const [editMode, setEditMode] = useState(false);
+  const [selectedFolders, setSelectedFolders] = useState<number[]>([]);
 
   const goToGenerator = () => {
     navigation.navigate('Generator');
@@ -32,47 +31,93 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('Planner');
   };
 
-  const addNewFolder = () => {
-    const newFolder = (
-      <Button key={folders.length} style={styles.folder}>
-        <FontAwesome5 name={selectedIcon} size={40} color="#365E32" />
-        <Text style={styles.folderText}>{buttonName}</Text>
-      </Button>
+  const toggleEditMode = () => {
+    setEditMode(!editMode);
+    setSelectedFolders([]);
+  };
+
+  const deleteSelectedFolders = () => {
+    const filteredFolders = folders.filter(
+      (_, index) => !selectedFolders.includes(index),
     );
+    setFolders(filteredFolders);
+    setSelectedFolders([]);
+    setEditMode(false);
+  };
+
+  const toggleFolderSelection = (index: number) => {
+    if (selectedFolders.includes(index)) {
+      setSelectedFolders(selectedFolders.filter((i) => i !== index));
+    } else {
+      setSelectedFolders([...selectedFolders, index]);
+    }
+  };
+
+  const addNewFolder = () => {
+    const newFolder = [`${buttonName}`, `${selectedIcon}`];
     setFolders([...folders, newFolder]);
     setModalVisible(false);
     setButtonName('New Folder');
     setSelectedIcon('star-o');
   };
 
+  // const addNewFolder = () => {
+  //   const newFolder = (
+  //     <TouchableOpacity key={folders.length} style={styles.folder}>
+  //       <FontAwesome5 name={selectedIcon} size={40} color="#365E32" />
+  //       <Text style={styles.folderText}>{buttonName}</Text>
+  //     </TouchableOpacity>
+  //   );
+  //   setFolders([...folders, newFolder]);
+  //   setModalVisible(false);
+  //   setButtonName('New Folder');
+  //   setSelectedIcon('star-o');
+  // };
+
   return (
     <View style={styles.container}>
       <ScrollView>
         <View style={styles.topButtons}>
-          <Button style={styles.editButton}>
-            <Text style={styles.editButtonText}>Edit</Text>
-          </Button>
-          <Button style={styles.plus} onPress={() => setModalVisible(true)}>
+          <TouchableOpacity
+            style={styles.editButton}
+            onPress={editMode ? deleteSelectedFolders : toggleEditMode}
+          >
+            <Text style={styles.editButtonText}>
+              {editMode ? 'Done' : 'Edit'}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.plus}
+            onPress={() => setModalVisible(true)}
+          >
             <FontAwesome5 name="plus" size={40} color="#365E32" />
-          </Button>
+          </TouchableOpacity>
         </View>
         <View style={styles.folders}>
-          <Button style={styles.folder}>
+          <TouchableOpacity style={styles.folder}>
             <FontAwesome5
               name="history"
               size={40}
               color="#365E32"
             ></FontAwesome5>
             <Text style={styles.folderText}>History</Text>
-          </Button>
-          <Button style={styles.folder}>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.folder}>
             <FontAwesome5 name="heart" size={40} color="#365E32"></FontAwesome5>
             <Text style={styles.folderText}>Favorites</Text>
-          </Button>
+          </TouchableOpacity>
           {folders.map((folder, index) => (
-            <View key={index} style={styles.folder}>
-              {folder}
-            </View>
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.folder,
+                selectedFolders.includes(index) && styles.selectedFolder,
+              ]}
+              onPress={() => editMode && toggleFolderSelection(index)}
+            >
+              <FontAwesome5 name={folder[1]} size={40} color="#365E32" />
+              <Text style={styles.folderText}>{folder[0]}</Text>
+            </TouchableOpacity>
           ))}
         </View>
       </ScrollView>
@@ -94,40 +139,41 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
             value={buttonName}
             onChangeText={(text) => setButtonName(text)}
           />
+          {/* Additional code for icon selection */}
           <View style={styles.iconContainer}>
-            <TouchableHighlight
+            <TouchableOpacity
               onPress={() => setSelectedIcon('hamburger')}
               style={
                 selectedIcon === 'hamburger' ? styles.iconSelected : styles.icon
               }
             >
               <FontAwesome5 name="hamburger" size={30} color="#E7D37F" />
-            </TouchableHighlight>
-            <TouchableHighlight
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={() => setSelectedIcon('apple-alt')}
               style={
                 selectedIcon === 'apple-alt' ? styles.iconSelected : styles.icon
               }
             >
               <FontAwesome5 name="apple-alt" size={30} color="#E7D37F" />
-            </TouchableHighlight>
-            <TouchableHighlight
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={() => setSelectedIcon('carrot')}
               style={
                 selectedIcon === 'carrot' ? styles.iconSelected : styles.icon
               }
             >
               <FontAwesome5 name="carrot" size={30} color="#E7D37F" />
-            </TouchableHighlight>
-            <TouchableHighlight
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={() => setSelectedIcon('ice-cream')}
               style={
                 selectedIcon === 'ice-cream' ? styles.iconSelected : styles.icon
               }
             >
               <FontAwesome5 name="ice-cream" size={30} color="#E7D37F" />
-            </TouchableHighlight>
-            <TouchableHighlight
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={() => setSelectedIcon('pepper-hot')}
               style={
                 selectedIcon === 'pepper-hot'
@@ -136,24 +182,24 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
               }
             >
               <FontAwesome5 name="pepper-hot" size={30} color="#E7D37F" />
-            </TouchableHighlight>
-            <TouchableHighlight
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={() => setSelectedIcon('coffee')}
               style={
                 selectedIcon === 'coffee' ? styles.iconSelected : styles.icon
               }
             >
               <FontAwesome5 name="coffee" size={30} color="#E7D37F" />
-            </TouchableHighlight>
-            <TouchableHighlight
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={() => setSelectedIcon('utensils')}
               style={
                 selectedIcon === 'utensils' ? styles.iconSelected : styles.icon
               }
             >
               <FontAwesome5 name="utensils" size={30} color="#E7D37F" />
-            </TouchableHighlight>
-            <TouchableHighlight
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={() => setSelectedIcon('pizza-slice')}
               style={
                 selectedIcon === 'pizza-slice'
@@ -162,40 +208,40 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
               }
             >
               <FontAwesome5 name="pizza-slice" size={30} color="#E7D37F" />
-            </TouchableHighlight>
-            <TouchableHighlight
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={() => setSelectedIcon('fish')}
               style={
                 selectedIcon === 'fish' ? styles.iconSelected : styles.icon
               }
             >
               <FontAwesome5 name="fish" size={30} color="#E7D37F" />
-            </TouchableHighlight>
+            </TouchableOpacity>
             {/* Add more icons as needed */}
           </View>
-          <Button style={styles.addButton} onPress={addNewFolder}>
+          <TouchableOpacity style={styles.addButton} onPress={addNewFolder}>
             <Text style={styles.buttonText}>Add Button</Text>
-          </Button>
-          <Button
+          </TouchableOpacity>
+          <TouchableOpacity
             style={styles.cancelButton}
             onPress={() => setModalVisible(false)}
           >
             <Text style={styles.buttonText}>Cancel</Text>
-          </Button>
+          </TouchableOpacity>
         </View>
       </Modal>
 
-      {/*Bottom tab navigator*/}
+      {/* Bottom tab navigator */}
       <View style={styles.buttons}>
-        <Button style={styles.button} onPress={goToGenerator}>
+        <TouchableOpacity style={styles.button} onPress={goToGenerator}>
           <Ionicons name="create-outline" size={40} color={'#FFF5CD'} />
-        </Button>
-        <Button style={styles.button} onPress={goToPlanner}>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={goToPlanner}>
           <Ionicons name="calendar-outline" size={40} color={'#FFF5CD'} />
-        </Button>
-        <Button style={styles.button}>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button}>
           <Ionicons name="basket" size={40} color={'#FFF5CD'} />
-        </Button>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -214,6 +260,7 @@ const styles = StyleSheet.create({
   editButton: {
     backgroundColor: '#E7D37F',
     borderWidth: 0,
+    padding: 10,
   },
   editButtonText: {
     color: '#365E32',
@@ -223,7 +270,7 @@ const styles = StyleSheet.create({
   plus: {
     backgroundColor: '#E7D37F',
     marginLeft: 200,
-    borderWidth: 0,
+    padding: 10,
   },
   buttons: {
     backgroundColor: '#82A263',
@@ -232,9 +279,8 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'stretch',
     height: 100,
+    paddingBottom: 30,
   },
   button: {
     flex: 1,
@@ -262,18 +308,21 @@ const styles = StyleSheet.create({
     height: 155,
     borderRadius: 17.5,
     margin: 17.5,
+    borderWidth: 2,
+    borderColor: 'transparent',
   },
   folderText: {
     fontFamily: 'Arvo-Bold',
     fontSize: 16,
     color: '#365E32',
+    marginTop: 10,
   },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#365E32',
-    padding: 20,
+    padding: 40,
   },
   modalTitle: {
     fontSize: 24,
@@ -296,13 +345,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'center',
     flexWrap: 'wrap',
-    marginHorizontal: 20,
     marginBottom: 20,
   },
   icon: {
-    flexDirection: 'column',
-    justifyContent: 'center',
-    alignItems: 'center',
     padding: 10,
     marginHorizontal: 5,
     borderRadius: 5,
@@ -331,6 +376,10 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: '#365E32',
     textAlign: 'center',
+  },
+  selectedFolder: {
+    borderColor: 'red',
+    borderWidth: 2,
   },
 });
 
