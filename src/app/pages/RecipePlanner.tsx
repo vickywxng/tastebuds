@@ -17,10 +17,6 @@ type Props = {
 };
 
 const RecipePlanner: React.FC<Props> = ({ navigation }) => {
-  const goToMain = () => {
-    navigation.navigate('MainPage');
-  };
-
   const goToGenerator = () => {
     navigation.navigate('Generator');
   };
@@ -35,17 +31,14 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
         <View></View>
       </ImageBackground>
       <View style={styles.buttons}>
-        <Button style={styles.button} onPress={goToMain}>
-          <Ionicons name="home-outline" size={36} color={'gray'} />
-        </Button>
         <Button style={styles.button} onPress={goToGenerator}>
-          <Ionicons name="create-outline" size={36} color={'gray'} />
+          <Ionicons name="create-outline" size={40} color={'#FFF5CD'} />
         </Button>
         <Button style={styles.button}>
-          <Ionicons name="calendar-outline" size={36} color={'#66B452'} />
+          <Ionicons name="calendar" size={40} color={'#FFF5CD'} />
         </Button>
         <Button style={styles.button} onPress={goToCollection}>
-          <Ionicons name="basket-outline" size={36} color={'gray'} />
+          <Ionicons name="basket-outline" size={40} color={'#FFF5CD'} />
         </Button>
       </View>
     </View>
@@ -55,9 +48,10 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#E7D37F',
   },
   buttons: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#82A263',
     position: 'absolute',
     bottom: 0,
     left: 0,

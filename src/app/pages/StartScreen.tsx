@@ -20,6 +20,8 @@ const StartScreen: React.FC<Props> = ({ navigation }) => {
   React.useEffect(() => {
     // Load the custom font when the component mounts
     Font.loadAsync({
+      'Arvo-Regular': require('../fonts/Arvo-Regular.ttf'),
+      'Arvo-Bold': require('../fonts/Arvo-Bold.ttf'),
       'Jua-Regular': require('../fonts/Jua-Regular.ttf'),
     });
   }, []);

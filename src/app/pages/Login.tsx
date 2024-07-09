@@ -31,9 +31,9 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       const querySnapshot = await getDocs(usersCollectionRef);
 
       querySnapshot.forEach((doc) => {
-        if (doc.data().username == username || doc.data().email == username) {
+        if (doc.data().username == username) {
           if (doc.data().password == password) {
-            navigation.navigate('MainPage');
+            navigation.navigate('Generator');
           } else {
             Alert.alert('Incorrect password. Please try again.');
           }
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: '#BC301D',
-    fontFamily: 'Jua',
+    fontFamily: 'Jua-Regular',
     fontSize: 34,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   buttonText: {
-    fontFamily: 'Jua',
+    fontFamily: 'Jua-Regular',
     fontSize: 24,
     color: '#fff',
   },

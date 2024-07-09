@@ -53,7 +53,7 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
           password: password,
           email: email,
         });
-        navigation.navigate('MainPage');
+        navigation.navigate('Registered');
       }
     } catch (error) {
       console.error('Error signing up:', error);
