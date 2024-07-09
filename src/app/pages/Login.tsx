@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
+  Alert,
   ImageBackground,
   StyleSheet,
   Text,
@@ -7,20 +8,46 @@ import {
   View,
 } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
-import { Button, YStack } from 'tamagui';
+import { collection, getDocs } from 'firebase/firestore/lite';
+import { Button } from 'tamagui';
+
+import { db } from '../firebase';
 
 type Props = {
   navigation: NavigationProp<any>;
 };
 
 const LoginScreen: React.FC<Props> = ({ navigation }) => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
   const goToSignUp = () => {
     navigation.navigate('SignUp');
   };
 
-  const handleLogin = () => {
-    // Implement login logic here
-    navigation.navigate('MainPage');
+  const handleLogin = async () => {
+    try {
+      const usersCollectionRef = collection(db, 'allUsers');
+      const querySnapshot = await getDocs(usersCollectionRef);
+
+      querySnapshot.forEach((doc) => {
+        if (doc.data().username == username) {
+          if (doc.data().password == password) {
+            navigation.navigate('Generator');
+          } else {
+            Alert.alert('Incorrect password. Please try again.');
+          }
+        }
+      });
+
+      Alert.alert(
+        'Username does not exist. Please check your spelling or create a new account.',
+      );
+
+      console.log('Document successfully checked!');
+    } catch (error) {
+      console.error('Error updating document:', error);
+    }
   };
 
   return (
@@ -34,12 +61,14 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
           style={styles.input}
           placeholder="Username"
           placeholderTextColor="#ccc"
+          onChangeText={(text) => setUsername(text)}
         />
         <TextInput
           style={styles.input}
           placeholder="Password"
           placeholderTextColor="#ccc"
           secureTextEntry={true}
+          onChangeText={(text) => setPassword(text)}
         />
         <Button style={styles.button} onPress={handleLogin}>
           <Text style={styles.buttonText}>Sign In</Text>
@@ -75,7 +104,7 @@ const styles = StyleSheet.create({
   },
   title: {
     color: '#BC301D',
-    fontFamily: 'Jua',
+    fontFamily: 'Jua-Regular',
     fontSize: 34,
     fontWeight: 'bold',
     textAlign: 'center',
@@ -102,7 +131,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   buttonText: {
-    fontFamily: 'Jua',
+    fontFamily: 'Jua-Regular',
     fontSize: 24,
     color: '#fff',
   },
