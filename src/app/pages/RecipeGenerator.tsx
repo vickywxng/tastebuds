@@ -17,10 +17,6 @@ type Props = {
 };
 
 const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
-  const goToMain = () => {
-    navigation.navigate('MainPage');
-  };
-
   const goToPlanner = () => {
     navigation.navigate('Planner');
   };
@@ -35,17 +31,14 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
         <View></View>
       </ImageBackground>
       <View style={styles.buttons}>
-        <Button style={styles.button} onPress={goToMain}>
-          <Ionicons name="home-outline" size={36} color={'gray'} />
-        </Button>
         <Button style={styles.button}>
-          <Ionicons name="create-outline" size={36} color={'#FE9E45'} />
+          <Ionicons name="create" size={40} color={'#FFF5CD'} />
         </Button>
         <Button style={styles.button} onPress={goToPlanner}>
-          <Ionicons name="calendar-outline" size={36} color={'gray'} />
+          <Ionicons name="calendar-outline" size={40} color={'#FFF5CD'} />
         </Button>
         <Button style={styles.button} onPress={goToCollection}>
-          <Ionicons name="basket-outline" size={36} color={'gray'} />
+          <Ionicons name="basket-outline" size={40} color={'#FFF5CD'} />
         </Button>
       </View>
     </View>
@@ -55,16 +48,15 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#E7D37F',
   },
   buttons: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#82A263',
     position: 'absolute',
     bottom: 0,
     left: 0,
     right: 0,
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'stretch',
     height: 100,
   },
   button: {
