@@ -61,22 +61,21 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <ImageBackground
-      source={require('../images/food_background_tile.png')}
-      style={styles.background}
-    >
+    <View style={styles.background}>
+      <View style={styles.greenCircle} />
       <View style={styles.container}>
-        <Text style={styles.title}>Create an Account</Text>
+        <Text style={styles.title}>Register</Text>
+        <Text style={styles.subtitle}>Create your account now!</Text>
         <TextInput
           style={styles.input}
           placeholder="Username"
-          placeholderTextColor="#ccc"
+          placeholderTextColor="#AFA26B"
           onChangeText={(text) => setUsername(text)}
         />
         <TextInput
           style={styles.input}
           placeholder="Email"
-          placeholderTextColor="#ccc"
+          placeholderTextColor="#AFA26B"
           keyboardType="email-address"
           autoCapitalize="none"
           onChangeText={(text) => setEmail(text)}
@@ -84,7 +83,14 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
         <TextInput
           style={styles.input}
           placeholder="Password"
-          placeholderTextColor="#ccc"
+          placeholderTextColor="#AFA26B"
+          secureTextEntry={true}
+          onChangeText={(text) => setPassword(text)}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Confirm password"
+          placeholderTextColor="#AFA26B"
           secureTextEntry={true}
           onChangeText={(text) => setPassword(text)}
         />
@@ -98,7 +104,7 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
           </Text>
         </Text>
       </View>
-    </ImageBackground>
+    </View>
   );
 };
 
@@ -107,13 +113,20 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#E7D37F',
+  },
+  greenCircle: {
+    width: 650,
+    height: 750,
+    backgroundColor: '#365E32',
+    borderRadius: 1000,
+    marginTop: -400,
   },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     borderRadius: 10,
     maxWidth: 400,
     width: '80%',
@@ -121,44 +134,51 @@ const styles = StyleSheet.create({
     marginTop: 80,
   },
   title: {
-    color: '#BC301D',
-    fontFamily: 'Jua',
-    fontSize: 34,
+    color: '#E7D37F',
+    fontFamily: 'Arvo-Bold',
+    fontSize: 36,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 50,
-    marginTop: 50,
+    marginTop: -300,
+    marginBottom: 20,
+  },
+  subtitle: {
+    fontSize: 18,
+    textAlign: 'center',
+    color: '#FFF5CD',
+    marginBottom: 180,
   },
   input: {
     width: '100%',
-    height: 50,
-    backgroundColor: '#fff',
+    height: 55,
+    color: 'black',
+    backgroundColor: '#FFF5CD',
     borderRadius: 10,
     paddingLeft: 15,
-    marginBottom: 15,
-    borderWidth: 2.5,
-    borderColor: '#E63922',
+    marginBottom: 20,
   },
   button: {
     width: '100%',
-    height: 50,
-    backgroundColor: '#E63922',
-    borderRadius: 10,
+    height: 55,
+    backgroundColor: '#FD9B62',
+    borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 20,
     marginBottom: 15,
   },
   buttonText: {
+    fontFamily: 'Arvo-Bold',
     fontSize: 18,
     color: '#fff',
   },
   loginText: {
     marginTop: 10,
     fontSize: 16,
-    color: '#000',
+    color: '#365E32',
   },
   loginLink: {
-    color: '#BC301D',
+    color: '#365E32',
     textDecorationLine: 'underline',
   },
 });
