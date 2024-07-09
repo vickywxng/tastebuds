@@ -6,11 +6,12 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
-import { Button, XStack, YStack } from 'tamagui';
+import { Button, YStack } from 'tamagui';
 
 type Props = {
   navigation: NavigationProp<any>;
@@ -27,31 +28,19 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View>
-          <YStack padding={100}>
-            <Text style={styles.modalTitle}>Ok, now what are we working with?</Text>
-            <XStack>
-              <Text>Ingredients</Text>
-              <Text>include quantity (e.g. 2 eggs)</Text>
-            </XStack>
-
-            <TextInput
-              style={styles.input}
-              placeholder="1 gal of milk, 3 potatoes, 2 sticks of butter, etc"
-            />
-
-          </YStack>
-        </View>
+      <ImageBackground>
+        <View></View>
+      </ImageBackground>
       <View style={styles.buttons}>
-        <Button style={styles.button}>
+        <TouchableOpacity style={styles.button}>
           <Ionicons name="create" size={40} color={'#FFF5CD'} />
-        </Button>
-        <Button style={styles.button} onPress={goToPlanner}>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={goToPlanner}>
           <Ionicons name="calendar-outline" size={40} color={'#FFF5CD'} />
-        </Button>
-        <Button style={styles.button} onPress={goToCollection}>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={goToCollection}>
           <Ionicons name="basket-outline" size={40} color={'#FFF5CD'} />
-        </Button>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -70,6 +59,7 @@ const styles = StyleSheet.create({
     right: 0,
     flexDirection: 'row',
     height: 100,
+    paddingBottom: 30,
   },
   button: {
     flex: 1,
@@ -79,18 +69,6 @@ const styles = StyleSheet.create({
     borderRadius: 0,
     borderWidth: 0,
     marginTop: 15,
-  },
-  modalTitle: {
-    fontSize: 24,
-    marginBottom: 20,
-    color: '#365E32',
-  }, 
-  input: {
-    width: '100%',
-    backgroundColor: '#F0F0F0',
-    padding: 10,
-    marginBottom: 20,
-    borderRadius: 5,
   },
 });
 
