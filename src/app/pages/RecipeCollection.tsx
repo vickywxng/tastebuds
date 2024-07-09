@@ -48,9 +48,14 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <ScrollView>
-        <Button style={styles.plus} onPress={() => setModalVisible(true)}>
-          <FontAwesome5 name="plus" size={40} color="#365E32" />
-        </Button>
+        <View style={styles.topButtons}>
+          <Button style={styles.editButton}>
+            <Text style={styles.editButtonText}>Edit</Text>
+          </Button>
+          <Button style={styles.plus} onPress={() => setModalVisible(true)}>
+            <FontAwesome5 name="plus" size={40} color="#365E32" />
+          </Button>
+        </View>
         <View style={styles.folders}>
           <Button style={styles.folder}>
             <FontAwesome5
@@ -96,7 +101,7 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
                 selectedIcon === 'hamburger' ? styles.iconSelected : styles.icon
               }
             >
-              <FontAwesome5 name="hamburger" size={30} color="#365E32" />
+              <FontAwesome5 name="hamburger" size={30} color="#E7D37F" />
             </TouchableHighlight>
             <TouchableHighlight
               onPress={() => setSelectedIcon('apple-alt')}
@@ -104,7 +109,7 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
                 selectedIcon === 'apple-alt' ? styles.iconSelected : styles.icon
               }
             >
-              <FontAwesome5 name="apple-alt" size={30} color="#365E32" />
+              <FontAwesome5 name="apple-alt" size={30} color="#E7D37F" />
             </TouchableHighlight>
             <TouchableHighlight
               onPress={() => setSelectedIcon('carrot')}
@@ -112,7 +117,7 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
                 selectedIcon === 'carrot' ? styles.iconSelected : styles.icon
               }
             >
-              <FontAwesome5 name="carrot" size={30} color="#365E32" />
+              <FontAwesome5 name="carrot" size={30} color="#E7D37F" />
             </TouchableHighlight>
             <TouchableHighlight
               onPress={() => setSelectedIcon('ice-cream')}
@@ -120,7 +125,7 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
                 selectedIcon === 'ice-cream' ? styles.iconSelected : styles.icon
               }
             >
-              <FontAwesome5 name="ice-cream" size={30} color="#365E32" />
+              <FontAwesome5 name="ice-cream" size={30} color="#E7D37F" />
             </TouchableHighlight>
             <TouchableHighlight
               onPress={() => setSelectedIcon('pepper-hot')}
@@ -130,7 +135,41 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
                   : styles.icon
               }
             >
-              <FontAwesome5 name="pepper-hot" size={30} color="#365E32" />
+              <FontAwesome5 name="pepper-hot" size={30} color="#E7D37F" />
+            </TouchableHighlight>
+            <TouchableHighlight
+              onPress={() => setSelectedIcon('coffee')}
+              style={
+                selectedIcon === 'coffee' ? styles.iconSelected : styles.icon
+              }
+            >
+              <FontAwesome5 name="coffee" size={30} color="#E7D37F" />
+            </TouchableHighlight>
+            <TouchableHighlight
+              onPress={() => setSelectedIcon('utensils')}
+              style={
+                selectedIcon === 'utensils' ? styles.iconSelected : styles.icon
+              }
+            >
+              <FontAwesome5 name="utensils" size={30} color="#E7D37F" />
+            </TouchableHighlight>
+            <TouchableHighlight
+              onPress={() => setSelectedIcon('pizza-slice')}
+              style={
+                selectedIcon === 'pizza-slice'
+                  ? styles.iconSelected
+                  : styles.icon
+              }
+            >
+              <FontAwesome5 name="pizza-slice" size={30} color="#E7D37F" />
+            </TouchableHighlight>
+            <TouchableHighlight
+              onPress={() => setSelectedIcon('fish')}
+              style={
+                selectedIcon === 'fish' ? styles.iconSelected : styles.icon
+              }
+            >
+              <FontAwesome5 name="fish" size={30} color="#E7D37F" />
             </TouchableHighlight>
             {/* Add more icons as needed */}
           </View>
@@ -167,10 +206,24 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#E7D37F',
   },
+  topButtons: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 120,
+  },
+  editButton: {
+    backgroundColor: '#E7D37F',
+    borderWidth: 0,
+  },
+  editButtonText: {
+    color: '#365E32',
+    fontFamily: 'Arvo-Bold',
+    fontSize: 32,
+  },
   plus: {
     backgroundColor: '#E7D37F',
-    marginTop: 100,
-    marginLeft: 300,
+    marginLeft: 200,
+    borderWidth: 0,
   },
   buttons: {
     backgroundColor: '#82A263',
@@ -219,30 +272,37 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#E7D37F',
+    backgroundColor: '#365E32',
     padding: 20,
   },
   modalTitle: {
     fontSize: 24,
     fontFamily: 'Arvo-Bold',
     marginBottom: 20,
-    color: '#365E32',
+    color: '#E7D37F',
   },
   input: {
     width: '75%',
-    backgroundColor: '#F0F0F0',
+    backgroundColor: '#FFF5CD',
+    color: '#AFA26B',
     padding: 10,
+    height: 40,
+    fontSize: 18,
     marginBottom: 20,
-    borderRadius: 5,
+    borderRadius: 10,
     textAlign: 'center',
   },
   iconContainer: {
     flexDirection: 'row',
-    marginHorizontal: 50,
-    marginBottom: 20,
+    justifyContent: 'center',
     flexWrap: 'wrap',
+    marginHorizontal: 20,
+    marginBottom: 20,
   },
   icon: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 10,
     marginHorizontal: 5,
     borderRadius: 5,
@@ -254,14 +314,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#82A263',
   },
   addButton: {
-    backgroundColor: '#82A263',
+    backgroundColor: '#FFF5CD',
     padding: 10,
     borderRadius: 5,
     width: 200,
     marginBottom: 10,
   },
   cancelButton: {
-    backgroundColor: '#365E32',
+    backgroundColor: '#E7D37F',
     padding: 10,
     borderRadius: 5,
     width: 200,
@@ -269,7 +329,7 @@ const styles = StyleSheet.create({
   buttonText: {
     fontFamily: 'Arvo-Bold',
     fontSize: 20,
-    color: 'white',
+    color: '#365E32',
     textAlign: 'center',
   },
 });
