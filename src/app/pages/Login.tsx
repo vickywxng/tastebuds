@@ -29,9 +29,11 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     try {
       const usersCollectionRef = collection(db, 'allUsers');
       const querySnapshot = await getDocs(usersCollectionRef);
+      let userExists = false;
 
       querySnapshot.forEach((doc) => {
         if (doc.data().username == username) {
+          userExists = true;
           if (doc.data().password == password) {
             navigation.navigate('Generator');
           } else {
@@ -40,9 +42,11 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         }
       });
 
-      Alert.alert(
-        'Username does not exist. Please check your spelling or create a new account.',
-      );
+      if (!userExists) {
+        Alert.alert(
+          'Username does not exist. Please check your spelling or create a new account.',
+        );
+      }
 
       console.log('Document successfully checked!');
     } catch (error) {
