@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Modal,
   ScrollView,
@@ -10,6 +10,15 @@ import {
 } from 'react-native';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { NavigationProp } from '@react-navigation/native';
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  setDoc,
+} from 'firebase/firestore/lite';
+
+import { db } from '../firebase';
 
 type Props = {
   navigation: NavigationProp<any>;
@@ -18,10 +27,33 @@ type Props = {
 const RecipeCollection: React.FC<Props> = ({ navigation }) => {
   const [folders, setFolders] = useState<string[][]>([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [buttonName, setButtonName] = useState('New Folder');
+  const [collectionName, setcollectionName] = useState('New Folder');
   const [selectedIcon, setSelectedIcon] = useState('star-o');
   const [editMode, setEditMode] = useState(false);
   const [selectedFolders, setSelectedFolders] = useState<number[]>([]);
+
+  useEffect(() => {
+    const fetchFolders = async () => {
+      try {
+        const collectionsRef = collection(db, 'collections');
+        const querySnapshot = await getDocs(collectionsRef);
+
+        const updatedFolders: string[][] = [];
+
+        querySnapshot.forEach((doc) => {
+          if (doc.id !== 'History' && doc.id !== 'Favorites') {
+            updatedFolders.push([doc.id, doc.data().IconName]);
+          }
+        });
+
+        setFolders(updatedFolders);
+      } catch (error) {
+        console.error('Error fetching folders:', error);
+      }
+    };
+
+    fetchFolders();
+  }, []);
 
   const goToGenerator = () => {
     navigation.navigate('Generator');
@@ -36,10 +68,23 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
     setSelectedFolders([]);
   };
 
-  const deleteSelectedFolders = () => {
+  const deleteSelectedFolders = async () => {
     const filteredFolders = folders.filter(
       (_, index) => !selectedFolders.includes(index),
     );
+
+    const foldersToDelete = folders.filter((_, index) =>
+      selectedFolders.includes(index),
+    );
+
+    const collectionsRef = collection(db, 'collections');
+
+    for (let infoArr of foldersToDelete) {
+      let id = infoArr[0];
+      const docRef = doc(collectionsRef, id);
+      deleteDoc(docRef);
+    }
+
     setFolders(filteredFolders);
     setSelectedFolders([]);
     setEditMode(false);
@@ -53,26 +98,28 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
     }
   };
 
-  const addNewFolder = () => {
-    const newFolder = [`${buttonName}`, `${selectedIcon}`];
+  const addNewFolder = async () => {
+    const newFolder = [`${collectionName}`, `${selectedIcon}`];
+    const collectionsRef = collection(db, 'collections');
+    const newDocRef = doc(collectionsRef, collectionName);
+
+    try {
+      await setDoc(newDocRef, {
+        IconName: selectedIcon,
+      });
+    } catch (error) {
+      console.error('Error adding document: ', error);
+    }
+
     setFolders([...folders, newFolder]);
     setModalVisible(false);
-    setButtonName('New Folder');
+    setcollectionName('New Folder');
     setSelectedIcon('star-o');
   };
 
-  // const addNewFolder = () => {
-  //   const newFolder = (
-  //     <TouchableOpacity key={folders.length} style={styles.folder}>
-  //       <FontAwesome5 name={selectedIcon} size={40} color="#365E32" />
-  //       <Text style={styles.folderText}>{buttonName}</Text>
-  //     </TouchableOpacity>
-  //   );
-  //   setFolders([...folders, newFolder]);
-  //   setModalVisible(false);
-  //   setButtonName('New Folder');
-  //   setSelectedIcon('star-o');
-  // };
+  const goIntoCollection = (id: String) => {
+    navigation.navigate('DynamicCollection', { textValue: id });
+  };
 
   return (
     <View style={styles.container}>
@@ -94,7 +141,10 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
           </TouchableOpacity>
         </View>
         <View style={styles.folders}>
-          <TouchableOpacity style={styles.folder}>
+          <TouchableOpacity
+            style={styles.folder}
+            onPress={() => !editMode && goIntoCollection('History')}
+          >
             <FontAwesome5
               name="history"
               size={40}
@@ -102,7 +152,10 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
             ></FontAwesome5>
             <Text style={styles.folderText}>History</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.folder}>
+          <TouchableOpacity
+            style={styles.folder}
+            onPress={() => !editMode && goIntoCollection('Favorites')}
+          >
             <FontAwesome5 name="heart" size={40} color="#365E32"></FontAwesome5>
             <Text style={styles.folderText}>Favorites</Text>
           </TouchableOpacity>
@@ -113,7 +166,11 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
                 styles.folder,
                 selectedFolders.includes(index) && styles.selectedFolder,
               ]}
-              onPress={() => editMode && toggleFolderSelection(index)}
+              onPress={() =>
+                editMode
+                  ? toggleFolderSelection(index)
+                  : goIntoCollection(`${folder[0]}`)
+              }
             >
               <FontAwesome5 name={folder[1]} size={40} color="#365E32" />
               <Text style={styles.folderText}>{folder[0]}</Text>
@@ -136,8 +193,8 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
           <TextInput
             style={styles.input}
             placeholder="Enter Button Name"
-            value={buttonName}
-            onChangeText={(text) => setButtonName(text)}
+            value={collectionName}
+            onChangeText={(text) => setcollectionName(text)}
           />
           {/* Additional code for icon selection */}
           <View style={styles.iconContainer}>

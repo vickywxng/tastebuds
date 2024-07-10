@@ -3,6 +3,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import 'expo-router/entry';
 
+import DynamicCollection from './pages/DynamicCollection';
 import LoginScreen from './pages/Login';
 import RecipeCollection from './pages/RecipeCollection';
 import RecipeGenerator from './pages/RecipeGenerator';
@@ -67,6 +68,17 @@ function App() {
       <Stack.Screen
         name="Collection"
         component={RecipeCollection}
+        options={{
+          transitionSpec: {
+            open: { animation: 'timing', config: { duration: 0 } },
+            close: { animation: 'timing', config: { duration: 0 } },
+          },
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="DynamicCollection"
+        component={DynamicCollection}
         options={{
           transitionSpec: {
             open: { animation: 'timing', config: { duration: 0 } },
