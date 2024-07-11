@@ -35,6 +35,10 @@ const DynamicCollection: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('Collection');
   };
 
+  const goToInfo = () => {
+    navigation.navigate('InfoPage');
+  };
+
   const toggleEditMode = () => {
     setEditMode(!editMode);
     setSelectedRecipes([]);
@@ -61,7 +65,7 @@ const DynamicCollection: React.FC<Props> = ({ navigation }) => {
           </Text>
         </TouchableOpacity>
         <View style={styles.recipes}>
-          <TouchableOpacity style={styles.recipe}>
+          <TouchableOpacity style={styles.recipe} onPress={goToInfo}>
             <Text style={styles.recipeTitle}>Blueberry Pancakes</Text>
             <Text style={styles.recipeDescription}>
               Super thick and fluffy blueberry pancakes! Melt in your mouth,
@@ -85,7 +89,6 @@ const DynamicCollection: React.FC<Props> = ({ navigation }) => {
           <TouchableOpacity style={styles.recipe}></TouchableOpacity>
           <TouchableOpacity style={styles.recipe}></TouchableOpacity>
         </View>
-        {/* Other components and navigation */}
       </ScrollView>
       <View style={styles.buttons}>
         <TouchableOpacity style={styles.button} onPress={goToGenerator}>
