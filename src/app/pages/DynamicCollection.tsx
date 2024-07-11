@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Modal,
   ScrollView,
@@ -10,7 +10,9 @@ import {
 } from 'react-native';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { NavigationProp, useRoute } from '@react-navigation/native';
-import { addDoc, collection, doc, setDoc } from 'firebase/firestore/lite';
+import { addDoc, collection, doc, getDocs } from 'firebase/firestore/lite';
+
+import { db } from '../firebase';
 
 type Props = {
   navigation: NavigationProp<any>;
@@ -25,21 +27,53 @@ const DynamicCollection: React.FC<Props> = ({ navigation }) => {
   const [editMode, setEditMode] = useState(false);
   const [recipes, setRecipes] = useState<string[][]>([]);
   const [selectedRecipes, setSelectedRecipes] = useState<number[]>([]);
+  const curCollection = collection(
+    db,
+    `allUsers/${userId}/collections/${collectionName}/Recipes`,
+  );
+
+  useEffect(() => {
+    const fetchRecipes = async () => {
+      try {
+        const querySnapshot = await getDocs(curCollection);
+        const updatedRecipes: string[][] = [];
+
+        querySnapshot.forEach((doc) => {
+          updatedRecipes.push([
+            doc.id,
+            doc.data().Description,
+            doc.data().Info['Time'],
+            doc.data().Info['Complexity'],
+            doc.data().Info['Calories'],
+          ]);
+        });
+
+        setRecipes(updatedRecipes);
+      } catch (error) {
+        console.error('Error fetching folders:', error);
+      }
+    };
+
+    fetchRecipes();
+  }, []);
 
   const goToGenerator = () => {
-    navigation.navigate('Generator');
+    navigation.navigate('Generator', { userId });
   };
 
   const goToPlanner = () => {
-    navigation.navigate('Planner');
+    navigation.navigate('Planner', { userId });
   };
 
   const goToCollection = () => {
-    navigation.navigate('Collection');
+    navigation.navigate('Collection', { userId });
   };
 
-  const goToInfo = () => {
-    navigation.navigate('InfoPage');
+  const goToInfo = (curRecipe: string) => {
+    navigation.navigate('InfoPage', {
+      navToInfo: `allUsers/${userId}/collections/${collectionName}/Recipes`,
+      curRecipe,
+    });
   };
 
   const toggleEditMode = () => {
@@ -68,29 +102,30 @@ const DynamicCollection: React.FC<Props> = ({ navigation }) => {
           </Text>
         </TouchableOpacity>
         <View style={styles.recipes}>
-          <TouchableOpacity style={styles.recipe} onPress={goToInfo}>
-            <Text style={styles.recipeTitle}>Blueberry Pancakes</Text>
-            <Text style={styles.recipeDescription}>
-              Super thick and fluffy blueberry pancakes! Melt in your mouth,
-              golden brown, and bursting with blueberries.
-            </Text>
-            <View style={styles.info}>
-              <View style={styles.infoElement}>
-                <Ionicons name="alarm" size={20} color="#FFF5CD" />
-                <Text style={styles.infoText}>30 min</Text>
+          {recipes.map((recipe, index) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.recipe}
+              onPress={() => goToInfo(`${recipe[0]}`)}
+            >
+              <Text style={styles.recipeTitle}>{recipe[0]}</Text>
+              <Text style={styles.recipeDescription}>{recipe[1]}</Text>
+              <View style={styles.info}>
+                <View style={styles.infoElement}>
+                  <Ionicons name="alarm" size={20} color="#FFF5CD" />
+                  <Text style={styles.infoText}>{recipe[2]}</Text>
+                </View>
+                <View style={styles.infoElement}>
+                  <Ionicons name="star" size={20} color="#FFF5CD" />
+                  <Text style={styles.infoText}>{recipe[3]}</Text>
+                </View>
+                <View style={styles.infoElement}>
+                  <Ionicons name="flame" size={20} color="#FFF5CD" />
+                  <Text style={styles.infoText}>{recipe[4]}</Text>
+                </View>
               </View>
-              <View style={styles.infoElement}>
-                <Ionicons name="star" size={20} color="#FFF5CD" />
-                <Text style={styles.infoText}>Easy</Text>
-              </View>
-              <View style={styles.infoElement}>
-                <Ionicons name="flame" size={20} color="#FFF5CD" />
-                <Text style={styles.infoText}>250 cals</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.recipe}></TouchableOpacity>
-          <TouchableOpacity style={styles.recipe}></TouchableOpacity>
+            </TouchableOpacity>
+          ))}
         </View>
       </ScrollView>
       <View style={styles.buttons}>

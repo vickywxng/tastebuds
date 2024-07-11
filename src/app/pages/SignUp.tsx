@@ -8,7 +8,14 @@ import {
   View,
 } from 'react-native';
 import { NavigationProp } from '@react-navigation/native';
-import { addDoc, collection, getDocs } from 'firebase/firestore/lite';
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  setDoc,
+} from 'firebase/firestore/lite';
 import { Button } from 'tamagui';
 
 import { db } from '../firebase';
@@ -48,12 +55,29 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
           'Email already has a username attached. Log into your account.',
         );
       } else {
-        await addDoc(usersCollectionRef, {
+        const docRef = await addDoc(usersCollectionRef, {
           username: username,
           password: password,
           email: email,
         });
-        navigation.navigate('Registered');
+        const collections = collection(
+          usersCollectionRef,
+          docRef.id,
+          'collections',
+        );
+
+        const dummyDocRef = doc(collections, 'dummyDocument');
+        await setDoc(dummyDocRef, {});
+
+        await deleteDoc(dummyDocRef);
+
+        const hisRef = doc(collections, 'History');
+        const favRef = doc(collections, 'Favorites');
+
+        await setDoc(hisRef, {});
+        await setDoc(favRef, {});
+
+        navigation.navigate('Registered', { docId: docRef.id });
       }
     } catch (error) {
       console.error('Error signing up:', error);
