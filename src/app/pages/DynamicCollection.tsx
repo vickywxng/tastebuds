@@ -18,7 +18,10 @@ type Props = {
 
 const DynamicCollection: React.FC<Props> = ({ navigation }) => {
   const route = useRoute();
-  const { collectionName } = route.params as { collectionName: string };
+  const { collectionName, userId } = route.params as {
+    collectionName: string;
+    userId: string;
+  };
   const [editMode, setEditMode] = useState(false);
   const [recipes, setRecipes] = useState<string[][]>([]);
   const [selectedRecipes, setSelectedRecipes] = useState<number[]>([]);

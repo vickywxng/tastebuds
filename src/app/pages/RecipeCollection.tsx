@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
-import { NavigationProp } from '@react-navigation/native';
+import { NavigationProp, useRoute } from '@react-navigation/native';
 import {
   collection,
   deleteDoc,
@@ -32,10 +32,15 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
   const [editMode, setEditMode] = useState(false);
   const [selectedFolders, setSelectedFolders] = useState<number[]>([]);
 
+  const route = useRoute();
+  const { userId } = route.params as {
+    userId: string;
+  };
+
   useEffect(() => {
     const fetchFolders = async () => {
       try {
-        const collectionsRef = collection(db, 'collections');
+        const collectionsRef = collection(db, `allUsers/${userId}/collections`);
         const querySnapshot = await getDocs(collectionsRef);
 
         const updatedFolders: string[][] = [];
@@ -56,11 +61,11 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
   }, []);
 
   const goToGenerator = () => {
-    navigation.navigate('Generator');
+    navigation.navigate('Generator', { userId });
   };
 
   const goToPlanner = () => {
-    navigation.navigate('Planner');
+    navigation.navigate('Planner', { userId });
   };
 
   const toggleEditMode = () => {
@@ -77,7 +82,7 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
       selectedFolders.includes(index),
     );
 
-    const collectionsRef = collection(db, 'collections');
+    const collectionsRef = collection(db, `allUsers/${userId}/collections`);
 
     for (let infoArr of foldersToDelete) {
       let id = infoArr[0];
@@ -100,7 +105,7 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
 
   const addNewFolder = async () => {
     const newFolder = [`${collectionName}`, `${selectedIcon}`];
-    const collectionsRef = collection(db, 'collections');
+    const collectionsRef = collection(db, `allUsers/${userId}/collections`);
     const newDocRef = doc(collectionsRef, collectionName);
 
     try {
@@ -117,8 +122,11 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
     setSelectedIcon('star-o');
   };
 
-  const goIntoCollection = (id: String) => {
-    navigation.navigate('DynamicCollection', { textValue: id });
+  const goIntoCollection = (collectionId: String) => {
+    navigation.navigate('DynamicCollection', {
+      collectionName: collectionId,
+      userId,
+    });
   };
 
   return (

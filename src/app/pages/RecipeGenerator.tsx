@@ -9,7 +9,8 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { NavigationProp } from '@react-navigation/native';
+import { NavigationProp, useRoute } from '@react-navigation/native';
+import { Divide } from '@tamagui/lucide-icons';
 import { Button, XStack, YStack } from 'tamagui';
 
 type Props = {
@@ -17,31 +18,97 @@ type Props = {
 };
 
 const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
+  const route = useRoute();
+  const { userId } = route.params as {
+    userId: string;
+  };
+
   const goToPlanner = () => {
-    navigation.navigate('Planner');
+    navigation.navigate('Planner', { userId });
   };
 
   const goToCollection = () => {
-    navigation.navigate('Collection');
+    navigation.navigate('Collection', { userId });
   };
 
   return (
     <View style={styles.container}>
       <View>
-          <YStack padding={100}>
-            <Text style={styles.modalTitle}>Ok, now what are we working with?</Text>
-            <XStack>
-              <Text>Ingredients</Text>
-              <Text>include quantity (e.g. 2 eggs)</Text>
-            </XStack>
+        <YStack padding={50}>
+          <Text style={styles.modalTitle}>
+            Ok, now what are we working with?
+          </Text>
+          <XStack>
+            <Text>Ingredients</Text>
+            <Text>include quantity (e.g. 2 eggs)</Text>
+          </XStack>
 
-            <TextInput
-              style={styles.input}
-              placeholder="1 gal of milk, 3 potatoes, 2 sticks of butter, etc"
-            />
+          <TextInput
+            style={styles.input}
+            placeholder="1 gal of milk, 3 potatoes, 2 sticks of butter, etc"
+          />
 
-          </YStack>
-        </View>
+          <Button>
+            <Ionicons name="link" size={40} color={'black'} />
+            Upload an Image
+          </Button>
+
+          <Text style={styles.modalTitle}>Time</Text>
+
+          <XStack>
+            {timeButton('15 mins')}
+            {timeButton('30 mins')}
+            {timeButton('1 hr')}
+          </XStack>
+
+          <XStack>
+            {timeButton('2 hrs')}
+            {timeButton('3 hrs')}
+          </XStack>
+
+          <Text style={styles.modalTitle}>Appliances</Text>
+          <XStack>
+            {applianceButton('Stove')}
+            {applianceButton('Oven')}
+            {applianceButton('Microwave')}
+          </XStack>
+
+          <XStack>
+            {applianceButton('Air Fryer')}
+            {applianceButton('Rice Cooker')}
+          </XStack>
+
+          <XStack>
+            <Text>Diet</Text>
+            <Text>(be as specific as possible!)</Text>
+          </XStack>
+
+          <TextInput
+            style={styles.input}
+            placeholder="Vegeterian, vegan, keto, etc"
+          />
+
+          <Text>Complexity</Text>
+          <XStack>
+            {complexityButton('Easy')}
+            {complexityButton('Medium')}
+            {complexityButton('Hard')}
+          </XStack>
+
+          <Text>Yield</Text>
+          {/* <Picker
+            selectedValue={selectedCategory}
+            style={styles.picker}
+            onValueChange={(itemValue) => setSelectedCategory(itemValue)}
+          >
+            <Picker.Item label="Breakfast" value="breakfast" />
+            <Picker.Item label="Lunch" value="lunch" />
+            <Picker.Item label="Dinner" value="dinner" />
+            <Picker.Item label="Snacks" value="snacks" />
+          </Picker> */}
+        </YStack>
+      </View>
+
       <View style={styles.buttons}>
         <Button style={styles.button}>
           <Ionicons name="create" size={40} color={'#FFF5CD'} />
@@ -84,7 +151,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     marginBottom: 20,
     color: '#365E32',
-  }, 
+  },
   input: {
     width: '100%',
     backgroundColor: '#F0F0F0',
@@ -93,5 +160,32 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
 });
+
+const timeButton = (str: string) => {
+  return (
+    <Button>
+      <Ionicons name="alarm-outline" size={40} color={'black'} />
+      {str}
+    </Button>
+  );
+};
+
+const applianceButton = (str: string) => {
+  return (
+    <Button>
+      <Ionicons name="construct-outline" size={40} color={'black'} />
+      {str}
+    </Button>
+  );
+};
+
+const complexityButton = (str: string) => {
+  return (
+    <Button>
+      <Ionicons name="star" size={40} color={'black'} />
+      {str}
+    </Button>
+  );
+};
 
 export default RecipeGenerator;

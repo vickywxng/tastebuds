@@ -35,7 +35,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
         if (doc.data().username == username) {
           userExists = true;
           if (doc.data().password == password) {
-            navigation.navigate('Generator');
+            navigation.navigate('Generator', { userId: doc.id });
           } else {
             Alert.alert('Incorrect password. Please try again.');
           }

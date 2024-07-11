@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { NavigationProp } from '@react-navigation/native';
+import { NavigationProp, useRoute } from '@react-navigation/native';
 import { Button, YStack } from 'tamagui';
 
 type Props = {
@@ -17,12 +17,17 @@ type Props = {
 };
 
 const RecipePlanner: React.FC<Props> = ({ navigation }) => {
+  const route = useRoute();
+  const { userId } = route.params as {
+    userId: string;
+  };
+
   const goToGenerator = () => {
-    navigation.navigate('Generator');
+    navigation.navigate('Generator', { userId });
   };
 
   const goToCollection = () => {
-    navigation.navigate('Collection');
+    navigation.navigate('Collection', { userId });
   };
 
   return (
