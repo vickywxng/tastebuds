@@ -146,6 +146,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderRadius: 0,
     borderWidth: 0,
+    paddingBottom: 10,
   },
   modalTitle: {
     fontSize: 24,

@@ -21,8 +21,9 @@ type Props = {
 
 const InfoPage: React.FC<Props> = ({ navigation }) => {
   const route = useRoute();
-  const { navToInfo, curRecipe } = route.params as {
-    navToInfo: string;
+  const { userId, collectionName, curRecipe } = route.params as {
+    userId: string;
+    collectionName: string;
     curRecipe: string;
   };
   const [title, setTitle] = useState<String>('');
@@ -34,7 +35,10 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
   useEffect(() => {
     const fetchRecipes = async () => {
       try {
-        const curDoc = doc(db, navToInfo, curRecipe);
+        const curDoc = doc(
+          db,
+          `allUsers/${userId}/collections/${collectionName}/Recipes/${curRecipe}`,
+        );
         const docSnap = await getDoc(curDoc);
 
         if (docSnap.exists()) {
@@ -57,15 +61,15 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
   }, []);
 
   const goToGenerator = () => {
-    navigation.navigate('Generator');
+    navigation.navigate('Generator', { userId });
   };
 
   const goToPlanner = () => {
-    navigation.navigate('Planner');
+    navigation.navigate('Planner', { userId });
   };
 
   const goToCollection = () => {
-    navigation.navigate('Collection');
+    navigation.navigate('Collection', { userId });
   };
 
   const goBack = () => {
@@ -124,7 +128,12 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
           <Ionicons name="create-outline" size={40} color={'#FFF5CD'} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.button}>
-          <Ionicons name="basket" size={40} color={'#FFF5CD'} />
+          <Ionicons
+            name="basket-outline"
+            size={40}
+            color={'#FFF5CD'}
+            onPress={goToCollection}
+          />
         </TouchableOpacity>
       </View>
     </View>
@@ -239,6 +248,7 @@ const styles = StyleSheet.create({
     right: 0,
     flexDirection: 'row',
     height: 100,
+    paddingBottom: 10,
   },
   button: {
     flex: 1,

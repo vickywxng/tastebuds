@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
 import { NavigationProp, useRoute } from '@react-navigation/native';
-import { addDoc, collection, doc, getDocs } from 'firebase/firestore/lite';
+import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore/lite';
 
 import { db } from '../firebase';
 
@@ -71,9 +71,18 @@ const DynamicCollection: React.FC<Props> = ({ navigation }) => {
 
   const goToInfo = (curRecipe: string) => {
     navigation.navigate('InfoPage', {
-      navToInfo: `allUsers/${userId}/collections/${collectionName}/Recipes`,
+      userId,
+      collectionName,
       curRecipe,
     });
+  };
+
+  const toggleRecipeSelection = (index: number) => {
+    if (selectedRecipes.includes(index)) {
+      setSelectedRecipes(selectedRecipes.filter((i) => i !== index));
+    } else {
+      setSelectedRecipes([...selectedRecipes, index]);
+    }
   };
 
   const toggleEditMode = () => {
@@ -85,6 +94,17 @@ const DynamicCollection: React.FC<Props> = ({ navigation }) => {
     const filteredFolders = recipes.filter(
       (_, index) => !selectedRecipes.includes(index),
     );
+
+    const recipesToDelete = recipes.filter((_, index) =>
+      selectedRecipes.includes(index),
+    );
+
+    for (let infoArr of recipesToDelete) {
+      let id = infoArr[0];
+      const docRef = doc(curCollection, id);
+      deleteDoc(docRef);
+    }
+
     setRecipes(filteredFolders);
     setSelectedRecipes([]);
     setEditMode(false);
@@ -105,8 +125,15 @@ const DynamicCollection: React.FC<Props> = ({ navigation }) => {
           {recipes.map((recipe, index) => (
             <TouchableOpacity
               key={index}
-              style={styles.recipe}
-              onPress={() => goToInfo(`${recipe[0]}`)}
+              style={[
+                styles.recipe,
+                selectedRecipes.includes(index) && styles.selectedRecipe,
+              ]}
+              onPress={() =>
+                editMode
+                  ? toggleRecipeSelection(index)
+                  : goToInfo(`${recipe[0]}`)
+              }
             >
               <Text style={styles.recipeTitle}>{recipe[0]}</Text>
               <Text style={styles.recipeDescription}>{recipe[1]}</Text>
@@ -135,8 +162,8 @@ const DynamicCollection: React.FC<Props> = ({ navigation }) => {
         <TouchableOpacity style={styles.button} onPress={goToGenerator}>
           <Ionicons name="create-outline" size={40} color={'#FFF5CD'} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button}>
-          <Ionicons name="basket" size={40} color={'#FFF5CD'} />
+        <TouchableOpacity style={styles.button} onPress={goToCollection}>
+          <Ionicons name="basket-outline" size={40} color={'#FFF5CD'} />
         </TouchableOpacity>
       </View>
     </View>
@@ -146,13 +173,12 @@ const DynamicCollection: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     backgroundColor: '#E7D37F',
   },
   editButton: {
     marginTop: 120,
     marginLeft: 31,
+    position: 'relative',
     backgroundColor: '#E7D37F',
     borderWidth: 0,
     padding: 10,
@@ -178,6 +204,10 @@ const styles = StyleSheet.create({
     borderRadius: 17.5,
     borderWidth: 2,
     borderColor: 'transparent',
+  },
+  selectedRecipe: {
+    borderColor: 'red',
+    borderWidth: 2,
   },
   recipeTitle: {
     color: '#365E32',
@@ -220,6 +250,7 @@ const styles = StyleSheet.create({
     right: 0,
     flexDirection: 'row',
     height: 100,
+    paddingBottom: 10,
   },
   button: {
     flex: 1,

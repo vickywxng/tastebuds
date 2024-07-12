@@ -66,6 +66,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'stretch',
     height: 100,
+    paddingBottom: 10,
   },
   button: {
     flex: 1,
