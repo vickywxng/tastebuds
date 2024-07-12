@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -36,15 +37,15 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
         <View></View>
       </ImageBackground>
       <View style={styles.buttons}>
-        <Button style={styles.button} onPress={goToGenerator}>
-          <Ionicons name="create-outline" size={40} color={'#FFF5CD'} />
-        </Button>
-        <Button style={styles.button}>
+        <TouchableOpacity style={styles.button}>
           <Ionicons name="calendar" size={40} color={'#FFF5CD'} />
-        </Button>
-        <Button style={styles.button} onPress={goToCollection}>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={goToGenerator}>
+          <Ionicons name="create-outline" size={40} color={'#FFF5CD'} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={goToCollection}>
           <Ionicons name="basket-outline" size={40} color={'#FFF5CD'} />
-        </Button>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -73,7 +74,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderRadius: 0,
     borderWidth: 0,
-    marginTop: 15,
   },
 });
 

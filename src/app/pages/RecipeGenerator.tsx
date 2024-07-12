@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -110,15 +111,15 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       </View>
 
       <View style={styles.buttons}>
-        <Button style={styles.button}>
-          <Ionicons name="create" size={40} color={'#FFF5CD'} />
-        </Button>
-        <Button style={styles.button} onPress={goToPlanner}>
+        <TouchableOpacity style={styles.button} onPress={goToPlanner}>
           <Ionicons name="calendar-outline" size={40} color={'#FFF5CD'} />
-        </Button>
-        <Button style={styles.button} onPress={goToCollection}>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button}>
+          <Ionicons name="create" size={40} color={'#FFF5CD'} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={goToCollection}>
           <Ionicons name="basket-outline" size={40} color={'#FFF5CD'} />
-        </Button>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -145,7 +146,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderRadius: 0,
     borderWidth: 0,
-    marginTop: 15,
   },
   modalTitle: {
     fontSize: 24,

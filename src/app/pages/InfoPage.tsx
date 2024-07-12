@@ -117,13 +117,13 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
         </View>
       </ScrollView>
       <View style={styles.buttons}>
-        <TouchableOpacity style={styles.button} onPress={goToGenerator}>
-          <Ionicons name="create-outline" size={40} color={'#FFF5CD'} />
-        </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={goToPlanner}>
           <Ionicons name="calendar-outline" size={40} color={'#FFF5CD'} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={goToCollection}>
+        <TouchableOpacity style={styles.button} onPress={goToGenerator}>
+          <Ionicons name="create-outline" size={40} color={'#FFF5CD'} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button}>
           <Ionicons name="basket" size={40} color={'#FFF5CD'} />
         </TouchableOpacity>
       </View>
@@ -239,7 +239,6 @@ const styles = StyleSheet.create({
     right: 0,
     flexDirection: 'row',
     height: 100,
-    paddingBottom: 30,
   },
   button: {
     flex: 1,
@@ -248,7 +247,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderRadius: 0,
     borderWidth: 0,
-    marginTop: 15,
   },
 });
 
