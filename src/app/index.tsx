@@ -5,6 +5,7 @@ import 'expo-router/entry';
 
 import DynamicCollection from './pages/DynamicCollection';
 import InfoPage from './pages/InfoPage';
+import InputOutput from './pages/Input-Output';
 import LoginScreen from './pages/Login';
 import RecipeCollection from './pages/RecipeCollection';
 import RecipeGenerator from './pages/RecipeGenerator';
@@ -18,6 +19,11 @@ const Stack = createStackNavigator();
 function App() {
   return (
     <Stack.Navigator initialRouteName="Start">
+      <Stack.Screen
+        name="InOut"
+        component={InputOutput}
+        options={{ headerShown: false }}
+      />
       <Stack.Screen
         name="Start"
         component={StartScreen}
