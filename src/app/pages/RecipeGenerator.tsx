@@ -6,6 +6,7 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -29,23 +30,31 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <ScrollView style={styles.container}>
       <View>
-          <YStack padding={50}>
+          <YStack padding={40}>
+            <View style={{ height: 50 }} />
             <Text style={styles.modalTitle}>Ok, now what are we working with?</Text>
-            <XStack>
-              <Text>Ingredients</Text>
-              <Text>include quantity (e.g. 2 eggs)</Text>
+            <View style={{ height: 20 }} />
+            <XStack style={{ alignItems: 'center' }}>
+              <Text style={styles.modalTitleSmaller}>Ingredients</Text>
+              <View style={{ width: 10 }} />
+              <Text style={styles.modalText}>include quantity (e.g. 2 eggs)</Text>
             </XStack>
 
             <TextInput
               style={styles.input}
               placeholder="1 gal of milk, 3 potatoes, 2 sticks of butter, etc"
+              placeholderTextColor="#AFA26B"
             />
 
-            <Button>
-              <Ionicons name="link" size={40} color={'black'}/>
-              Upload an Image
-            </Button>
+            <TouchableOpacity style={styles.uploadImageButton} onPress={() => { /* your handler here */ }}>
+              <View style={styles.iconContainer}>
+                <Ionicons name="link" size={20} color={'black'} />
+                <View style={{ width: 10 }} />
+                <Text style={styles.modalText}>Upload an Image</Text>
+              </View>
+            </TouchableOpacity>
 
 
             <Text style={styles.modalTitle}>Time</Text>
@@ -103,10 +112,11 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
             <Picker.Item label="Snacks" value="snacks" />
           </Picker> */}
 
-
+          <Button>Generate Recipe</Button>
             
           </YStack>
         </View>
+      </ScrollView>
 
       <View style={styles.buttons}>
         <Button style={styles.button}>
@@ -126,7 +136,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#E7D37F',
+    backgroundColor: '#365E32',
   },
   buttons: {
     backgroundColor: '#82A263',
@@ -148,23 +158,68 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 24,
-    marginBottom: 20,
-    color: '#365E32',
+    fontFamily: "Arvo-Bold",
+    marginBottom: 10,
+    color: '#E7D37F',
   }, 
+  modalTitleSmaller: {
+    fontSize: 18,
+    fontFamily: "Arvo-Bold",
+    marginBottom: 10,
+    color: '#E7D37F',
+  }, 
+  modalText: {
+    fontSize: 12,
+    fontFamily: "Lato",
+    marginBottom: 10,
+    color: '#FFF5CD',
+  },
   input: {
     width: '100%',
-    backgroundColor: '#F0F0F0',
+    backgroundColor: '#FFF5CD',
     padding: 10,
-    marginBottom: 20,
-    borderRadius: 5,
+    marginBottom: 5,
+    borderRadius: 9,
+  },
+  uploadImageButton: {
+    backgroundColor: 'transparent',
+    padding: 0,
+    borderRadius: 0,
+    width: 200,
+    marginBottom: 5,
+    marginTop: 0,
+  },
+  iconContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+  },
+  selectedPreferenceButton: {
+    paddingHorizontal: 15,
+    paddingVertical: 5,  
+    marginHorizontal: 5,   
+    marginBottom: 10,      
+    backgroundColor: '#82A263',
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 20,
+  },
+  preferenceButton: {
+    paddingHorizontal: 15,
+    paddingVertical: 5,  
+    marginHorizontal: 5,   
+    marginBottom: 10,      
+    backgroundColor: '#82A263',
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 20,
   },
 });
 
 
 const timeButton = (str: string) => {
   return (
-    <Button>
-      <Ionicons name="alarm-outline" size={40} color={'black'} />
+    <Button style={styles.preferenceButton}>
+      <Ionicons name="alarm-outline" size={20} color={'black'} />
       {str}
     </Button>
   );
@@ -172,8 +227,8 @@ const timeButton = (str: string) => {
 
 const applianceButton = (str: string) => {
   return (
-    <Button>
-      <Ionicons name="construct-outline" size={40} color={'black'} />
+    <Button style={styles.preferenceButton}>
+      <Ionicons name="construct-outline" size={20} color={'black'} />
       {str}
     </Button>
   );
@@ -181,8 +236,8 @@ const applianceButton = (str: string) => {
 
 const complexityButton = (str: string) => {
   return (
-    <Button>
-      <Ionicons name="star" size={40} color={'black'} />
+    <Button style={styles.preferenceButton}>
+      <Ionicons name="star" size={20} color={'black'} />
       {str}
     </Button>
   );
