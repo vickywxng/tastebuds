@@ -36,9 +36,10 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
             <View style={{ height: 50 }} />
             <Text style={styles.modalTitle}>Ok, now what are we working with?</Text>
             <View style={{ height: 20 }} />
-            <XStack style={{ alignItems: 'center' }}>
+
+            <XStack style={styles.row}>
               <Text style={styles.modalTitleSmaller}>Ingredients</Text>
-              <View style={{ width: 10 }} />
+              <View style={{ width: 7 }} />
               <Text style={styles.modalText}>include quantity (e.g. 2 eggs)</Text>
             </XStack>
 
@@ -48,16 +49,12 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
               placeholderTextColor="#AFA26B"
             />
 
-            <TouchableOpacity style={styles.uploadImageButton} onPress={() => { /* your handler here */ }}>
-              <View style={styles.iconContainer}>
-                <Ionicons name="link" size={20} color={'black'} />
-                <View style={{ width: 10 }} />
-                <Text style={styles.modalText}>Upload an Image</Text>
-              </View>
+            <TouchableOpacity style={styles.uploadImageButton}>
+              <Ionicons name="link" size={20} color={'#FFF5CD'} />
+              <Text style={styles.uploadImageText}>Upload an Image</Text>
             </TouchableOpacity>
 
-
-            <Text style={styles.modalTitle}>Time</Text>
+            <Text style={styles.modalTitleSmaller}>Time</Text>
 
             <XStack>
               {timeButton("15 mins")}
@@ -71,7 +68,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
             </XStack>
 
             
-            <Text style={styles.modalTitle}>Appliances</Text>
+            <Text style={styles.modalTitleSmaller}>Appliances</Text>
             <XStack>
               {applianceButton("Stove")}
               {applianceButton("Oven")}
@@ -83,9 +80,10 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
               {applianceButton("Rice Cooker")}
             </XStack>
             
-            <XStack>
-              <Text>Diet</Text>
-              <Text>(be as specific as possible!)</Text>
+            <XStack style={styles.row}>
+              <Text style={styles.modalTitleSmaller}>Diet</Text>
+              <View style={{ width: 5 }} />
+              <Text style={styles.modalText}>(be as specific as possible!)</Text>
             </XStack>
 
             <TextInput
@@ -101,16 +99,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
             </XStack>
 
             <Text>Yield</Text>
-            {/* <Picker
-            selectedValue={selectedCategory}
-            style={styles.picker}
-            onValueChange={(itemValue) => setSelectedCategory(itemValue)}
-          >
-            <Picker.Item label="Breakfast" value="breakfast" />
-            <Picker.Item label="Lunch" value="lunch" />
-            <Picker.Item label="Dinner" value="dinner" />
-            <Picker.Item label="Snacks" value="snacks" />
-          </Picker> */}
+            
 
           <Button>Generate Recipe</Button>
             
@@ -137,6 +126,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#365E32',
+  },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'baseline', 
   },
   buttons: {
     backgroundColor: '#82A263',
@@ -182,16 +175,20 @@ const styles = StyleSheet.create({
     borderRadius: 9,
   },
   uploadImageButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: 'transparent',
     padding: 0,
     borderRadius: 0,
-    width: 200,
     marginBottom: 5,
-    marginTop: 0,
+  },
+  uploadImageText: {
+    marginLeft: 5,
+    color: '#FFF5CD',
   },
   iconContainer: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
+    alignItems: 'center',
   },
   selectedPreferenceButton: {
     paddingHorizontal: 15,
@@ -220,7 +217,7 @@ const timeButton = (str: string) => {
   return (
     <Button style={styles.preferenceButton}>
       <Ionicons name="alarm-outline" size={20} color={'black'} />
-      {str}
+      <Text style={{ marginLeft: 5 }}>{str}</Text>
     </Button>
   );
 };
@@ -229,7 +226,7 @@ const applianceButton = (str: string) => {
   return (
     <Button style={styles.preferenceButton}>
       <Ionicons name="construct-outline" size={20} color={'black'} />
-      {str}
+      <Text style={{ marginLeft: 5 }}>{str}</Text>
     </Button>
   );
 };
@@ -238,7 +235,7 @@ const complexityButton = (str: string) => {
   return (
     <Button style={styles.preferenceButton}>
       <Ionicons name="star" size={20} color={'black'} />
-      {str}
+      <Text style={{ marginLeft: 5 }}>{str}</Text>
     </Button>
   );
 };
