@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Dimensions,
   ImageBackground,
@@ -19,7 +19,10 @@ type Props = {
   navigation: NavigationProp<any>;
 };
 
+
 const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
+  const [selectedMinutes, setSelectedMinutes] = useState<number | null>(null);
+  
   const goToPlanner = () => {
     navigation.navigate('Planner');
   };
@@ -27,6 +30,44 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const goToCollection = () => {
     navigation.navigate('Collection');
   };
+
+  const handleTimeSelected = (mins: number) => {
+    setSelectedMinutes(mins);
+  };
+
+  const timeButton = (str: string, mins: number) => {
+    return (
+      <Button
+        style={[
+          styles.preferenceButton,
+          selectedMinutes === mins ? styles.selectedPreferenceButton : {}
+        ]}
+        onPress={() => handleTimeSelected(mins)}
+      >
+        <Ionicons name="alarm-outline" size={20} color={'#FFF5CD'} />
+        <Text style={{ marginLeft: 5, color: '#FFF5CD' }}>{str}</Text>
+      </Button>
+    );
+  };
+  
+  const applianceButton = (str: string) => {
+    return (
+      <Button style={styles.preferenceButton}>
+        <Ionicons name="construct-outline" size={20} color={'#FFF5CD'} />
+        <Text style={{ marginLeft: 5, color: '#FFF5CD' }}>{str}</Text>
+      </Button>
+    );
+  };
+  
+  const complexityButton = (str: string) => {
+    return (
+      <Button style={styles.preferenceButton}>
+        <Ionicons name="star" size={20} color={'#FFF5CD'} />
+        <Text style={{ marginLeft: 5, color: '#FFF5CD' }}>{str}</Text>
+      </Button>
+    );
+  };
+  
 
   return (
     <View style={styles.container}>
@@ -57,14 +98,14 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
             <Text style={styles.modalTitleSmaller}>Time</Text>
 
             <XStack>
-              {timeButton("15 mins")}
-              {timeButton("30 mins")}
-              {timeButton("1 hr")}
+              {timeButton("15 mins", 15)}
+              {timeButton("30 mins", 30)}
+              {timeButton("1 hr", 60)}
             </XStack>
 
             <XStack>
-              {timeButton("2 hrs")}
-              {timeButton("3 hrs")}
+              {timeButton("2 hrs", 120)}
+              {timeButton("3 hrs", 180)}
             </XStack>
 
             
@@ -91,14 +132,14 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
               placeholder="Vegeterian, vegan, keto, etc"
             />
 
-            <Text>Complexity</Text>
+            <Text style={styles.modalTitleSmaller}>Complexity</Text>
             <XStack>
               {complexityButton("Easy")}
               {complexityButton("Medium")}
               {complexityButton("Hard")}
             </XStack>
 
-            <Text>Yield</Text>
+            <Text style={styles.modalTitleSmaller}>Yield</Text>
             
 
           <Button>Generate Recipe</Button>
@@ -195,9 +236,11 @@ const styles = StyleSheet.create({
     paddingVertical: 5,  
     marginHorizontal: 5,   
     marginBottom: 10,      
-    backgroundColor: '#82A263',
+    backgroundColor: '#FD9B62',
     flexDirection: 'row',
     alignItems: 'center',
+    borderColor:'#FFF5CD',
+    borderWidth: 2,
     borderRadius: 20,
   },
   preferenceButton: {
@@ -205,39 +248,17 @@ const styles = StyleSheet.create({
     paddingVertical: 5,  
     marginHorizontal: 5,   
     marginBottom: 10,      
-    backgroundColor: '#82A263',
+    backgroundColor: 'transparent',
     flexDirection: 'row',
     alignItems: 'center',
+    borderColor:'#FFF5CD',
+    borderWidth: 2,
     borderRadius: 20,
   },
 });
 
 
-const timeButton = (str: string) => {
-  return (
-    <Button style={styles.preferenceButton}>
-      <Ionicons name="alarm-outline" size={20} color={'black'} />
-      <Text style={{ marginLeft: 5 }}>{str}</Text>
-    </Button>
-  );
-};
 
-const applianceButton = (str: string) => {
-  return (
-    <Button style={styles.preferenceButton}>
-      <Ionicons name="construct-outline" size={20} color={'black'} />
-      <Text style={{ marginLeft: 5 }}>{str}</Text>
-    </Button>
-  );
-};
 
-const complexityButton = (str: string) => {
-  return (
-    <Button style={styles.preferenceButton}>
-      <Ionicons name="star" size={20} color={'black'} />
-      <Text style={{ marginLeft: 5 }}>{str}</Text>
-    </Button>
-  );
-};
 
 export default RecipeGenerator;
