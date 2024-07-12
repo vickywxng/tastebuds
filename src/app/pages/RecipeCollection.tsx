@@ -1,61 +1,188 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  Dimensions,
-  ImageBackground,
   Modal,
   ScrollView,
   StyleSheet,
   Text,
   TextInput,
-  TouchableHighlight,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { FontAwesome5, Ionicons } from '@expo/vector-icons';
-import { NavigationProp } from '@react-navigation/native';
-import { Button, YStack } from 'tamagui';
+import { NavigationProp, useRoute } from '@react-navigation/native';
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  setDoc,
+} from 'firebase/firestore/lite';
+
+import { db } from '../firebase';
 
 type Props = {
   navigation: NavigationProp<any>;
 };
 
 const RecipeCollection: React.FC<Props> = ({ navigation }) => {
-  const [folders, setFolders] = useState<React.ReactElement[]>([]);
+  const [folders, setFolders] = useState<string[][]>([]);
   const [modalVisible, setModalVisible] = useState(false);
-  const [buttonName, setButtonName] = useState('');
-  const [selectedIcon, setSelectedIcon] = useState('history'); // Default icon
+  const [collectionName, setcollectionName] = useState('New Folder');
+  const [selectedIcon, setSelectedIcon] = useState('star-o');
+  const [editMode, setEditMode] = useState(false);
+  const [selectedFolders, setSelectedFolders] = useState<number[]>([]);
+
+  const route = useRoute();
+  const { userId } = route.params as {
+    userId: string;
+  };
+
+  useEffect(() => {
+    const fetchFolders = async () => {
+      try {
+        const collectionsRef = collection(db, `allUsers/${userId}/collections`);
+        const querySnapshot = await getDocs(collectionsRef);
+
+        const updatedFolders: string[][] = [];
+
+        querySnapshot.forEach((doc) => {
+          if (doc.id !== 'History' && doc.id !== 'Favorites') {
+            updatedFolders.push([doc.id, doc.data().IconName]);
+          }
+        });
+
+        setFolders(updatedFolders);
+      } catch (error) {
+        console.error('Error fetching folders:', error);
+      }
+    };
+
+    fetchFolders();
+  }, []);
 
   const goToGenerator = () => {
-    navigation.navigate('Generator');
+    navigation.navigate('Generator', { userId });
   };
 
   const goToPlanner = () => {
-    navigation.navigate('Planner');
+    navigation.navigate('Planner', { userId });
   };
 
-  const addNewFolder = () => {
-    const newFolder = (
-      <Button key={folders.length} style={styles.folder}>
-        <FontAwesome5 name={selectedIcon} size={40} color="#365E32" />
-        <Text style={styles.folderText}>{buttonName}</Text>
-      </Button>
+  const toggleEditMode = () => {
+    setEditMode(!editMode);
+    setSelectedFolders([]);
+  };
+
+  const deleteSelectedFolders = async () => {
+    const filteredFolders = folders.filter(
+      (_, index) => !selectedFolders.includes(index),
     );
+
+    const foldersToDelete = folders.filter((_, index) =>
+      selectedFolders.includes(index),
+    );
+
+    const collectionsRef = collection(db, `allUsers/${userId}/collections`);
+
+    for (let infoArr of foldersToDelete) {
+      let id = infoArr[0];
+      const docRef = doc(collectionsRef, id);
+      deleteDoc(docRef);
+    }
+
+    setFolders(filteredFolders);
+    setSelectedFolders([]);
+    setEditMode(false);
+  };
+
+  const toggleFolderSelection = (index: number) => {
+    if (selectedFolders.includes(index)) {
+      setSelectedFolders(selectedFolders.filter((i) => i !== index));
+    } else {
+      setSelectedFolders([...selectedFolders, index]);
+    }
+  };
+
+  const addNewFolder = async () => {
+    const newFolder = [`${collectionName}`, `${selectedIcon}`];
+    const collectionsRef = collection(db, `allUsers/${userId}/collections`);
+    const newDocRef = doc(collectionsRef, collectionName);
+
+    try {
+      await setDoc(newDocRef, {
+        IconName: selectedIcon,
+      });
+    } catch (error) {
+      console.error('Error adding document: ', error);
+    }
+
     setFolders([...folders, newFolder]);
-    setModalVisible(false); // Close modal after adding new folder
-    setButtonName(''); // Clear input values
-    setSelectedIcon('history'); // Reset selected icon to default
+    setModalVisible(false);
+    setcollectionName('New Folder');
+    setSelectedIcon('star-o');
+  };
+
+  const goIntoCollection = (collectionId: String) => {
+    navigation.navigate('DynamicCollection', {
+      collectionName: collectionId,
+      userId,
+    });
   };
 
   return (
     <View style={styles.container}>
       <ScrollView>
-        <Button style={styles.plus} onPress={() => setModalVisible(true)}>
-          <FontAwesome5 name="plus" size={40} color="#365E32" />
-        </Button>
+        <View style={styles.topButtons}>
+          <TouchableOpacity
+            style={styles.editButton}
+            onPress={editMode ? deleteSelectedFolders : toggleEditMode}
+          >
+            <Text style={styles.editButtonText}>
+              {editMode ? 'Done' : 'Edit'}
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.plus}
+            onPress={() => setModalVisible(true)}
+          >
+            <FontAwesome5 name="plus" size={40} color="#365E32" />
+          </TouchableOpacity>
+        </View>
         <View style={styles.folders}>
+          <TouchableOpacity
+            style={styles.folder}
+            onPress={() => !editMode && goIntoCollection('History')}
+          >
+            <FontAwesome5
+              name="history"
+              size={40}
+              color="#365E32"
+            ></FontAwesome5>
+            <Text style={styles.folderText}>History</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.folder}
+            onPress={() => !editMode && goIntoCollection('Favorites')}
+          >
+            <FontAwesome5 name="heart" size={40} color="#365E32"></FontAwesome5>
+            <Text style={styles.folderText}>Favorites</Text>
+          </TouchableOpacity>
           {folders.map((folder, index) => (
-            <View key={index} style={styles.folder}>
-              {folder}
-            </View>
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.folder,
+                selectedFolders.includes(index) && styles.selectedFolder,
+              ]}
+              onPress={() =>
+                editMode
+                  ? toggleFolderSelection(index)
+                  : goIntoCollection(`${folder[0]}`)
+              }
+            >
+              <FontAwesome5 name={folder[1]} size={40} color="#365E32" />
+              <Text style={styles.folderText}>{folder[0]}</Text>
+            </TouchableOpacity>
           ))}
         </View>
       </ScrollView>
@@ -70,57 +197,116 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
         }}
       >
         <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Add New Folder</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter Button Name"
-              value={buttonName}
-              onChangeText={(text) => setButtonName(text)}
-            />
-            <View style={styles.iconContainer}>
-              <TouchableHighlight
-                onPress={() => setSelectedIcon('history')}
-                style={
-                  selectedIcon === 'history' ? styles.iconSelected : styles.icon
-                }
-              >
-                <FontAwesome5 name="history" size={30} color="#365E32" />
-              </TouchableHighlight>
-              <TouchableHighlight
-                onPress={() => setSelectedIcon('heart')}
-                style={
-                  selectedIcon === 'heart' ? styles.iconSelected : styles.icon
-                }
-              >
-                <FontAwesome5 name="heart" size={30} color="#365E32" />
-              </TouchableHighlight>
-              {/* Add more icons as needed */}
-            </View>
-            <Button style={styles.addButton} onPress={addNewFolder}>
-              <Text style={styles.buttonText}>Add Button</Text>
-            </Button>
-            <Button
-              style={styles.cancelButton}
-              onPress={() => setModalVisible(false)}
+          <Text style={styles.modalTitle}>Add New Folder</Text>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter Button Name"
+            value={collectionName}
+            onChangeText={(text) => setcollectionName(text)}
+          />
+          {/* Additional code for icon selection */}
+          <View style={styles.iconContainer}>
+            <TouchableOpacity
+              onPress={() => setSelectedIcon('hamburger')}
+              style={
+                selectedIcon === 'hamburger' ? styles.iconSelected : styles.icon
+              }
             >
-              <Text style={styles.buttonText}>Cancel</Text>
-            </Button>
+              <FontAwesome5 name="hamburger" size={30} color="#E7D37F" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setSelectedIcon('apple-alt')}
+              style={
+                selectedIcon === 'apple-alt' ? styles.iconSelected : styles.icon
+              }
+            >
+              <FontAwesome5 name="apple-alt" size={30} color="#E7D37F" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setSelectedIcon('carrot')}
+              style={
+                selectedIcon === 'carrot' ? styles.iconSelected : styles.icon
+              }
+            >
+              <FontAwesome5 name="carrot" size={30} color="#E7D37F" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setSelectedIcon('ice-cream')}
+              style={
+                selectedIcon === 'ice-cream' ? styles.iconSelected : styles.icon
+              }
+            >
+              <FontAwesome5 name="ice-cream" size={30} color="#E7D37F" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setSelectedIcon('pepper-hot')}
+              style={
+                selectedIcon === 'pepper-hot'
+                  ? styles.iconSelected
+                  : styles.icon
+              }
+            >
+              <FontAwesome5 name="pepper-hot" size={30} color="#E7D37F" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setSelectedIcon('coffee')}
+              style={
+                selectedIcon === 'coffee' ? styles.iconSelected : styles.icon
+              }
+            >
+              <FontAwesome5 name="coffee" size={30} color="#E7D37F" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setSelectedIcon('utensils')}
+              style={
+                selectedIcon === 'utensils' ? styles.iconSelected : styles.icon
+              }
+            >
+              <FontAwesome5 name="utensils" size={30} color="#E7D37F" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setSelectedIcon('pizza-slice')}
+              style={
+                selectedIcon === 'pizza-slice'
+                  ? styles.iconSelected
+                  : styles.icon
+              }
+            >
+              <FontAwesome5 name="pizza-slice" size={30} color="#E7D37F" />
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => setSelectedIcon('fish')}
+              style={
+                selectedIcon === 'fish' ? styles.iconSelected : styles.icon
+              }
+            >
+              <FontAwesome5 name="fish" size={30} color="#E7D37F" />
+            </TouchableOpacity>
+            {/* Add more icons as needed */}
           </View>
+          <TouchableOpacity style={styles.addButton} onPress={addNewFolder}>
+            <Text style={styles.buttonText}>Add Button</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={() => setModalVisible(false)}
+          >
+            <Text style={styles.buttonText}>Cancel</Text>
+          </TouchableOpacity>
         </View>
       </Modal>
 
-      {/* Bottom navigation buttons */}
+      {/* Bottom tab navigator */}
       <View style={styles.buttons}>
-        <Button style={styles.button} onPress={goToGenerator}>
-          <Ionicons name="create-outline" size={40} color={'#FFF5CD'} />
-        </Button>
-        <Button style={styles.button} onPress={goToPlanner}>
+        <TouchableOpacity style={styles.button} onPress={goToPlanner}>
           <Ionicons name="calendar-outline" size={40} color={'#FFF5CD'} />
-        </Button>
-        <Button style={styles.button}>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={goToGenerator}>
+          <Ionicons name="create-outline" size={40} color={'#FFF5CD'} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button}>
           <Ionicons name="basket" size={40} color={'#FFF5CD'} />
-        </Button>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -131,10 +317,25 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#E7D37F',
   },
+  topButtons: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 120,
+  },
+  editButton: {
+    backgroundColor: '#E7D37F',
+    borderWidth: 0,
+    padding: 10,
+  },
+  editButtonText: {
+    color: '#365E32',
+    fontFamily: 'Arvo-Bold',
+    fontSize: 32,
+  },
   plus: {
     backgroundColor: '#E7D37F',
-    marginTop: 100,
-    marginLeft: 300,
+    marginLeft: 200,
+    padding: 10,
   },
   buttons: {
     backgroundColor: '#82A263',
@@ -143,9 +344,8 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'stretch',
     height: 100,
+    paddingBottom: 10,
   },
   button: {
     flex: 1,
@@ -154,7 +354,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderRadius: 0,
     borderWidth: 0,
-    marginTop: 15,
   },
   folders: {
     flexDirection: 'row',
@@ -173,44 +372,43 @@ const styles = StyleSheet.create({
     height: 155,
     borderRadius: 17.5,
     margin: 17.5,
+    borderWidth: 2,
+    borderColor: 'transparent',
   },
   folderText: {
     fontFamily: 'Arvo-Bold',
     fontSize: 16,
     color: '#365E32',
+    marginTop: 10,
   },
   modalContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#E7D37F',
-    padding: 20,
-  },
-  modalContent: {
-    backgroundColor: '#FFF5CD',
-    borderRadius: 10,
-    padding: 20,
-    alignItems: 'center',
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
+    backgroundColor: '#365E32',
+    padding: 40,
   },
   modalTitle: {
     fontSize: 24,
+    fontFamily: 'Arvo-Bold',
     marginBottom: 20,
-    color: '#365E32',
+    color: '#E7D37F',
   },
   input: {
-    width: '100%',
-    backgroundColor: '#F0F0F0',
+    width: '75%',
+    backgroundColor: '#FFF5CD',
+    color: '#AFA26B',
     padding: 10,
+    height: 40,
+    fontSize: 18,
     marginBottom: 20,
-    borderRadius: 5,
+    borderRadius: 10,
+    textAlign: 'center',
   },
   iconContainer: {
     flexDirection: 'row',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
     marginBottom: 20,
   },
   icon: {
@@ -225,22 +423,27 @@ const styles = StyleSheet.create({
     backgroundColor: '#82A263',
   },
   addButton: {
-    backgroundColor: '#82A263',
+    backgroundColor: '#FFF5CD',
     padding: 10,
     borderRadius: 5,
     width: 200,
     marginBottom: 10,
   },
   cancelButton: {
-    backgroundColor: '#E74C3C',
+    backgroundColor: '#E7D37F',
     padding: 10,
     borderRadius: 5,
     width: 200,
   },
   buttonText: {
-    fontSize: 16,
-    color: 'white',
+    fontFamily: 'Arvo-Bold',
+    fontSize: 20,
+    color: '#365E32',
     textAlign: 'center',
+  },
+  selectedFolder: {
+    borderColor: 'red',
+    borderWidth: 2,
   },
 });
 

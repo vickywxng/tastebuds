@@ -29,20 +29,24 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
     try {
       const usersCollectionRef = collection(db, 'allUsers');
       const querySnapshot = await getDocs(usersCollectionRef);
+      let userExists = false;
 
       querySnapshot.forEach((doc) => {
         if (doc.data().username == username) {
+          userExists = true;
           if (doc.data().password == password) {
-            navigation.navigate('Generator');
+            navigation.navigate('Generator', { userId: doc.id });
           } else {
             Alert.alert('Incorrect password. Please try again.');
           }
         }
       });
 
-      Alert.alert(
-        'Username does not exist. Please check your spelling or create a new account.',
-      );
+      if (!userExists) {
+        Alert.alert(
+          'Username does not exist. Please check your spelling or create a new account.',
+        );
+      }
 
       console.log('Document successfully checked!');
     } catch (error) {
@@ -51,27 +55,26 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <ImageBackground
-      source={require('../images/food_background_tile.png')}
-      style={styles.background}
-    >
+    <View style={styles.background}>
+      <View style={styles.greenCircle} />
       <View style={styles.container}>
         <Text style={styles.title}>Welcome Back!</Text>
+        <Text style={styles.subtitle}>Login to your account</Text>
         <TextInput
           style={styles.input}
           placeholder="Username"
-          placeholderTextColor="#ccc"
+          placeholderTextColor="#AFA26B"
           onChangeText={(text) => setUsername(text)}
         />
         <TextInput
           style={styles.input}
           placeholder="Password"
-          placeholderTextColor="#ccc"
+          placeholderTextColor="#AFA26B"
           secureTextEntry={true}
           onChangeText={(text) => setPassword(text)}
         />
         <Button style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Sign In</Text>
+          <Text style={styles.buttonText}>Login</Text>
         </Button>
         <Text style={styles.signUpText}>
           Don't have an account?{' '}
@@ -80,7 +83,7 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
           </Text>
         </Text>
       </View>
-    </ImageBackground>
+    </View>
   );
 };
 
@@ -89,13 +92,20 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: '#E7D37F',
+  },
+  greenCircle: {
+    width: 650,
+    height: 750,
+    backgroundColor: '#365E32',
+    borderRadius: 1000,
+    marginTop: -300,
   },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
     borderRadius: 10,
     maxWidth: 400,
     width: '80%',
@@ -103,45 +113,51 @@ const styles = StyleSheet.create({
     marginTop: 80,
   },
   title: {
-    color: '#BC301D',
-    fontFamily: 'Jua-Regular',
-    fontSize: 34,
+    color: '#E7D37F',
+    fontFamily: 'Arvo-Bold',
+    fontSize: 36,
     fontWeight: 'bold',
     textAlign: 'center',
-    marginBottom: 50,
-    marginTop: 50,
+    marginTop: -350,
+    marginBottom: 20,
+  },
+  subtitle: {
+    fontSize: 18,
+    textAlign: 'center',
+    color: '#FFF5CD',
+    marginBottom: 180,
   },
   input: {
     width: '100%',
-    height: 50,
-    backgroundColor: '#fff',
+    height: 55,
+    color: 'black',
+    backgroundColor: '#FFF5CD',
     borderRadius: 10,
     paddingLeft: 15,
-    marginBottom: 15,
-    borderWidth: 2.5,
-    borderColor: '#E63922',
+    marginBottom: 20,
   },
   button: {
     width: '100%',
-    height: 50,
-    backgroundColor: '#E63922',
-    borderRadius: 10,
+    height: 55,
+    backgroundColor: '#FD9B62',
+    borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',
+    marginTop: 20,
     marginBottom: 15,
   },
   buttonText: {
-    fontFamily: 'Jua-Regular',
-    fontSize: 24,
+    fontFamily: 'Arvo-Bold',
+    fontSize: 18,
     color: '#fff',
   },
   signUpText: {
     marginTop: 10,
     fontSize: 16,
-    color: '#000',
+    color: '#365E32',
   },
   signUpLink: {
-    color: '#BC301D',
+    color: '#365E32',
     textDecorationLine: 'underline',
   },
 });
