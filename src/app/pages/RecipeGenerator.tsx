@@ -13,12 +13,14 @@ import { Ionicons } from '@expo/vector-icons';
 import { NavigationProp, useRoute } from '@react-navigation/native';
 import { Divide } from '@tamagui/lucide-icons';
 import { Button, XStack, YStack } from 'tamagui';
+import { LuEggFried } from "react-icons/lu";
 
 type Props = {
   navigation: NavigationProp<any>;
 };
 
 const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
+  const [selectedMeal, setSelectedMeal] = useState<string | null>(null);
   const [selectedMinutes, setSelectedMinutes] = useState<number | null>(null);
   const [applianceArray, setApplianceArray] = useState<string[]>([]);
   const [complexityLevel, setComplexityLevel] = useState<string | null>(null);
@@ -30,6 +32,17 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const { userId } = route.params as {
     userId: string;
   };
+
+  const mealButton = (meal: string) => (
+    <Button
+      style={styles.mealButton}
+      onPress={() => setSelectedMeal(meal)}
+    >
+      {/* <LuEggFried /> */}
+      <Text style={[styles.modalTitleSmaller, { marginBottom: 0 }]}>{meal}</Text>
+    </Button>
+  );
+
 
   const goToPlanner = () => {
     navigation.navigate('Planner', { userId });
@@ -129,102 +142,123 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <View style={{ padding: 40 }}>
           <View style={{ height: 50 }} />
-          <Text style={styles.modalTitle}>
-            Ok, now what are we working with?
-          </Text>
-          <View style={{ height: 20 }} />
 
-          <XStack style={styles.row}>
-            <Text style={styles.modalTitleSmaller}>Ingredients</Text>
-            <View style={{ width: 7 }} />
-            <Text style={styles.modalText}>include quantity (e.g. 2 eggs)</Text>
-          </XStack>
+          {!selectedMeal && (
+            <>
+              <Text style={styles.modalTitle}>
+              What are we tryna chef up today? 
+              </Text>
+              <View style={{ height: 20 }} />
+              <YStack>
+                {mealButton('Breakfast')}
+                {mealButton('Lunch')}
+                {mealButton('Dinner')}
+                {mealButton('Snack')}
+              </YStack>
+            </>
+          )}
 
-          <TextInput
-            style={styles.input}
-            placeholder="1 gal of milk, 3 potatoes, 2 sticks of butter, etc"
-            placeholderTextColor="#AFA26B"
-            value={ingredients}
-            onChangeText={(text) => setIngredients(text)}
-          />
+          {selectedMeal &&(
+            <>
+              <Text style={styles.modalTitle}>
+                Ok, now what are we working with?
+              </Text>
+              <View style={{ height: 20 }} />
 
-          <TouchableOpacity style={styles.uploadImageButton}>
-            <Ionicons name="link" size={20} color={'#FFF5CD'} />
-            <Text style={styles.uploadImageText}>Upload an Image</Text>
-          </TouchableOpacity>
+              <XStack style={styles.row}>
+                <Text style={styles.modalTitleSmaller}>Ingredients</Text>
+                <View style={{ width: 7 }} />
+                <Text style={styles.modalText}>include quantity (e.g. 2 eggs)</Text>
+              </XStack>
 
-          <View style={{ height: 20 }} />
-          <Text style={styles.modalTitleSmaller}>Time</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="1 gal of milk, 3 potatoes, 2 sticks of butter, etc"
+                placeholderTextColor="#AFA26B"
+                value={ingredients}
+                onChangeText={(text) => setIngredients(text)}
+              />
 
-          <XStack>
-            {timeButton('15 mins', 15)}
-            {timeButton('30 mins', 30)}
-            {timeButton('1 hr', 60)}
-          </XStack>
+              <TouchableOpacity style={styles.uploadImageButton}>
+                <Ionicons name="link" size={20} color={'#FFF5CD'} />
+                <Text style={styles.uploadImageText}>Upload an Image</Text>
+              </TouchableOpacity>
 
-          <XStack>
-            {timeButton('2 hrs', 120)}
-            {timeButton('3 hrs', 180)}
-          </XStack>
+              <View style={{ height: 20 }} />
+              <Text style={styles.modalTitleSmaller}>Time</Text>
 
-          <View style={{ height: 20 }} />
-          <Text style={styles.modalTitleSmaller}>Appliances</Text>
-          <XStack>
-            {applianceButton('Stove')}
-            {applianceButton('Oven')}
-            {applianceButton('Microwave')}
-          </XStack>
+              <XStack>
+                {timeButton('15 mins', 15)}
+                {timeButton('30 mins', 30)}
+                {timeButton('1 hr', 60)}
+              </XStack>
 
-          <XStack>
-            {applianceButton('Air Fryer')}
-            {applianceButton('Rice Cooker')}
-          </XStack>
+              <XStack>
+                {timeButton('2 hrs', 120)}
+                {timeButton('3 hrs', 180)}
+              </XStack>
 
-          <View style={{ height: 20 }} />
-          <XStack style={styles.row}>
-            <Text style={styles.modalTitleSmaller}>Diet</Text>
-            <View style={{ width: 5 }} />
-            <Text style={styles.modalText}>(be as specific as possible!)</Text>
-          </XStack>
+              <View style={{ height: 20 }} />
+              <Text style={styles.modalTitleSmaller}>Appliances</Text>
+              <XStack>
+                {applianceButton('Stove')}
+                {applianceButton('Oven')}
+                {applianceButton('Microwave')}
+              </XStack>
 
-          <TextInput
-            style={styles.input}
-            placeholder="Vegeterian, vegan, keto, etc"
-            value={diet}
-            onChangeText={(text) => setDiet(text)}
-          />
+              <XStack>
+                {applianceButton('Air Fryer')}
+                {applianceButton('Rice Cooker')}
+              </XStack>
 
-          <View style={{ height: 20 }} />
-          <Text style={styles.modalTitleSmaller}>Complexity</Text>
-          <XStack>
-            {complexityButton('Easy')}
-            {complexityButton('Medium')}
-            {complexityButton('Hard')}
-          </XStack>
+              <View style={{ height: 20 }} />
+              <XStack style={styles.row}>
+                <Text style={styles.modalTitleSmaller}>Diet</Text>
+                <View style={{ width: 5 }} />
+                <Text style={styles.modalText}>(be as specific as possible!)</Text>
+              </XStack>
 
-          <View style={{ height: 20 }} />
-          <Text style={styles.modalTitleSmaller}>Yield</Text>
+              <TextInput
+                style={styles.input}
+                placeholder="Vegeterian, vegan, keto, etc"
+                value={diet}
+                onChangeText={(text) => setDiet(text)}
+              />
 
-          <View style={{ height: 20 }} />
-          <Button
-            style={styles.recipeGeneratorButton}
-            onPress={() => generateRecipe()}
-          >
-            <Text style={[styles.modalTitleSmaller, { marginBottom: 0 }]}>
-              Generate Recipe
-            </Text>
-          </Button>
-          <View
-            style={[
-              styles.errorMessageContainer,
-              { height: showError ? 40 : 0 },
-            ]}
-          >
-            <Ionicons name="alert-outline" size={20} color={'#FD9B62'} />
-            <Text style={styles.errorMessageText}>
-              Make sure to fill out all of the sections.
-            </Text>
-          </View>
+              <View style={{ height: 20 }} />
+              <Text style={styles.modalTitleSmaller}>Complexity</Text>
+              <XStack>
+                {complexityButton('Easy')}
+                {complexityButton('Medium')}
+                {complexityButton('Hard')}
+              </XStack>
+
+              <View style={{ height: 20 }} />
+              <Text style={styles.modalTitleSmaller}>Yield</Text>
+
+              <View style={{ height: 20 }} />
+              <Button
+                style={styles.recipeGeneratorButton}
+                onPress={() => generateRecipe()}
+              >
+                <Text style={[styles.modalTitleSmaller, { marginBottom: 0 }]}>
+                  Generate Recipe
+                </Text>
+              </Button>
+              <View
+                style={[
+                  styles.errorMessageContainer,
+                  { height: showError ? 40 : 0 },
+                ]}
+              >
+                <Ionicons name="alert-outline" size={20} color={'#FD9B62'} />
+                <Text style={styles.errorMessageText}>
+                  Make sure to fill out all of the sections.
+                </Text>
+              </View>
+            </>
+          )}  
+          
         </View>
 
         <View style={{ height: 100 }} />
@@ -356,7 +390,15 @@ const styles = StyleSheet.create({
     fontFamily: 'Lato-bold',
     color: '#FD9B62',
     textAlign: 'center',
-  },
+  }, 
+  mealButton: {
+    backgroundColor: '#FD9B62',
+    paddingHorizontal: 10,
+    marginBottom: 10, 
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });
 
 export default RecipeGenerator;
