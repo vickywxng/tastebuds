@@ -24,6 +24,10 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const [selectedMinutes, setSelectedMinutes] = useState<number | null>(null);
   const [applianceArray, setApplianceArray] = useState<string[]>([]);
   const [complexityLevel, setComplexityLevel] = useState<string | null>(null);
+  const [ingredients, setIngredients] = useState<string | null>(null);
+  const [diet, setDiet] = useState<string | null>(null);
+  const [showError, setShowError] = useState(false);
+
 
   const goToPlanner = () => {
     navigation.navigate('Planner');
@@ -42,9 +46,15 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   };
 
   const generateRecipe = () => {
-    console.log(selectedMinutes);
-    console.log(applianceArray);
-    console.log(complexityLevel);
+    if (!selectedMinutes || applianceArray.length === 0 || !complexityLevel) {
+      setShowError(true);
+    } else {
+      setShowError(false);
+      console.log(selectedMinutes);
+      console.log(applianceArray);
+      console.log(complexityLevel);
+      // Add logic to generate recipe here
+    }
   };
 
   const timeButton = (str: string, mins: number) => {
@@ -180,10 +190,18 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
           <Text style={styles.modalTitleSmaller}>Yield</Text>
           
           <View style={{ height: 20 }} />
-          <Button style={styles.recipeGeneratorButton} onPress={() => generateRecipe()}>
-            <Text style={[styles.modalTitleSmaller, { marginBottom: 0 }]}>Generate Recipe</Text>
-          </Button>
-        </View>
+            <Button style={styles.recipeGeneratorButton} onPress={() => generateRecipe()}>
+              <Text style={[styles.modalTitleSmaller, { marginBottom: 0 }]}>Generate Recipe</Text>
+            </Button>
+            <View style={[styles.errorMessageContainer, { height: showError ? 40 : 0 }]}>
+                <Ionicons name="alert-outline" size={20} color={'#FD9B62'} />
+                <Text style={styles.errorMessageText}>
+                  Make sure to fill out all of the sections.
+                </Text>
+            </View>
+          </View>
+
+          
 
         <View style={{ height: 100 }} />
       </ScrollView>
@@ -301,7 +319,20 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     justifyContent: 'center',
     alignItems: 'center',
-  }
+  }, 
+  errorMessageContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 20,
+  },
+  errorMessageText: {
+    marginLeft: 5,
+    fontSize: 16,
+    fontFamily: 'Lato-bold',
+    color: '#FD9B62',
+    textAlign: 'center',
+  },
 });
 
 export default RecipeGenerator;
