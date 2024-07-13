@@ -10,15 +10,13 @@ import {
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { NavigationProp } from '@react-navigation/native';
-import { Button, XStack, YStack } from 'tamagui';
+import { NavigationProp, useRoute } from '@react-navigation/native';
 import { Divide } from '@tamagui/lucide-icons';
-
+import { Button, XStack, YStack } from 'tamagui';
 
 type Props = {
   navigation: NavigationProp<any>;
 };
-
 
 const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const [selectedMinutes, setSelectedMinutes] = useState<number | null>(null);
@@ -28,13 +26,17 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const [diet, setDiet] = useState<string>('');
   const [showError, setShowError] = useState(false);
 
+  const route = useRoute();
+  const { userId } = route.params as {
+    userId: string;
+  };
 
   const goToPlanner = () => {
-    navigation.navigate('Planner');
+    navigation.navigate('Planner', { userId });
   };
 
   const goToCollection = () => {
-    navigation.navigate('Collection');
+    navigation.navigate('Collection', { userId });
   };
 
   const handleTimeSelected = (mins: number) => {
@@ -46,7 +48,13 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   };
 
   const generateRecipe = () => {
-    if (!selectedMinutes || applianceArray.length === 0 || !complexityLevel || !diet || !ingredients) {
+    if (
+      !selectedMinutes ||
+      applianceArray.length === 0 ||
+      !complexityLevel ||
+      !diet ||
+      !ingredients
+    ) {
       setShowError(true);
     } else {
       setShowError(false);
@@ -64,7 +72,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       <Button
         style={[
           styles.preferenceButton,
-          selectedMinutes === mins ? styles.selectedPreferenceButton : {}
+          selectedMinutes === mins ? styles.selectedPreferenceButton : {},
         ]}
         onPress={() => handleTimeSelected(mins)}
       >
@@ -76,7 +84,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
   const handleAppliancesSelected = (appliance: string) => {
     if (applianceArray.includes(appliance)) {
-      const updatedArray = applianceArray.filter(item => item !== appliance);
+      const updatedArray = applianceArray.filter((item) => item !== appliance);
       setApplianceArray(updatedArray);
     } else {
       const updatedApplianceArray = [...applianceArray, appliance];
@@ -91,7 +99,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       <Button
         style={[
           styles.preferenceButton,
-          isSelected ? styles.selectedPreferenceButton : {}
+          isSelected ? styles.selectedPreferenceButton : {},
         ]}
         onPress={() => handleAppliancesSelected(appliance)}
       >
@@ -103,10 +111,10 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
   const complexityButton = (complexity: string) => {
     return (
-      <Button 
+      <Button
         style={[
           styles.preferenceButton,
-          complexityLevel === complexity ? styles.selectedPreferenceButton : {}
+          complexityLevel === complexity ? styles.selectedPreferenceButton : {},
         ]}
         onPress={() => handleComplexitySelected(complexity)}
       >
@@ -121,7 +129,9 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <View style={{ padding: 40 }}>
           <View style={{ height: 50 }} />
-          <Text style={styles.modalTitle}>Ok, now what are we working with?</Text>
+          <Text style={styles.modalTitle}>
+            Ok, now what are we working with?
+          </Text>
           <View style={{ height: 20 }} />
 
           <XStack style={styles.row}>
@@ -135,7 +145,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
             placeholder="1 gal of milk, 3 potatoes, 2 sticks of butter, etc"
             placeholderTextColor="#AFA26B"
             value={ingredients}
-            onChangeText={text => setIngredients(text)}
+            onChangeText={(text) => setIngredients(text)}
           />
 
           <TouchableOpacity style={styles.uploadImageButton}>
@@ -147,29 +157,29 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
           <Text style={styles.modalTitleSmaller}>Time</Text>
 
           <XStack>
-            {timeButton("15 mins", 15)}
-            {timeButton("30 mins", 30)}
-            {timeButton("1 hr", 60)}
+            {timeButton('15 mins', 15)}
+            {timeButton('30 mins', 30)}
+            {timeButton('1 hr', 60)}
           </XStack>
 
           <XStack>
-            {timeButton("2 hrs", 120)}
-            {timeButton("3 hrs", 180)}
+            {timeButton('2 hrs', 120)}
+            {timeButton('3 hrs', 180)}
           </XStack>
 
           <View style={{ height: 20 }} />
           <Text style={styles.modalTitleSmaller}>Appliances</Text>
           <XStack>
-            {applianceButton("Stove")}
-            {applianceButton("Oven")}
-            {applianceButton("Microwave")}
+            {applianceButton('Stove')}
+            {applianceButton('Oven')}
+            {applianceButton('Microwave')}
           </XStack>
 
           <XStack>
-            {applianceButton("Air Fryer")}
-            {applianceButton("Rice Cooker")}
+            {applianceButton('Air Fryer')}
+            {applianceButton('Rice Cooker')}
           </XStack>
-          
+
           <View style={{ height: 20 }} />
           <XStack style={styles.row}>
             <Text style={styles.modalTitleSmaller}>Diet</Text>
@@ -181,43 +191,51 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
             style={styles.input}
             placeholder="Vegeterian, vegan, keto, etc"
             value={diet}
-            onChangeText={text => setDiet(text)}
+            onChangeText={(text) => setDiet(text)}
           />
 
           <View style={{ height: 20 }} />
           <Text style={styles.modalTitleSmaller}>Complexity</Text>
           <XStack>
-            {complexityButton("Easy")}
-            {complexityButton("Medium")}
-            {complexityButton("Hard")}
+            {complexityButton('Easy')}
+            {complexityButton('Medium')}
+            {complexityButton('Hard')}
           </XStack>
 
           <View style={{ height: 20 }} />
           <Text style={styles.modalTitleSmaller}>Yield</Text>
-          
-          <View style={{ height: 20 }} />
-            <Button style={styles.recipeGeneratorButton} onPress={() => generateRecipe()}>
-              <Text style={[styles.modalTitleSmaller, { marginBottom: 0 }]}>Generate Recipe</Text>
-            </Button>
-            <View style={[styles.errorMessageContainer, { height: showError ? 40 : 0 }]}>
-                <Ionicons name="alert-outline" size={20} color={'#FD9B62'} />
-                <Text style={styles.errorMessageText}>
-                  Make sure to fill out all of the sections.
-                </Text>
-            </View>
-          </View>
 
-          
+          <View style={{ height: 20 }} />
+          <Button
+            style={styles.recipeGeneratorButton}
+            onPress={() => generateRecipe()}
+          >
+            <Text style={[styles.modalTitleSmaller, { marginBottom: 0 }]}>
+              Generate Recipe
+            </Text>
+          </Button>
+          <View
+            style={[
+              styles.errorMessageContainer,
+              { height: showError ? 40 : 0 },
+            ]}
+          >
+            <Ionicons name="alert-outline" size={20} color={'#FD9B62'} />
+            <Text style={styles.errorMessageText}>
+              Make sure to fill out all of the sections.
+            </Text>
+          </View>
+        </View>
 
         <View style={{ height: 100 }} />
       </ScrollView>
 
       <View style={styles.buttons}>
-        <Button style={styles.button}>
-          <Ionicons name="create" size={40} color={'#FFF5CD'} />
-        </Button>
         <Button style={styles.button} onPress={goToPlanner}>
           <Ionicons name="calendar-outline" size={40} color={'#FFF5CD'} />
+        </Button>
+        <Button style={styles.button}>
+          <Ionicons name="create" size={40} color={'#FFF5CD'} />
         </Button>
         <Button style={styles.button} onPress={goToCollection}>
           <Ionicons name="basket-outline" size={40} color={'#FFF5CD'} />
@@ -237,7 +255,7 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    alignItems: 'baseline', 
+    alignItems: 'baseline',
   },
   buttons: {
     backgroundColor: '#82A263',
@@ -260,19 +278,19 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     fontSize: 24,
-    fontFamily: "Arvo-Bold",
+    fontFamily: 'Arvo-Bold',
     marginBottom: 10,
     color: '#E7D37F',
-  }, 
+  },
   modalTitleSmaller: {
     fontSize: 18,
-    fontFamily: "Arvo-Bold",
+    fontFamily: 'Arvo-Bold',
     marginBottom: 10,
     color: '#E7D37F',
-  }, 
+  },
   modalText: {
     fontSize: 12,
-    fontFamily: "Lato",
+    fontFamily: 'Lato',
     marginBottom: 10,
     color: '#FFF5CD',
   },
@@ -297,25 +315,25 @@ const styles = StyleSheet.create({
   },
   selectedPreferenceButton: {
     paddingHorizontal: 15,
-    paddingVertical: 5,  
-    marginHorizontal: 5,   
-    marginBottom: 10,      
+    paddingVertical: 5,
+    marginHorizontal: 5,
+    marginBottom: 10,
     backgroundColor: '#AFA26B',
     flexDirection: 'row',
     alignItems: 'center',
-    borderColor:'#FFF5CD',
+    borderColor: '#FFF5CD',
     borderWidth: 2,
     borderRadius: 20,
   },
   preferenceButton: {
     paddingHorizontal: 15,
-    paddingVertical: 5,  
-    marginHorizontal: 5,   
-    marginBottom: 10,      
+    paddingVertical: 5,
+    marginHorizontal: 5,
+    marginBottom: 10,
     backgroundColor: 'transparent',
     flexDirection: 'row',
     alignItems: 'center',
-    borderColor:'#FFF5CD',
+    borderColor: '#FFF5CD',
     borderWidth: 2,
     borderRadius: 20,
   },
@@ -325,7 +343,7 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     justifyContent: 'center',
     alignItems: 'center',
-  }, 
+  },
   errorMessageContainer: {
     flexDirection: 'row',
     alignItems: 'center',
