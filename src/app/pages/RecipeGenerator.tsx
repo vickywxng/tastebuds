@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dimensions,
   ImageBackground,
@@ -9,11 +9,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { NavigationProp, useRoute } from '@react-navigation/native';
+import { Ionicons, MaterialCommunityIcons, FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { NavigationProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import { Divide } from '@tamagui/lucide-icons';
 import { Button, XStack, YStack } from 'tamagui';
-import { LuEggFried } from "react-icons/lu";
+// import { LuEggFried } from "react-icons/lu";
+// import { FaBeer } from "@react-icons/all-files/fa/FaBeer";
 
 type Props = {
   navigation: NavigationProp<any>;
@@ -33,15 +34,53 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     userId: string;
   };
 
-  const mealButton = (meal: string) => (
-    <Button
-      style={styles.mealButton}
-      onPress={() => setSelectedMeal(meal)}
-    >
-      {/* <LuEggFried /> */}
-      <Text style={[styles.modalTitleSmaller, { marginBottom: 0 }]}>{meal}</Text>
-    </Button>
+  useEffect(() => {
+    resetState();
+  }, []);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      resetState();
+    }, [])
   );
+
+  const resetState = () => {
+    setSelectedMeal(null);
+    setSelectedMinutes(null);
+    setApplianceArray([]);
+    setComplexityLevel(null);
+    setIngredients('');
+    setDiet('');
+    setShowError(false);
+  };
+
+
+
+  const mealButton = (meal: string) => {
+    let icon = null; 
+
+    if (meal === "Breakfast") {
+      icon = <MaterialCommunityIcons name="egg-fried" size={40} color={'#FFF5CD'} />;
+    } else if (meal === "Lunch") {
+      icon = <MaterialCommunityIcons name="food" size={35} color={'#FFF5CD'} />;
+    } else if (meal === "Dinner") {
+      icon = <MaterialIcons name="dinner-dining" size={35} color={'#FFF5CD'} />;
+    } else {
+      icon = <MaterialCommunityIcons name="food-apple-outline" size={35} color={'#FFF5CD'} />;
+    }
+  
+    return (
+      <Button
+        style={styles.mealButton}
+        onPress={() => setSelectedMeal(meal)}
+      >
+        {icon} {/* Render the determined icon */}
+        <Text style={[styles.modalTitleSmaller, { marginBottom: 0 }, {color: '#FFF5CD'}]}>{meal}</Text>
+      </Button>
+    );
+  };
+
+  
 
 
   const goToPlanner = () => {
@@ -145,10 +184,11 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
           {!selectedMeal && (
             <>
-              <Text style={styles.modalTitle}>
+            <View style={{ height: 150 }} />
+              <Text style={[styles.modalTitle, { textAlign: 'center' }]}>
               What are we tryna chef up today? 
               </Text>
-              <View style={{ height: 20 }} />
+              <View style={{ height: 50 }} />
               <YStack>
                 {mealButton('Breakfast')}
                 {mealButton('Lunch')}
@@ -251,7 +291,9 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
                   { height: showError ? 40 : 0 },
                 ]}
               >
-                <Ionicons name="alert-outline" size={20} color={'#FD9B62'} />
+                <FontAwesome name="warning" size={20} color={'#FD9B62'} />
+                
+                {/* <Ionicons name="alert-outline" size={20} color={'#FD9B62'} /> */}
                 <Text style={styles.errorMessageText}>
                   Make sure to fill out all of the sections.
                 </Text>
