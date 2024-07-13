@@ -22,6 +22,9 @@ type Props = {
 
 const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const [selectedMinutes, setSelectedMinutes] = useState<number | null>(null);
+  const [applianceArray, setApplianceArray] = useState<string[]>([]);
+  const [complexityLevel, setComplexityLevel] = useState<string | null>(null);
+
   
   const goToPlanner = () => {
     navigation.navigate('Planner');
@@ -33,6 +36,17 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
   const handleTimeSelected = (mins: number) => {
     setSelectedMinutes(mins);
+  };
+
+  const handleComplexitySelected = (complexity: string) => {
+    setComplexityLevel(complexity);
+  };
+
+  //Called when "Generate Recipe" button is clicked.
+  const generateRecipe = () => {
+    console.log(selectedMinutes);
+    console.log(applianceArray);
+    console.log(complexityLevel);
   };
 
   const timeButton = (str: string, mins: number) => {
@@ -49,21 +63,47 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       </Button>
     );
   };
+
+
+  const handleAppliancesSelected = (appliance: string) => {
+    if (applianceArray.includes(appliance)) {
+      const updatedArray = applianceArray.filter(item => item !== appliance);
+      setApplianceArray(updatedArray);
+    } else {
+      const updatedApplianceArray = [...applianceArray, appliance];
+      setApplianceArray(updatedApplianceArray);
+    }
+  };
+
+  const applianceButton = (appliance: string) => {
+    const isSelected = applianceArray.includes(appliance);
   
-  const applianceButton = (str: string) => {
     return (
-      <Button style={styles.preferenceButton}>
+      <Button
+        style={[
+          styles.preferenceButton,
+          isSelected ? styles.selectedPreferenceButton : {}
+        ]}
+        onPress={() => handleAppliancesSelected(appliance)}
+      >
         <Ionicons name="construct-outline" size={20} color={'#FFF5CD'} />
-        <Text style={{ marginLeft: 5, color: '#FFF5CD' }}>{str}</Text>
+        <Text style={{ marginLeft: 5, color: '#FFF5CD' }}>{appliance}</Text>
       </Button>
     );
   };
   
-  const complexityButton = (str: string) => {
+  const complexityButton = (complexity: string) => {
     return (
-      <Button style={styles.preferenceButton}>
+      <Button 
+        style={[
+          styles.preferenceButton,
+          complexityLevel === complexity ? styles.selectedPreferenceButton : {}
+        ]}
+        onPress={() => handleComplexitySelected(complexity)}>
+
         <Ionicons name="star" size={20} color={'#FFF5CD'} />
-        <Text style={{ marginLeft: 5, color: '#FFF5CD' }}>{str}</Text>
+        <Text style={{ marginLeft: 5, color: '#FFF5CD' }}>{complexity}</Text>
+
       </Button>
     );
   };
@@ -142,7 +182,9 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
             <Text style={styles.modalTitleSmaller}>Yield</Text>
             
 
-          <Button>Generate Recipe</Button>
+            <Button style={styles.recipeGeneratorButton} onPress={() => generateRecipe()}>
+              <Text style={[styles.modalTitleSmaller, { marginBottom: 0 }]}>Generate Recipe</Text>
+            </Button>
             
           </YStack>
         </View>
@@ -236,7 +278,7 @@ const styles = StyleSheet.create({
     paddingVertical: 5,  
     marginHorizontal: 5,   
     marginBottom: 10,      
-    backgroundColor: '#FD9B62',
+    backgroundColor: '#AFA26B',
     flexDirection: 'row',
     alignItems: 'center',
     borderColor:'#FFF5CD',
@@ -254,7 +296,13 @@ const styles = StyleSheet.create({
     borderColor:'#FFF5CD',
     borderWidth: 2,
     borderRadius: 20,
-  },
+  }, recipeGeneratorButton: {
+    backgroundColor: '#FD9B62',
+    paddingHorizontal: 30,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });
 
 
