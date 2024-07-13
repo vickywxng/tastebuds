@@ -24,8 +24,8 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const [selectedMinutes, setSelectedMinutes] = useState<number | null>(null);
   const [applianceArray, setApplianceArray] = useState<string[]>([]);
   const [complexityLevel, setComplexityLevel] = useState<string | null>(null);
-  const [ingredients, setIngredients] = useState<string | null>(null);
-  const [diet, setDiet] = useState<string | null>(null);
+  const [ingredients, setIngredients] = useState<string>('');
+  const [diet, setDiet] = useState<string>('');
   const [showError, setShowError] = useState(false);
 
 
@@ -46,13 +46,15 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   };
 
   const generateRecipe = () => {
-    if (!selectedMinutes || applianceArray.length === 0 || !complexityLevel) {
+    if (!selectedMinutes || applianceArray.length === 0 || !complexityLevel || !diet || !ingredients) {
       setShowError(true);
     } else {
       setShowError(false);
       console.log(selectedMinutes);
       console.log(applianceArray);
       console.log(complexityLevel);
+      console.log(ingredients);
+      console.log(diet);
       // Add logic to generate recipe here
     }
   };
@@ -132,6 +134,8 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
             style={styles.input}
             placeholder="1 gal of milk, 3 potatoes, 2 sticks of butter, etc"
             placeholderTextColor="#AFA26B"
+            value={ingredients}
+            onChangeText={text => setIngredients(text)}
           />
 
           <TouchableOpacity style={styles.uploadImageButton}>
@@ -176,6 +180,8 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
           <TextInput
             style={styles.input}
             placeholder="Vegeterian, vegan, keto, etc"
+            value={diet}
+            onChangeText={text => setDiet(text)}
           />
 
           <View style={{ height: 20 }} />
