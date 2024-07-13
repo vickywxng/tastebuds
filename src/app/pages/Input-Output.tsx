@@ -19,6 +19,11 @@ type Props = {
 
 const InputOutput: React.FC<Props> = ({ navigation }) => {
   const [infoArray, setInfoArray] = useState<string[]>([]);
+  const [title, setTitle] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
+  const [ingredients, setIngredients] = useState<string[]>([]);
+  const [directions, setDirections] = useState<string[]>([]);
+  const [calories, setCalories] = useState<string>('');
   const makeInput = (
     cookTime: string,
     appliance: string,
@@ -27,7 +32,7 @@ const InputOutput: React.FC<Props> = ({ navigation }) => {
     quantity: string,
     ingredients: string,
   ) => {
-    const input = `Generate me a recipe with these constraints: ${cookTime} cooking time, cooked on ${appliance}, diet ${diet}, ${complexity}, ${quantity} yield. The ingredients available are ${ingredients}. I need the response to be generated in this way: Title: (title of dish) Description: (description of dish) Ingredients: (list of all ingredients separated by a comma) Directions: (list of cooking directions separated by a comma) Calories: (calorie amount)`;
+    const input = `Generate me a recipe with these constraints: ${cookTime} cooking time, cooked on ${appliance}, diet ${diet}, ${complexity}, ${quantity} yield. The ingredients available are ${ingredients}. I need the response to be generated in this way: Title: (title of dish) Description: (description of dish) Ingredients: (list of all ingredients separated by a comma) Directions: (list of cooking directions separated by a period) Calories: (calorie amount)`;
     return input;
   };
 
@@ -44,6 +49,30 @@ const InputOutput: React.FC<Props> = ({ navigation }) => {
     const pattern = wordsToSplitBy.join('|');
     const array = output.split(new RegExp(pattern, 'i'));
     setInfoArray(array);
+
+    if (infoArray[1]) {
+      setTitle(infoArray[1]);
+    }
+
+    if (infoArray[2]) {
+      setDescription(infoArray[2]);
+    }
+
+    if (infoArray[3]) {
+      setIngredients(infoArray[3].split(', '));
+    }
+
+    if (infoArray[4]) {
+      setDirections(infoArray[4].split('. '));
+    }
+
+    if (infoArray[5]) {
+      const regex = /\d+/g;
+      const numbers = infoArray[5].match(regex);
+      if (numbers && numbers[0]) {
+        setCalories(numbers[0]);
+      }
+    }
   };
 
   useEffect(() => {
@@ -52,15 +81,6 @@ const InputOutput: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-        <Text style={{ color: 'black', margin: 20, marginTop: 100 }}>
-          {infoArray[1]}
-        </Text>
-        <Text style={{ color: 'black', margin: 20 }}>{infoArray[2]}</Text>
-        <Text style={{ color: 'black', margin: 20 }}>{infoArray[3]}</Text>
-        <Text style={{ color: 'black', margin: 20 }}>{infoArray[4]}</Text>
-        <Text style={{ color: 'black', margin: 20 }}>{infoArray[5]}</Text>
-      </View>
       <View style={styles.buttons}>
         <TouchableOpacity style={styles.button}>
           <Ionicons name="calendar-outline" size={40} color={'#FFF5CD'} />
@@ -80,6 +100,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#365E32',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   buttons: {
     backgroundColor: '#82A263',
