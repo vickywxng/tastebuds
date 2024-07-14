@@ -13,8 +13,6 @@ import { Ionicons, MaterialCommunityIcons, FontAwesome, MaterialIcons } from '@e
 import { NavigationProp, useFocusEffect, useRoute } from '@react-navigation/native';
 import { Divide } from '@tamagui/lucide-icons';
 import { Button, XStack, YStack } from 'tamagui';
-// import { LuEggFried } from "react-icons/lu";
-// import { FaBeer } from "@react-icons/all-files/fa/FaBeer";
 
 type Props = {
   navigation: NavigationProp<any>;
@@ -28,6 +26,15 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const [ingredients, setIngredients] = useState<string>('');
   const [diet, setDiet] = useState<string>('');
   const [showError, setShowError] = useState(false);
+  const [generateRecipeBoolean, setGenerateRecipeBoolean] =  useState<boolean | null>(null);
+
+  const [generatedRecipeTitle, setGeneratedRecipeTitle] =  useState<string | null>(null);
+  const [generatedRecipeDescription, setGeneratedRecipeDescription] =  useState<string | null>(null);
+  const [generatedRecipeServingsAmount, setGeneratedRecipeServingsAmount] =  useState<number | null>(null);
+  const [generatedRecipeTimeAmount, setGeneratedRecipeTimeAmount] =  useState<string | null>(null);
+  //Might need to make time into a number measured in minutes and then convert it into a string
+  const [generatedRecipeComplexityLevel, setGeneratedRecipeComplexityLevel] =  useState<string | null>(null);
+
 
   const route = useRoute();
   const { userId } = route.params as {
@@ -36,6 +43,12 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
   useEffect(() => {
     resetState();
+    //move the below somewhere else
+    setGeneratedRecipeTitle("Blueberry Pancakes");
+    setGeneratedRecipeDescription("Super thick and fluffy blueberry pancakes! Melt in your mouth, golden brown, and bursting with blueberries.");
+    setGeneratedRecipeServingsAmount(2);
+    setGeneratedRecipeTimeAmount("20 mins");
+    setGeneratedRecipeComplexityLevel("Easy");
   }, []);
 
   useFocusEffect(
@@ -52,8 +65,148 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     setIngredients('');
     setDiet('');
     setShowError(false);
+    setGenerateRecipeBoolean(false);
   };
 
+  const userPreferencePage = () => {
+    return(
+      <View>
+        <TouchableOpacity>
+          <MaterialIcons name="arrow-back-ios" size={30} color="#FFF5CD"/>
+        </TouchableOpacity>
+
+        <View style={{ height: 30 }} />
+        <Text style={styles.modalTitle}>
+          Ok, now what are we working with?
+        </Text>
+        <View style={{ height: 20 }} />
+
+        <XStack style={styles.row}>
+          <Text style={styles.modalTitleSmaller}>Ingredients</Text>
+          <View style={{ width: 7 }} />
+          <Text style={styles.modalText}>include quantity (e.g. 2 eggs)</Text>
+        </XStack>
+
+        <TextInput
+          style={styles.input}
+          placeholder="1 gal of milk, 3 potatoes, 2 sticks of butter, etc"
+          placeholderTextColor="#AFA26B"
+          value={ingredients}
+          onChangeText={(text) => setIngredients(text)}
+        />
+
+        <TouchableOpacity style={styles.uploadImageButton}>
+          <Ionicons name="link" size={20} color={'#FFF5CD'} />
+          <Text style={styles.uploadImageText}>Upload an Image</Text>
+        </TouchableOpacity>
+
+        <View style={{ height: 20 }} />
+        <Text style={styles.modalTitleSmaller}>Time</Text>
+
+        <XStack>
+          {timeButton('15 mins', 15)}
+          {timeButton('30 mins', 30)}
+          {timeButton('1 hr', 60)}
+        </XStack>
+
+        <XStack>
+          {timeButton('2 hrs', 120)}
+          {timeButton('3 hrs', 180)}
+        </XStack>
+
+        <View style={{ height: 20 }} />
+        <Text style={styles.modalTitleSmaller}>Appliances</Text>
+        <XStack>
+          {applianceButton('Stove')}
+          {applianceButton('Oven')}
+          {applianceButton('Microwave')}
+        </XStack>
+
+        <XStack>
+          {applianceButton('Air Fryer')}
+          {applianceButton('Rice Cooker')}
+        </XStack>
+
+        <View style={{ height: 20 }} />
+        <XStack style={styles.row}>
+          <Text style={styles.modalTitleSmaller}>Diet</Text>
+          <View style={{ width: 5 }} />
+          <Text style={styles.modalText}>(be as specific as possible!)</Text>
+        </XStack>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Vegeterian, vegan, keto, etc"
+          value={diet}
+          onChangeText={(text) => setDiet(text)}
+        />
+
+        <View style={{ height: 20 }} />
+        <Text style={styles.modalTitleSmaller}>Complexity</Text>
+        <XStack>
+          {complexityButton('Easy')}
+          {complexityButton('Medium')}
+          {complexityButton('Hard')}
+        </XStack>
+
+        <View style={{ height: 20 }} />
+        <Text style={styles.modalTitleSmaller}>Yield</Text>
+
+        <View style={{ height: 20 }} />
+        <Button
+          style={styles.recipeGeneratorButton}
+          onPress={() => generateRecipe()}
+        >
+          <Text style={[styles.modalTitleSmaller, { marginBottom: 0 }]}>
+            Generate Recipe
+          </Text>
+        </Button>
+        <View
+          style={[
+            styles.errorMessageContainer,
+            { height: showError ? 40 : 0 },
+          ]}
+        >
+          <FontAwesome name="warning" size={20} color={'#FD9B62'} />
+          <Text style={styles.errorMessageText}>
+            Make sure to fill out all of the sections.
+          </Text>
+        </View>
+    </View>
+    )
+  }
+
+  const generatedRecipePage = () => {
+    
+    return (
+      <View style={{ padding: 20 }}>
+        <Text style={styles.modalTitle}>Tadaaa, now this what we want...</Text>
+        <View style={{ height: 50 }} />
+        <Text style={styles.modalTitle}>{generatedRecipeTitle}</Text>
+        <Text style={styles.modalLargerText}>{generatedRecipeDescription}</Text>
+        <View style={{ height: 10 }} />
+
+        <XStack style={styles.container}>
+
+          <YStack style={styles.centeredYStack}>
+            <Text style={styles.modalTitleSmaller}>Servings</Text>
+            <Text style={styles.modalLargerText}>{generatedRecipeServingsAmount}</Text>
+          </YStack>
+          <YStack style={styles.centeredYStack}>
+            <Text style={styles.modalTitleSmaller}>Time</Text>
+            <Text style={styles.modalLargerText}>{generatedRecipeTimeAmount}</Text>
+          </YStack>
+          <YStack style={styles.centeredYStack}>
+            <Text style={styles.modalTitleSmaller}>Complexity</Text>
+            <Text style={styles.modalLargerText}>{generatedRecipeComplexityLevel}</Text>
+          </YStack>
+        </XStack>
+
+        <Text>{'\u2022'}</Text>
+
+      </View>
+    )
+  }
 
 
   const mealButton = (meal: string) => {
@@ -79,8 +232,6 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       </Button>
     );
   };
-
-  
 
 
   const goToPlanner = () => {
@@ -115,6 +266,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       console.log(complexityLevel);
       console.log(ingredients);
       console.log(diet);
+      setGenerateRecipeBoolean(true);
       // Add logic to generate recipe here
     }
   };
@@ -182,7 +334,9 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
         <View style={{ padding: 40 }}>
           <View style={{ height: 50 }} />
 
-          {!selectedMeal && (
+          {generatedRecipePage()}
+
+          {/* {!selectedMeal && !generateRecipeBoolean &&(
             <>
             <View style={{ height: 150 }} />
               <Text style={[styles.modalTitle, { textAlign: 'center' }]}>
@@ -196,111 +350,20 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
                 {mealButton('Snack')}
               </YStack>
             </>
-          )}
+          )} */}
 
-          {selectedMeal &&(
+          {/* {selectedMeal && !generateRecipeBoolean &&(
             <>
-              <Text style={styles.modalTitle}>
-                Ok, now what are we working with?
-              </Text>
-              <View style={{ height: 20 }} />
+              {userPreferencePage()}
+            </>
+          )}   */}
 
-              <XStack style={styles.row}>
-                <Text style={styles.modalTitleSmaller}>Ingredients</Text>
-                <View style={{ width: 7 }} />
-                <Text style={styles.modalText}>include quantity (e.g. 2 eggs)</Text>
-              </XStack>
-
-              <TextInput
-                style={styles.input}
-                placeholder="1 gal of milk, 3 potatoes, 2 sticks of butter, etc"
-                placeholderTextColor="#AFA26B"
-                value={ingredients}
-                onChangeText={(text) => setIngredients(text)}
-              />
-
-              <TouchableOpacity style={styles.uploadImageButton}>
-                <Ionicons name="link" size={20} color={'#FFF5CD'} />
-                <Text style={styles.uploadImageText}>Upload an Image</Text>
-              </TouchableOpacity>
-
-              <View style={{ height: 20 }} />
-              <Text style={styles.modalTitleSmaller}>Time</Text>
-
-              <XStack>
-                {timeButton('15 mins', 15)}
-                {timeButton('30 mins', 30)}
-                {timeButton('1 hr', 60)}
-              </XStack>
-
-              <XStack>
-                {timeButton('2 hrs', 120)}
-                {timeButton('3 hrs', 180)}
-              </XStack>
-
-              <View style={{ height: 20 }} />
-              <Text style={styles.modalTitleSmaller}>Appliances</Text>
-              <XStack>
-                {applianceButton('Stove')}
-                {applianceButton('Oven')}
-                {applianceButton('Microwave')}
-              </XStack>
-
-              <XStack>
-                {applianceButton('Air Fryer')}
-                {applianceButton('Rice Cooker')}
-              </XStack>
-
-              <View style={{ height: 20 }} />
-              <XStack style={styles.row}>
-                <Text style={styles.modalTitleSmaller}>Diet</Text>
-                <View style={{ width: 5 }} />
-                <Text style={styles.modalText}>(be as specific as possible!)</Text>
-              </XStack>
-
-              <TextInput
-                style={styles.input}
-                placeholder="Vegeterian, vegan, keto, etc"
-                value={diet}
-                onChangeText={(text) => setDiet(text)}
-              />
-
-              <View style={{ height: 20 }} />
-              <Text style={styles.modalTitleSmaller}>Complexity</Text>
-              <XStack>
-                {complexityButton('Easy')}
-                {complexityButton('Medium')}
-                {complexityButton('Hard')}
-              </XStack>
-
-              <View style={{ height: 20 }} />
-              <Text style={styles.modalTitleSmaller}>Yield</Text>
-
-              <View style={{ height: 20 }} />
-              <Button
-                style={styles.recipeGeneratorButton}
-                onPress={() => generateRecipe()}
-              >
-                <Text style={[styles.modalTitleSmaller, { marginBottom: 0 }]}>
-                  Generate Recipe
-                </Text>
-              </Button>
-              <View
-                style={[
-                  styles.errorMessageContainer,
-                  { height: showError ? 40 : 0 },
-                ]}
-              >
-                <FontAwesome name="warning" size={20} color={'#FD9B62'} />
-                
-                {/* <Ionicons name="alert-outline" size={20} color={'#FD9B62'} /> */}
-                <Text style={styles.errorMessageText}>
-                  Make sure to fill out all of the sections.
-                </Text>
-              </View>
+          {generateRecipeBoolean &&(
+            <>
+              {generatedRecipePage()}
             </>
           )}  
-          
+
         </View>
 
         <View style={{ height: 100 }} />
@@ -325,6 +388,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#365E32',
+    justifyContent: 'space-between',
   },
   scrollViewContent: {
     flexGrow: 1,
@@ -367,6 +431,12 @@ const styles = StyleSheet.create({
   modalText: {
     fontSize: 12,
     fontFamily: 'Lato',
+    marginBottom: 10,
+    color: '#FFF5CD',
+  },
+  modalLargerText: {
+    fontSize: 14,
+    fontFamily: 'Lato-SemiBold',
     marginBottom: 10,
     color: '#FFF5CD',
   },
@@ -440,7 +510,12 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     justifyContent: 'center',
     alignItems: 'center',
-  }
+  }, 
+  centeredYStack: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });
 
 export default RecipeGenerator;
