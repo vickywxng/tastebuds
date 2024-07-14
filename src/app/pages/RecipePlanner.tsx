@@ -6,10 +6,11 @@ import {
   StyleSheet,
   Text,
   TextInput,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { NavigationProp } from '@react-navigation/native';
+import { NavigationProp, useRoute } from '@react-navigation/native';
 import { Button, YStack } from 'tamagui';
 
 type Props = {
@@ -17,12 +18,17 @@ type Props = {
 };
 
 const RecipePlanner: React.FC<Props> = ({ navigation }) => {
+  const route = useRoute();
+  const { userId } = route.params as {
+    userId: string;
+  };
+
   const goToGenerator = () => {
-    navigation.navigate('Generator');
+    navigation.navigate('Generator', { userId });
   };
 
   const goToCollection = () => {
-    navigation.navigate('Collection');
+    navigation.navigate('Collection', { userId });
   };
 
   return (
@@ -31,15 +37,15 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
         <View></View>
       </ImageBackground>
       <View style={styles.buttons}>
-        <Button style={styles.button} onPress={goToGenerator}>
-          <Ionicons name="create-outline" size={40} color={'#FFF5CD'} />
-        </Button>
-        <Button style={styles.button}>
+        <TouchableOpacity style={styles.button}>
           <Ionicons name="calendar" size={40} color={'#FFF5CD'} />
-        </Button>
-        <Button style={styles.button} onPress={goToCollection}>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={goToGenerator}>
+          <Ionicons name="create-outline" size={40} color={'#FFF5CD'} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.button} onPress={goToCollection}>
           <Ionicons name="basket-outline" size={40} color={'#FFF5CD'} />
-        </Button>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -60,6 +66,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'stretch',
     height: 100,
+    paddingBottom: 10,
   },
   button: {
     flex: 1,
@@ -68,7 +75,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderRadius: 0,
     borderWidth: 0,
-    marginTop: 15,
   },
 });
 
