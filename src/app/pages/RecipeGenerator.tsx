@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Dimensions,
   ImageBackground,
@@ -19,6 +19,7 @@ type Props = {
 };
 
 const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
+  const scrollViewRef = useRef<ScrollView>(null);
   const [selectedMeal, setSelectedMeal] = useState<string | null>(null);
   const [selectedMinutes, setSelectedMinutes] = useState<number | null>(null);
   const [applianceArray, setApplianceArray] = useState<string[]>([]);
@@ -59,8 +60,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   };
 
   useEffect(() => {
-    resetState();
-    //move the below somewhere else
+    resetState(); 
     setGeneratedRecipeTitle("Blueberry Pancakes");
     setGeneratedRecipeDescription("Super thick and fluffy blueberry pancakes! Melt in your mouth, golden brown, and bursting with blueberries.");
     setGeneratedRecipeServingsAmount(2);
@@ -72,10 +72,9 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       '\u2022 1 cup of milk'
     );
     setGeneratedRecipeDirections(
-      '1. Mix the milk and vinegar and let it sit for a minute or two (you’re making “buttermilk” here). \n'
-      + '2. Whisk the dry ingredients together. Whisk the egg, milk, and melted butter into the dry ingredients until just combined.'
-    )
-
+      '1. Mix the milk and vinegar and let it sit for a minute or two (you’re making “buttermilk” here). \n' +
+      '2. Whisk the dry ingredients together. Whisk the egg, milk, and melted butter into the dry ingredients until just combined.'
+    );
     setGeneratedRecipeCaloriesPerServing("509");
     setGeneratedRecipeTotalFat("16.6g");
     setGeneratedRecipeSodium("983.3mg");
@@ -89,7 +88,14 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     setGeneratedRecipeVitaminA("165.2" + "\u03BC" + "g");
     setGeneratedRecipeIron("4mg");
     setGeneratedRecipePhosphorus("558.2mg");
-  }, []);
+  
+    // // Scroll to the top when transitioning to generated recipe
+    // if (scrollViewRef.current) {
+    //   scrollViewRef.current.scrollTo({ y: 0, animated: true });
+    // }
+  }, []); 
+  
+  
 
   useFocusEffect(
     React.useCallback(() => {
@@ -106,6 +112,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     setDiet('');
     setShowError(false);
     setGenerateRecipeBoolean(false);
+
   };
 
   const userPreferencePage = () => {
@@ -414,6 +421,10 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       console.log(ingredients);
       console.log(diet);
       setGenerateRecipeBoolean(true);
+
+      if (scrollViewRef.current) {
+        scrollViewRef.current.scrollTo({ y: 0, animated: true });
+      }
       // Add logic to generate recipe here
     }
   };
@@ -477,13 +488,13 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+      <ScrollView ref={scrollViewRef} contentContainerStyle={styles.scrollViewContent}>
         <View style={{ padding: 40 }}>
           <View style={{ height: 50 }} />
 
-          {generatedRecipePage()}
+          {/* {generatedRecipePage()} */}
 
-          {/* {!selectedMeal && !generateRecipeBoolean &&(
+          {!selectedMeal && !generateRecipeBoolean &&(
             <>
             <View style={{ height: 150 }} />
               <Text style={[styles.modalTitle, { textAlign: 'center' }]}>
@@ -497,13 +508,13 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
                 {mealButton('Snack')}
               </YStack>
             </>
-          )} */}
+          )}
 
-          {/* {selectedMeal && !generateRecipeBoolean &&(
+          {selectedMeal && !generateRecipeBoolean &&(
             <>
               {userPreferencePage()}
             </>
-          )}   */}
+          )}  
 
           {generateRecipeBoolean &&(
             <>
