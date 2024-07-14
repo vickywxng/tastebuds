@@ -224,7 +224,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
         <View style={{ height: 50 }} />
         <Text style={styles.modalTitle}>{generatedRecipeTitle}</Text>
         <Text style={styles.modalLargerText}>{generatedRecipeDescription}</Text>
-        <View style={{ height: 10 }} />
+        <View style={{ height: 30 }} />
 
         <XStack style={styles.container}>
 
@@ -242,20 +242,108 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
           </YStack>
         </XStack>
 
+        <View style={{ height: 30 }} />
         <Text style={styles.modalTitleSmaller}>Ingredients</Text>
         <Text style={styles.modalLargerText}>{generatedRecipeIngredients}</Text>
-        <View style={{ height: 10 }} />
+        <View style={{ height: 30 }} />
         <Text style={styles.modalTitleSmaller}>Directions</Text>
         <Text style={styles.modalLargerText}>{generatedRecipeDirections}</Text>
 
-        <View style={{ height: 10 }} />
+        <View style={{ height: 30 }} />
         <Text style={styles.modalTitleSmaller}>Nutritional Facts</Text>
-        <XStack>
-          <Text style={styles.modalLargerText}>Calories per serving:</Text>
-          <View style={{ width: 5 }} />
-          <Text style={[styles.modalLargerText, {fontFamily: "Lato-Bold"}]}>{generatedRecipeCaloriesPerServing}</Text>
-        </XStack>
+
+        <YStack gap={0}>
+          <XStack>
+            <Text style={styles.modalLargerText}>Calories per serving:</Text>
+            <View style={{ width: 5 }} />
+            <Text style={[styles.modalLargerText, {fontFamily: "Lato-Bold"}]}>{generatedRecipeCaloriesPerServing}</Text>
+          </XStack>
+
+          <XStack>
+            <Text style={styles.modalLargerText}>Total Fat:</Text>
+            <View style={{ width: 5 }} />
+            <Text style={[styles.modalLargerText, {fontFamily: "Lato-Bold"}]}>{generatedRecipeTotalFat}</Text>
+          </XStack>
+
+          <XStack>
+            <Text style={styles.modalLargerText}>Sodium:</Text>
+            <View style={{ width: 5 }} />
+            <Text style={[styles.modalLargerText, {fontFamily: "Lato-Bold"}]}>{generatedRecipeSodium}</Text>
+          </XStack>
+
+          <XStack>
+            <Text style={styles.modalLargerText}>Dietary Fiber:</Text>
+            <View style={{ width: 5 }} />
+            <Text style={[styles.modalLargerText, {fontFamily: "Lato-Bold"}]}>{generatedRecipeDietaryFiber}</Text>
+          </XStack>
+
+          <XStack>
+            <Text style={styles.modalLargerText}>Protein:</Text>
+            <View style={{ width: 5 }} />
+            <Text style={[styles.modalLargerText, {fontFamily: "Lato-Bold"}]}>{generatedRecipeProtein}</Text>
+          </XStack>
+          
+          <XStack>
+            <Text style={styles.modalLargerText}>VitaminC:</Text>
+            <View style={{ width: 5 }} />
+            <Text style={[styles.modalLargerText, {fontFamily: "Lato-Bold"}]}>{generatedRecipeVitaminC}</Text>
+          </XStack>
+
+          <XStack>
+            <Text style={styles.modalLargerText}>Potassium:</Text>
+            <View style={{ width: 5 }} />
+            <Text style={[styles.modalLargerText, {fontFamily: "Lato-Bold"}]}>{generatedRecipePotassium}</Text>
+          </XStack>
+
+          <XStack>
+            <Text style={styles.modalLargerText}>Cholesterol:</Text>
+            <View style={{ width: 5 }} />
+            <Text style={[styles.modalLargerText, {fontFamily: "Lato-Bold"}]}>{generatedRecipeCholesterol}</Text>
+          </XStack>
+
+          <XStack>
+            <Text style={styles.modalLargerText}>Total Carbohydrate:</Text>
+            <View style={{ width: 5 }} />
+            <Text style={[styles.modalLargerText, {fontFamily: "Lato-Bold"}]}>{generatedRecipeTotalCarb}</Text>
+          </XStack>
+
+          <XStack>
+            <Text style={styles.modalLargerText}>Sugars:</Text>
+            <View style={{ width: 5 }} />
+            <Text style={[styles.modalLargerText, {fontFamily: "Lato-Bold"}]}>{generatedRecipeSugars}</Text>
+          </XStack>
+
+          <XStack>
+            <Text style={styles.modalLargerText}>VitaminA:</Text>
+            <View style={{ width: 5 }} />
+            <Text style={[styles.modalLargerText, {fontFamily: "Lato-Bold"}]}>{generatedRecipeVitaminA}</Text>
+          </XStack>
+
+          <XStack>
+            <Text style={styles.modalLargerText}>Iron:</Text>
+            <View style={{ width: 5 }} />
+            <Text style={[styles.modalLargerText, {fontFamily: "Lato-Bold"}]}>{generatedRecipeIron}</Text>
+          </XStack>
+
+          <XStack>
+            <Text style={styles.modalLargerText}>Phosphorus:</Text>
+            <View style={{ width: 5 }} />
+            <Text style={[styles.modalLargerText, {fontFamily: "Lato-Bold"}]}>{generatedRecipePhosphorus}</Text>
+          </XStack>
+
+        </YStack>
         
+        <View style={{ height: 30 }} />
+
+        <Button
+          style={styles.recipeGeneratorButton}
+          onPress={() => addToPlanner()}
+        >
+          <Text style={[styles.modalTitleSmaller, { marginBottom: 0 }]}>
+            Add to planner
+          </Text>
+        </Button>
+
 
         {/* Bullet point */}
         {/* <Text>{'\u2022'}</Text> */}
@@ -305,6 +393,9 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const handleComplexitySelected = (complexity: string) => {
     setComplexityLevel(complexity);
   };
+
+  const addToPlanner = () => {
+  }
 
   const generateRecipe = () => {
     if (
@@ -492,7 +583,7 @@ const styles = StyleSheet.create({
   },
   modalLargerText: {
     fontSize: 14,
-    fontFamily: 'Lato-Italic',
+    fontFamily: 'Lato-SemiBold',
     marginBottom: 10,
     color: '#FFF5CD',
   },
