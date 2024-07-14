@@ -34,6 +34,23 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const [generatedRecipeTimeAmount, setGeneratedRecipeTimeAmount] =  useState<string | null>(null);
   //Might need to make time into a number measured in minutes and then convert it into a string
   const [generatedRecipeComplexityLevel, setGeneratedRecipeComplexityLevel] =  useState<string | null>(null);
+  const [generatedRecipeIngredients, setGeneratedRecipeIngredients] =  useState<string | null>(null);
+  const [generatedRecipeDirections, setGeneratedRecipeDirections] =  useState<string | null>(null);
+  const [generatedRecipeCaloriesPerServing, setGeneratedRecipeCaloriesPerServing] =  useState<string | null>(null);
+  const [generatedRecipeTotalFat, setGeneratedRecipeTotalFat] =  useState<string | null>(null);
+  const [generatedRecipeSodium, setGeneratedRecipeSodium] =  useState<string | null>(null);
+  const [generatedRecipeDietaryFiber, setGeneratedRecipeDietaryFiber] =  useState<string | null>(null);
+  const [generatedRecipeProtein, setGeneratedRecipeProtein] =  useState<string | null>(null);
+  const [generatedRecipeVitaminC, setGeneratedRecipeVitaminC] =  useState<string | null>(null);
+  const [generatedRecipePotassium, setGeneratedRecipePotassium] =  useState<string | null>(null);
+  const [generatedRecipeCholesterol, setGeneratedRecipeCholesterol] =  useState<string | null>(null);
+  const [generatedRecipeTotalCarb, setGeneratedRecipeTotalCarb] =  useState<string | null>(null);
+  const [generatedRecipeSugars, setGeneratedRecipeSugars] =  useState<string | null>(null);
+  const [generatedRecipeVitaminA, setGeneratedRecipeVitaminA] =  useState<string | null>(null);
+  const [generatedRecipeIron, setGeneratedRecipeIron] =  useState<string | null>(null);
+  const [generatedRecipePhosphorus, setGeneratedRecipePhosphorus] =  useState<string | null>(null);
+
+
 
 
   const route = useRoute();
@@ -49,6 +66,29 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     setGeneratedRecipeServingsAmount(2);
     setGeneratedRecipeTimeAmount("20 mins");
     setGeneratedRecipeComplexityLevel("Easy");
+    setGeneratedRecipeIngredients(
+      '\u2022 1 Egg\n' +
+      '\u2022 2 cups of flour\n' +
+      '\u2022 1 cup of milk'
+    );
+    setGeneratedRecipeDirections(
+      '1. Mix the milk and vinegar and let it sit for a minute or two (you’re making “buttermilk” here). \n'
+      + '2. Whisk the dry ingredients together. Whisk the egg, milk, and melted butter into the dry ingredients until just combined.'
+    )
+
+    setGeneratedRecipeCaloriesPerServing("509");
+    setGeneratedRecipeTotalFat("16.6g");
+    setGeneratedRecipeSodium("983.3mg");
+    setGeneratedRecipeDietaryFiber("3.6g");
+    setGeneratedRecipeProtein("13.3g");
+    setGeneratedRecipeVitaminC("7.4mg");
+    setGeneratedRecipePotassium("796.6mg");
+    setGeneratedRecipeCholesterol("130.9mg");
+    setGeneratedRecipeTotalCarb("77.9g");
+    setGeneratedRecipeSugars("24.8g");
+    setGeneratedRecipeVitaminA("165.2" + "\u03BC" + "g");
+    setGeneratedRecipeIron("4mg");
+    setGeneratedRecipePhosphorus("558.2mg");
   }, []);
 
   useFocusEffect(
@@ -202,7 +242,23 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
           </YStack>
         </XStack>
 
-        <Text>{'\u2022'}</Text>
+        <Text style={styles.modalTitleSmaller}>Ingredients</Text>
+        <Text style={styles.modalLargerText}>{generatedRecipeIngredients}</Text>
+        <View style={{ height: 10 }} />
+        <Text style={styles.modalTitleSmaller}>Directions</Text>
+        <Text style={styles.modalLargerText}>{generatedRecipeDirections}</Text>
+
+        <View style={{ height: 10 }} />
+        <Text style={styles.modalTitleSmaller}>Nutritional Facts</Text>
+        <XStack>
+          <Text style={styles.modalLargerText}>Calories per serving:</Text>
+          <View style={{ width: 5 }} />
+          <Text style={[styles.modalLargerText, {fontFamily: "Lato-Bold"}]}>{generatedRecipeCaloriesPerServing}</Text>
+        </XStack>
+        
+
+        {/* Bullet point */}
+        {/* <Text>{'\u2022'}</Text> */}
 
       </View>
     )
@@ -436,7 +492,7 @@ const styles = StyleSheet.create({
   },
   modalLargerText: {
     fontSize: 14,
-    fontFamily: 'Lato-SemiBold',
+    fontFamily: 'Lato-Italic',
     marginBottom: 10,
     color: '#FFF5CD',
   },
