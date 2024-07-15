@@ -537,7 +537,8 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       
       let str = "";
       for(let i=1; i<=directionsArray.length; i++) {
-        str += i + ". " + ingredientsArray[i-1] + "\n";
+        str += i + ". " + directionsArray[i-1] + "\n";
+        
       }
 
       setGeneratedRecipeDirections(str);
