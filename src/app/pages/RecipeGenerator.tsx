@@ -30,12 +30,14 @@ type Props = {
 const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const scrollViewRef = useRef<ScrollView>(null);
   const [selectedMeal, setSelectedMeal] = useState<string | null>(null);
-  const [selectedMinutes, setSelectedMinutes] = useState<number | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [applianceArray, setApplianceArray] = useState<string[]>([]);
+  const [applianceString, setApplianceString] = useState<string | null>(null);
   const [complexityLevel, setComplexityLevel] = useState<string | null>(null);
   const [ingredients, setIngredients] = useState<string>('');
   const [diet, setDiet] = useState<string>('');
   const [showError, setShowError] = useState(false);
+  const [servingsAmount, setServingsAmount] = useState<number | null>(null);
   const [generateRecipeBoolean, setGenerateRecipeBoolean] = useState<
     boolean | null
   >(null);
@@ -101,24 +103,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     // );
     // setGeneratedRecipeCaloriesPerServing('509');
 
-    organizeOutput("hey");
-    setGeneratedRecipeTotalFat('16.6g');
-    setGeneratedRecipeSodium('983.3mg');
-    setGeneratedRecipeDietaryFiber('3.6g');
-    setGeneratedRecipeProtein('13.3g');
-    setGeneratedRecipeVitaminC('7.4mg');
-    setGeneratedRecipePotassium('796.6mg');
-    setGeneratedRecipeCholesterol('130.9mg');
-    setGeneratedRecipeTotalCarb('77.9g');
-    setGeneratedRecipeSugars('24.8g');
-    setGeneratedRecipeVitaminA('165.2' + '\u03BC' + 'g');
-    setGeneratedRecipeIron('4mg');
-    setGeneratedRecipePhosphorus('558.2mg');
-
-    // // Scroll to the top when transitioning to generated recipe
-    // if (scrollViewRef.current) {
-    //   scrollViewRef.current.scrollTo({ y: 0, animated: true });
-    // }
+    
   }, []);
 
   useFocusEffect(
@@ -129,7 +114,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
   const resetState = () => {
     setSelectedMeal(null);
-    setSelectedMinutes(null);
+    setSelectedTime(null);
     setApplianceArray([]);
     setComplexityLevel(null);
     setIngredients('');
@@ -449,8 +434,8 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('Collection', { userId });
   };
 
-  const handleTimeSelected = (mins: number) => {
-    setSelectedMinutes(mins);
+  const handleTimeSelected = (time: string) => {
+    setSelectedTime(time);
   };
 
   const handleComplexitySelected = (complexity: string) => {
@@ -461,7 +446,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
   const generateRecipe = () => {
     if (
-      !selectedMinutes ||
+      !selectedTime ||
       applianceArray.length === 0 ||
       !complexityLevel ||
       !diet ||
@@ -470,7 +455,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       setShowError(true);
     } else {
       setShowError(false);
-      console.log(selectedMinutes);
+      console.log(selectedTime);
       console.log(applianceArray);
       console.log(complexityLevel);
       console.log(ingredients);
@@ -481,8 +466,38 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
         scrollViewRef.current.scrollTo({ y: 0, animated: true });
       }
       // Add logic to generate recipe here
+      organizeOutput("hey");
+      setGeneratedRecipeTotalFat('16.6g');
+      setGeneratedRecipeSodium('983.3mg');
+      setGeneratedRecipeDietaryFiber('3.6g');
+      setGeneratedRecipeProtein('13.3g');
+      setGeneratedRecipeVitaminC('7.4mg');
+      setGeneratedRecipePotassium('796.6mg');
+      setGeneratedRecipeCholesterol('130.9mg');
+      setGeneratedRecipeTotalCarb('77.9g');
+      setGeneratedRecipeSugars('24.8g');
+      setGeneratedRecipeVitaminA('165.2' + '\u03BC' + 'g');
+      setGeneratedRecipeIron('4mg');
+      setGeneratedRecipePhosphorus('558.2mg');
+
+      let applianceString = "";
+      for(let i=0; i<applianceArray.length; i++) {
+        applianceString += applianceArray[i];
+        if(i!=applianceArray.length - 1) {
+          applianceString += ", ";
+        }
+      }
+
+      // setApplianceString(str);
+
+      setServingsAmount(2);
+
+      makeInput(selectedTime, applianceString, diet, complexityLevel, servingsAmount, ingredients);
     }
   };
+
+  //convert appliance array to string
+
 
   const makeInput = (
     cookTime: string,
@@ -490,7 +505,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     diet: string,
     complexity: string,
     quantity: string,
-    ingredients: string,
+    ingredients: number,
   ) => {
     const input = `Generate me a recipe with these constraints: ${cookTime} cooking time, cooked on ${appliance}, diet ${diet}, ${complexity}, ${quantity} yield. The ingredients available are ${ingredients}. I need the response to be generated in this way: Title: (title of dish) Description: (description of dish) Ingredients: (list of all ingredients separated by a comma) Directions: (list of cooking directions separated by a period) Calories: (calorie amount)`;
     return input;
@@ -555,14 +570,14 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     //TODO: add other nutrition facts!
   };
 
-  const timeButton = (str: string, mins: number) => {
+  const timeButton = (str: string) => {
     return (
       <Button
         style={[
           styles.preferenceButton,
-          selectedMinutes === mins ? styles.selectedPreferenceButton : {},
+          selectedTime === str ? styles.selectedPreferenceButton : {},
         ]}
-        onPress={() => handleTimeSelected(mins)}
+        onPress={() => handleTimeSelected(str)}
       >
         <Ionicons name="alarm-outline" size={20} color={'#FFF5CD'} />
         <Text style={{ marginLeft: 5, color: '#FFF5CD' }}>{str}</Text>
