@@ -56,57 +56,27 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [ingredientsArray, setIngredientsArray] = useState<string[]>([]);
-  const [directions, setDirections] = useState<string[]>([]);
+  const [directionsArray, setDirectionsArray] = useState<string[]>([]);
   const [calories, setCalories] = useState<string>('');
 
   //Might need to make time into a number measured in minutes and then convert it into a string
   const [generatedRecipeComplexityLevel, setGeneratedRecipeComplexityLevel] =
     useState<string | null>(null);
-  const [generatedRecipeIngredients, setGeneratedRecipeIngredients] = useState<
-    string | null
-  >(null);
-  const [generatedRecipeDirections, setGeneratedRecipeDirections] = useState<
-    string | null
-  >(null);
-  const [
-    generatedRecipeCaloriesPerServing,
-    setGeneratedRecipeCaloriesPerServing,
-  ] = useState<string | null>(null);
-  const [generatedRecipeTotalFat, setGeneratedRecipeTotalFat] = useState<
-    string | null
-  >(null);
-  const [generatedRecipeSodium, setGeneratedRecipeSodium] = useState<
-    string | null
-  >(null);
-  const [generatedRecipeDietaryFiber, setGeneratedRecipeDietaryFiber] =
-    useState<string | null>(null);
-  const [generatedRecipeProtein, setGeneratedRecipeProtein] = useState<
-    string | null
-  >(null);
-  const [generatedRecipeVitaminC, setGeneratedRecipeVitaminC] = useState<
-    string | null
-  >(null);
-  const [generatedRecipePotassium, setGeneratedRecipePotassium] = useState<
-    string | null
-  >(null);
-  const [generatedRecipeCholesterol, setGeneratedRecipeCholesterol] = useState<
-    string | null
-  >(null);
-  const [generatedRecipeTotalCarb, setGeneratedRecipeTotalCarb] = useState<
-    string | null
-  >(null);
-  const [generatedRecipeSugars, setGeneratedRecipeSugars] = useState<
-    string | null
-  >(null);
-  const [generatedRecipeVitaminA, setGeneratedRecipeVitaminA] = useState<
-    string | null
-  >(null);
-  const [generatedRecipeIron, setGeneratedRecipeIron] = useState<string | null>(
-    null,
-  );
-  const [generatedRecipePhosphorus, setGeneratedRecipePhosphorus] = useState<
-    string | null
-  >(null);
+  const [generatedRecipeIngredients, setGeneratedRecipeIngredients] = useState<string | null>(null);
+  const [generatedRecipeDirections, setGeneratedRecipeDirections] = useState<string | null>(null);
+  const [generatedRecipeCaloriesPerServing, setGeneratedRecipeCaloriesPerServing] = useState<string | null>(null);
+  const [generatedRecipeTotalFat, setGeneratedRecipeTotalFat] = useState<string | null >(null);
+  const [generatedRecipeSodium, setGeneratedRecipeSodium] = useState<string | null>(null);
+  const [generatedRecipeDietaryFiber, setGeneratedRecipeDietaryFiber] = useState<string | null>(null);
+  const [generatedRecipeProtein, setGeneratedRecipeProtein] = useState<string | null>(null);
+  const [generatedRecipeVitaminC, setGeneratedRecipeVitaminC] = useState<string | null>(null);
+  const [generatedRecipePotassium, setGeneratedRecipePotassium] = useState<string | null>(null);
+  const [generatedRecipeCholesterol, setGeneratedRecipeCholesterol] = useState<string | null>(null);
+  const [generatedRecipeTotalCarb, setGeneratedRecipeTotalCarb] = useState<string | null>(null);
+  const [generatedRecipeSugars, setGeneratedRecipeSugars] = useState<string | null>(null);
+  const [generatedRecipeVitaminA, setGeneratedRecipeVitaminA] = useState<string | null>(null);
+  const [generatedRecipeIron, setGeneratedRecipeIron] = useState<string | null>(null);
+  const [generatedRecipePhosphorus, setGeneratedRecipePhosphorus] = useState<string | null>(null);
 
   const route = useRoute();
   const { userId } = route.params as {
@@ -115,21 +85,23 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
   useEffect(() => {
     resetState();
-    setGeneratedRecipeTitle('Blueberry Pancakes');
-    setGeneratedRecipeDescription(
-      'Super thick and fluffy blueberry pancakes! Melt in your mouth, golden brown, and bursting with blueberries.',
-    );
-    setGeneratedRecipeServingsAmount(2);
-    setGeneratedRecipeTimeAmount('20 mins');
-    setGeneratedRecipeComplexityLevel('Easy');
-    setGeneratedRecipeIngredients(
-      '\u2022 1 Egg\n' + '\u2022 2 cups of flour\n' + '\u2022 1 cup of milk',
-    );
-    setGeneratedRecipeDirections(
-      '1. Mix the milk and vinegar and let it sit for a minute or two (you’re making “buttermilk” here). \n' +
-        '2. Whisk the dry ingredients together. Whisk the egg, milk, and melted butter into the dry ingredients until just combined.',
-    );
-    setGeneratedRecipeCaloriesPerServing('509');
+    // setGeneratedRecipeTitle('Blueberry Pancakes');
+    // setGeneratedRecipeDescription(
+    //   'Super thick and fluffy blueberry pancakes! Melt in your mouth, golden brown, and bursting with blueberries.',
+    // );
+    // setGeneratedRecipeServingsAmount(2);
+    // setGeneratedRecipeTimeAmount('20 mins');
+    // setGeneratedRecipeComplexityLevel('Easy');
+    // setGeneratedRecipeIngredients(
+    //   '\u2022 1 Egg\n' + '\u2022 2 cups of flour\n' + '\u2022 1 cup of milk',
+    // );
+    // setGeneratedRecipeDirections(
+    //   '1. Mix the milk and vinegar and let it sit for a minute or two (you’re making “buttermilk” here). \n' +
+    //     '2. Whisk the dry ingredients together. Whisk the egg, milk, and melted butter into the dry ingredients until just combined.',
+    // );
+    // setGeneratedRecipeCaloriesPerServing('509');
+
+    organizeOutput("hey");
     setGeneratedRecipeTotalFat('16.6g');
     setGeneratedRecipeSodium('983.3mg');
     setGeneratedRecipeDietaryFiber('3.6g');
@@ -526,7 +498,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
   const organizeOutput = (givenOutput: string) => {
     let output =
-      'Title: Creamy Potato Soup Description: A comforting and creamy potato soup made with simple ingredients, perfect for a quick and satisfying meal. Ingredients: 3 potatoes, 2 sticks of butter, 1 gal of milk Directions: Peel and dice the potatoes. In a large pot, melt the butter over medium heat. Add the diced potatoes and sauté for 2-3 minutes. Pour in the milk and bring to a gentle simmer. Cook for about 10 minutes or until the potatoes are tender. Use a potato masher or immersion blender to blend some of the potatoes to thicken the soup while leaving some chunks for texture. Season with salt and pepper to taste. Serve hot. Calories: Approximately 350 calories';
+      'Title: Creamy Potato Soup Description: A comforting and creamy potato soup made with simple ingredients, perfect for a quick and satisfying meal. Ingredients: 3 potatoes, 2 sticks of butter, 1 gal of milk. Directions: Peel and dice the potatoes. In a large pot, melt the butter over medium heat. Add the diced potatoes and sauté for 2-3 minutes. Pour in the milk and bring to a gentle simmer. Cook for about 10 minutes or until the potatoes are tender. Use a potato masher or immersion blender to blend some of the potatoes to thicken the soup while leaving some chunks for texture. Season with salt and pepper to taste. Serve hot. Calories: Approximately 350 calories';
     const wordsToSplitBy = [
       'Title: ',
       'Description: ',
@@ -540,18 +512,35 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
     if (infoArray[1]) {
       setTitle(infoArray[1]);
+      setGeneratedRecipeTitle(infoArray[1]);
     }
 
     if (infoArray[2]) {
       setDescription(infoArray[2]);
+      setGeneratedRecipeDescription(infoArray[2]);
     }
 
     if (infoArray[3]) {
       setIngredientsArray(infoArray[3].split(', '));
+      let str = "";
+      for(let i=0; i<ingredientsArray.length; i++) {
+        str += "\u2022 " + ingredientsArray[i] + "\n";
+      }
+
+      setGeneratedRecipeIngredients(str);
+      console.log(generatedRecipeIngredients);
+
     }
 
     if (infoArray[4]) {
-      setDirections(infoArray[4].split('. '));
+      setDirectionsArray(infoArray[4].split('. '));
+      
+      let str = "";
+      for(let i=1; i<=directionsArray.length; i++) {
+        str += i + ". " + ingredientsArray[i-1] + "\n";
+      }
+
+      setGeneratedRecipeDirections(str);
     }
 
     if (infoArray[5]) {
@@ -559,6 +548,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       const numbers = infoArray[5].match(regex);
       if (numbers && numbers[0]) {
         setCalories(numbers[0]);
+        setGeneratedRecipeCaloriesPerServing(numbers[0]);
       }
     }
   };
