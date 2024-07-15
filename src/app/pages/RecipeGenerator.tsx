@@ -20,7 +20,7 @@ import {
   useFocusEffect,
   useRoute,
 } from '@react-navigation/native';
-import { Divide } from '@tamagui/lucide-icons';
+import { CornerDownLeft, Divide } from '@tamagui/lucide-icons';
 import { Button, XStack, YStack } from 'tamagui';
 
 type Props = {
@@ -363,7 +363,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
           </XStack>
 
           <XStack>
-            <Text style={styles.modalLargerText}>VitaminA:</Text>
+            <Text style={styles.modalLargerText}>Vitamin A:</Text>
             <View style={{ width: 5 }} />
             <Text style={[styles.modalLargerText, { fontFamily: 'Lato-Bold' }]}>
               {generatedRecipeVitaminA}
@@ -536,11 +536,10 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       setDirectionsArray(infoArray[4].split('. '));
       
       let str = "";
-      for(let i=1; i<=directionsArray.length; i++) {
+      for(let i=1; i<directionsArray.length; i++) {
+        //FIX THIS, because I had to do < instead of <= since it was doing an empty last line
         str += i + ". " + directionsArray[i-1] + "\n";
-        
       }
-
       setGeneratedRecipeDirections(str);
     }
 
@@ -549,9 +548,11 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       const numbers = infoArray[5].match(regex);
       if (numbers && numbers[0]) {
         setCalories(numbers[0]);
-        setGeneratedRecipeCaloriesPerServing(numbers[0]);
+        setGeneratedRecipeCaloriesPerServing(numbers[0] + "g");
       }
     }
+
+    //TODO: add other nutrition facts!
   };
 
   const timeButton = (str: string, mins: number) => {
