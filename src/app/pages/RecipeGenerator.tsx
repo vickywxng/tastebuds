@@ -29,7 +29,7 @@ type Props = {
 
 const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const scrollViewRef = useRef<ScrollView>(null);
-  const [selectedMeal, setSelectedMeal] = useState<string | null>(null);
+  const [selectedMeal, setSelectedMeal] = useState<boolean | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [applianceArray, setApplianceArray] = useState<string[]>([]);
   const [applianceString, setApplianceString] = useState<string | null>(null);
@@ -126,7 +126,8 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const userPreferencePage = () => {
     return (
       <View>
-        <TouchableOpacity>
+        {/* !selectedTime */}
+        <TouchableOpacity onPress={() => setSelectedMeal(false)}>
           <MaterialIcons name="arrow-back-ios" size={30} color="#FFF5CD" />
         </TouchableOpacity>
 
@@ -157,14 +158,14 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
         <Text style={styles.modalTitleSmaller}>Time</Text>
 
         <XStack>
-          {timeButton('15 mins', 15)}
-          {timeButton('30 mins', 30)}
-          {timeButton('1 hr', 60)}
+          {timeButton('15 mins')}
+          {timeButton('30 mins')}
+          {timeButton('1 hr')}
         </XStack>
 
         <XStack>
-          {timeButton('2 hrs', 120)}
-          {timeButton('3 hrs', 180)}
+          {timeButton('2 hrs')}
+          {timeButton('3 hrs')}
         </XStack>
 
         <View style={{ height: 20 }} />
@@ -239,19 +240,19 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
           <YStack style={styles.centeredYStack}>
             <Text style={styles.modalTitleSmaller}>Servings</Text>
             <Text style={styles.modalLargerText}>
-              {generatedRecipeServingsAmount}
+              {servingsAmount}
             </Text>
           </YStack>
           <YStack style={styles.centeredYStack}>
             <Text style={styles.modalTitleSmaller}>Time</Text>
             <Text style={styles.modalLargerText}>
-              {generatedRecipeTimeAmount}
+              {selectedTime}
             </Text>
           </YStack>
           <YStack style={styles.centeredYStack}>
             <Text style={styles.modalTitleSmaller}>Complexity</Text>
             <Text style={styles.modalLargerText}>
-              {generatedRecipeComplexityLevel}
+              {complexityLevel}
             </Text>
           </YStack>
         </XStack>
@@ -259,11 +260,11 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
         <View style={{ height: 30 }} />
         <Text style={styles.modalTitleSmaller}>Ingredients</Text>
         <Text style={styles.modalLargerText}>{generatedRecipeIngredients}</Text>
-        <View style={{ height: 30 }} />
+        <View style={{ height: 15 }} />
         <Text style={styles.modalTitleSmaller}>Directions</Text>
         <Text style={styles.modalLargerText}>{generatedRecipeDirections}</Text>
 
-        <View style={{ height: 30 }} />
+        <View style={{ height: 20 }} />
         <Text style={styles.modalTitleSmaller}>Nutritional Facts</Text>
 
         <YStack gap={0}>
