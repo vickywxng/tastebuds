@@ -32,150 +32,153 @@ export function SelectDemo() {
   return (
     <YStack gap="$4">
       <XStack ai="center" gap="$4">
-        <Label htmlFor="select-demo-1" f={1} miw={80}>
+        {/* <Label htmlFor="select-demo-1" f={1} miw={80}>
           Custom
-        </Label>
+        </Label> */}
         <SelectDemoItem id="select-demo-1" />
       </XStack>
 
-      <XStack ai="center" gap="$4">
+      {/* <XStack ai="center" gap="$4">
         <Label htmlFor="select-demo-2" f={1} miw={80}>
           Native
         </Label>
         <SelectDemoItem id="select-demo-2" native />
-      </XStack>
+      </XStack> */}
     </YStack>
   )
 }
 
 export function SelectDemoItem(props: SelectProps) {
-  const [val, setVal] = useState('apple')
+  const [val, setVal] = useState('1')
 
   return (
-    <Select value={val} onValueChange={setVal} disablePreventBodyScroll {...props}>
-      <Select.Trigger width={220} iconAfter={ChevronDown}>
-        <Select.Value placeholder="Something" />
-      </Select.Trigger>
+    <View>
+      <Select value={val} onValueChange={setVal} disablePreventBodyScroll {...props}>
+        <Select.Trigger width={220} iconAfter={ChevronDown} style={styles.preferenceButton}>
+          <Select.Value placeholder="Something" />
+        </Select.Trigger>
 
-      <Adapt when="sm" platform="touch">
-        <Sheet
-          native={!!props.native}
-          modal
-          dismissOnSnapToBottom
-          animationConfig={{
-            type: 'spring',
-            damping: 20,
-            mass: 1.2,
-            stiffness: 250,
-          }}
-        >
-          <Sheet.Frame>
-            <Sheet.ScrollView>
-              <Adapt.Contents />
-            </Sheet.ScrollView>
-          </Sheet.Frame>
-          <Sheet.Overlay
-            animation="lazy"
-            enterStyle={{ opacity: 0 }}
-            exitStyle={{ opacity: 0 }}
-          />
-        </Sheet>
-      </Adapt>
+        <Adapt when="sm" platform="touch">
+          <Sheet
+            native={!!props.native}
+            modal
+            dismissOnSnapToBottom
+            animationConfig={{
+              type: 'spring',
+              damping: 20,
+              mass: 1.2,
+              stiffness: 250,
+            }}
+          >
+            <Sheet.Frame>
+              <Sheet.ScrollView>
+                <Adapt.Contents />
+              </Sheet.ScrollView>
+            </Sheet.Frame>
+            <Sheet.Overlay
+              animation="lazy"
+              enterStyle={{ opacity: 0 }}
+              exitStyle={{ opacity: 0 }}
+            />
+          </Sheet>
+        </Adapt>
 
-      <Select.Content zIndex={200000}>
-        <Select.ScrollUpButton
-          alignItems="center"
-          justifyContent="center"
-          position="relative"
-          width="100%"
-          height="$3"
-        >
-          <YStack zIndex={10}>
-            <ChevronUp size={20} />
-          </YStack>
-          <LinearGradient
-            start={{ x: 0, y: 0 }}
-            end={{ x: 0, y: 1 }}
-            colors={['$background', 'transparent']}
-            style={{ borderRadius: 4 }}
-          />
-        </Select.ScrollUpButton>
-
-        <Select.Viewport
-          // to do animations:
-          // animation="quick"
-          // animateOnly={['transform', 'opacity']}
-          // enterStyle={{ o: 0, y: -10 }}
-          // exitStyle={{ o: 0, y: 10 }}
-          minWidth={200}
-        >
-          <Select.Group>
-            <Select.Label>Fruits</Select.Label>
-            {/* for longer lists memoizing these is useful */}
-            {useMemo(
-              () =>
-                items.map((item, i) => {
-                  return (
-                    <Select.Item
-                      index={i}
-                      key={item.name}
-                      value={item.name.toLowerCase()}
-                    >
-                      <Select.ItemText>{item.name}</Select.ItemText>
-                      <Select.ItemIndicator marginLeft="auto">
-                        <Check size={16} />
-                      </Select.ItemIndicator>
-                    </Select.Item>
-                  )
-                }),
-              [items]
-            )}
-          </Select.Group>
-          {/* Native gets an extra icon */}
-          {props.native && (
-            <YStack
-              position="absolute"
-              right={0}
-              top={0}
-              bottom={0}
-              alignItems="center"
-              justifyContent="center"
-              width={'$4'}
-              pointerEvents="none"
-            >
-              <ChevronDown
-                size={getFontSize((props.size as FontSizeTokens) ?? '$true')}
-              />
+        <Select.Content zIndex={200000}>
+          <Select.ScrollUpButton
+            alignItems="center"
+            justifyContent="center"
+            position="relative"
+            width="100%"
+            height="$3"
+          >
+            <YStack zIndex={10}>
+              <ChevronUp size={20} />
             </YStack>
-          )}
-        </Select.Viewport>
+            <LinearGradient
+              start={{ x: 0, y: 0 }}
+              end={{ x: 0, y: 1 }}
+              colors={['$background', 'transparent']}
+              style={{ borderRadius: 4 }}
+            />
+          </Select.ScrollUpButton>
 
-        <Select.ScrollDownButton
-          alignItems="center"
-          justifyContent="center"
-          position="relative"
-          width="100%"
-          height="$3"
-        >
-          <YStack zIndex={10}>
-            <ChevronDown size={20} />
-          </YStack>
-          <LinearGradient
-            start={[0, 0]}
-            end={[0, 1]}
-            fullscreen
-            colors={['transparent', '$background']}
-            borderRadius="$4"
-          />
-        </Select.ScrollDownButton>
-      </Select.Content>
-    </Select>
+          <Select.Viewport
+            // to do animations:
+            // animation="quick"
+            // animateOnly={['transform', 'opacity']}
+            // enterStyle={{ o: 0, y: -10 }}
+            // exitStyle={{ o: 0, y: 10 }}
+            minWidth={200}
+          >
+            <Select.Group>
+              <Select.Label>Yield</Select.Label>
+              {/* for longer lists memoizing these is useful */}
+              {useMemo(
+                () =>
+                  items.map((item, i) => {
+                    return (
+                      <Select.Item
+                        index={i}
+                        key={item.name}
+                        value={item.name.toLowerCase()}
+                      >
+                        <Select.ItemText>{item.name}</Select.ItemText>
+                        <Select.ItemIndicator marginLeft="auto">
+                          <Check size={16} />
+                        </Select.ItemIndicator>
+                      </Select.Item>
+                    )
+                  }),
+                [items]
+              )}
+            </Select.Group>
+            {/* Native gets an extra icon */}
+            {props.native && (
+              <YStack
+                position="absolute"
+                right={0}
+                top={0}
+                bottom={0}
+                alignItems="center"
+                justifyContent="center"
+                width={'$4'}
+                pointerEvents="none"
+              >
+                <ChevronDown
+                  size={getFontSize((props.size as FontSizeTokens) ?? '$true')}
+                />
+              </YStack>
+            )}
+          </Select.Viewport>
+
+          <Select.ScrollDownButton
+            alignItems="center"
+            justifyContent="center"
+            position="relative"
+            width="100%"
+            height="$3"
+          >
+            <YStack zIndex={10}>
+              <ChevronDown size={20} />
+            </YStack>
+            <LinearGradient
+              start={[0, 0]}
+              end={[0, 1]}
+              fullscreen
+              colors={['transparent', '$background']}
+              borderRadius="$4"
+            />
+          </Select.ScrollDownButton>
+        </Select.Content>
+      </Select>
+    </View>
+    
   )
 }
 
 const items = [
-  { name: 'Apple' },
-  { name: 'Pear' },
+  { name: '1'},
+  { name: '2' },
   { name: 'Blackberry' },
   { name: 'Peach' },
   { name: 'Apricot' },
@@ -297,7 +300,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const userPreferencePage = () => {
     return (
       <View>
-        <SelectDemo />
+        
         {/* !selectedTime */}
         <TouchableOpacity onPress={() => setSelectedMeal(false)}>
           <MaterialIcons name="arrow-back-ios" size={30} color="#FFF5CD" />
@@ -377,6 +380,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
         <View style={{ height: 20 }} />
         <Text style={styles.modalTitleSmaller}>Yield</Text>
+        <SelectDemo />
 
         <View style={{ height: 20 }} />
         <Button
