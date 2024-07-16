@@ -28,6 +28,7 @@ type Props = {
   navigation: NavigationProp<any>;
 };
 
+
 export function SelectDemo() {
   return (
     <YStack gap="$4">
@@ -48,12 +49,41 @@ export function SelectDemo() {
   )
 }
 
+const items: { name: string }[] = [
+  { name: '1' },
+  { name: '2' },
+  { name: '3' },
+  { name: '4' },
+  { name: '5' },
+  { name: '6' },
+  { name: '7' },
+  { name: '8' },
+  { name: '9' },
+  { name: '10' },
+];
+
+let selectedItem: string = items.length > 0 ? items[0]?.name || '' : '';
+const setSelectedItem = (value: string) => {
+  selectedItem = value;
+};
+
 export function SelectDemoItem(props: SelectProps) {
-  const [val, setVal] = useState('1')
+
+  // const [selectedItem, setSelectedItem] = useState(items.length > 0 ? items[0]?.name || '' : '');
+
+
+  const handleValueChange = (value: string) => {
+    setSelectedItem(value);
+    console.log(value);
+    // Handle any other logic you need here when the value changes
+  };
 
   return (
     <View>
-      <Select value={val} onValueChange={setVal} disablePreventBodyScroll {...props}>
+      <Select value={selectedItem}
+        onValueChange={handleValueChange}
+        disablePreventBodyScroll
+        {...props}>
         <Select.Trigger width={80} style={[styles.preferenceButton, {borderRadius: 15}]}>
         <Select.Value placeholder="Something" style={{ color: '#FFF5CD' }} /> 
         <ChevronDown size={20} color = '#FFF5CD' />
@@ -113,7 +143,7 @@ export function SelectDemoItem(props: SelectProps) {
           >
             <Select.Group>
               <Select.Label>Yield</Select.Label>
-              {/* for longer lists memoizing these is useful */}
+              {/* for longer lists memorizing these is useful */}
               {useMemo(
                 () =>
                   items.map((item, i) => {
@@ -177,22 +207,11 @@ export function SelectDemoItem(props: SelectProps) {
   )
 }
 
-const items = [
-  { name: '1'},
-  { name: '2' },
-  { name: '3' },
-  { name: '4' },
-  { name: '5' },
-  { name: '6' },
-  { name: '7' },
-  { name: '8' },
-  { name: '9' },
-  { name: '10' },
-]
+
 
 const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const scrollViewRef = useRef<ScrollView>(null);
-  const [selectedMeal, setSelectedMeal] = useState<boolean | null>(null);
+  const [selectedMeal, setSelectedMeal] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [applianceArray, setApplianceArray] = useState<string[]>([]);
   const [applianceString, setApplianceString] = useState<string | null>(null);
@@ -200,17 +219,13 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const [ingredients, setIngredients] = useState<string>('');
   const [diet, setDiet] = useState<string>('');
   const [showError, setShowError] = useState(false);
-  const [servingsAmount, setServingsAmount] = useState<number | null>(null);
+  const [servingsAmount, setServingsAmount] = useState<string | null>(null);
   const [generateRecipeBoolean, setGenerateRecipeBoolean] = useState<
     boolean | null
   >(null);
 
-  const [generatedRecipeTitle, setGeneratedRecipeTitle] = useState<
-    string | null
-  >(null);
-  const [generatedRecipeDescription, setGeneratedRecipeDescription] = useState<
-    string | null
-  >(null);
+  const [generatedRecipeTitle, setGeneratedRecipeTitle] = useState<string | null>(null);
+  const [generatedRecipeDescription, setGeneratedRecipeDescription] = useState<string | null>(null);
   const [generatedRecipeServingsAmount, setGeneratedRecipeServingsAmount] =
     useState<number | null>(null);
   const [generatedRecipeTimeAmount, setGeneratedRecipeTimeAmount] = useState<
@@ -291,7 +306,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       <View>
         
         {/* !selectedTime */}
-        <TouchableOpacity onPress={() => setSelectedMeal(false)}>
+        <TouchableOpacity onPress={() => setSelectedMeal(null)}>
           <MaterialIcons name="arrow-back-ios" size={30} color="#FFF5CD" />
         </TouchableOpacity>
 
@@ -628,6 +643,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       console.log(diet);
       setGenerateRecipeBoolean(true);
 
+
       if (scrollViewRef.current) {
         scrollViewRef.current.scrollTo({ y: 0, animated: true });
       }
@@ -656,9 +672,15 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
       // setApplianceString(str);
 
-      setServingsAmount(2);
+      setServingsAmount(selectedItem);
 
-      makeInput(selectedTime, applianceString, diet, complexityLevel, servingsAmount, ingredients);
+      if(servingsAmount != null) {
+        makeInput(selectedTime, applianceString, diet, complexityLevel, servingsAmount, ingredients);
+      }
+
+
+
+      
     }
   };
 
@@ -671,7 +693,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     diet: string,
     complexity: string,
     quantity: string,
-    ingredients: number,
+    ingredients: string,
   ) => {
     const input = `Generate me a recipe with these constraints: ${cookTime} cooking time, cooked on ${appliance}, diet ${diet}, ${complexity}, ${quantity} yield. The ingredients available are ${ingredients}. I need the response to be generated in this way: Title: (title of dish) Description: (description of dish) Ingredients: (list of all ingredients separated by a comma) Directions: (list of cooking directions separated by a period) Calories: (calorie amount)`;
     return input;
