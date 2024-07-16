@@ -54,7 +54,7 @@ export function SelectDemoItem(props: SelectProps) {
   return (
     <View>
       <Select value={val} onValueChange={setVal} disablePreventBodyScroll {...props}>
-        <Select.Trigger width={80} style={styles.preferenceButton}>
+        <Select.Trigger width={80} style={[styles.preferenceButton, {borderRadius: 15}]}>
         <Select.Value placeholder="Something" style={{ color: '#FFF5CD' }} /> 
         <ChevronDown size={20} color = '#FFF5CD' />
         </Select.Trigger>
