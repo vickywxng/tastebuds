@@ -54,8 +54,9 @@ export function SelectDemoItem(props: SelectProps) {
   return (
     <View>
       <Select value={val} onValueChange={setVal} disablePreventBodyScroll {...props}>
-        <Select.Trigger width={220} iconAfter={ChevronDown} style={styles.preferenceButton}>
-          <Select.Value placeholder="Something" />
+        <Select.Trigger width={80} style={styles.preferenceButton}>
+        <Select.Value placeholder="Something" style={{ color: '#FFF5CD' }} /> 
+        <ChevronDown size={20} color = '#FFF5CD' />
         </Select.Trigger>
 
         <Adapt when="sm" platform="touch">
@@ -144,7 +145,7 @@ export function SelectDemoItem(props: SelectProps) {
                 width={'$4'}
                 pointerEvents="none"
               >
-                <ChevronDown
+                <ChevronDown color='#FFF5CD'
                   size={getFontSize((props.size as FontSizeTokens) ?? '$true')}
                 />
               </YStack>
@@ -159,7 +160,7 @@ export function SelectDemoItem(props: SelectProps) {
             height="$3"
           >
             <YStack zIndex={10}>
-              <ChevronDown size={20} />
+              <ChevronDown size={20}  color='#FFF5CD' />
             </YStack>
             <LinearGradient
               start={[0, 0]}
@@ -179,26 +180,14 @@ export function SelectDemoItem(props: SelectProps) {
 const items = [
   { name: '1'},
   { name: '2' },
-  { name: 'Blackberry' },
-  { name: 'Peach' },
-  { name: 'Apricot' },
-  { name: 'Melon' },
-  { name: 'Honeydew' },
-  { name: 'Starfruit' },
-  { name: 'Blueberry' },
-  { name: 'Raspberry' },
-  { name: 'Strawberry' },
-  { name: 'Mango' },
-  { name: 'Pineapple' },
-  { name: 'Lime' },
-  { name: 'Lemon' },
-  { name: 'Coconut' },
-  { name: 'Guava' },
-  { name: 'Papaya' },
-  { name: 'Orange' },
-  { name: 'Grape' },
-  { name: 'Jackfruit' },
-  { name: 'Durian' },
+  { name: '3' },
+  { name: '4' },
+  { name: '5' },
+  { name: '6' },
+  { name: '7' },
+  { name: '8' },
+  { name: '9' },
+  { name: '10' },
 ]
 
 const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
