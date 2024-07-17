@@ -29,183 +29,182 @@ type Props = {
 };
 
 
-export function SelectDemo() {
-  return (
-    <YStack gap="$4">
-      <XStack ai="center" gap="$4">
-        {/* <Label htmlFor="select-demo-1" f={1} miw={80}>
-          Custom
-        </Label> */}
-        <SelectDemoItem id="select-demo-1" />
-      </XStack>
+// export function SelectDemo() {
+//   return (
+//     <YStack gap="$4">
+//       <XStack ai="center" gap="$4">
+//         {/* <Label htmlFor="select-demo-1" f={1} miw={80}>
+//           Custom
+//         </Label> */}
+//         <SelectDemoItem id="select-demo-1" />
+//       </XStack>
 
-      {/* <XStack ai="center" gap="$4">
-        <Label htmlFor="select-demo-2" f={1} miw={80}>
-          Native
-        </Label>
-        <SelectDemoItem id="select-demo-2" native />
-      </XStack> */}
-    </YStack>
-  )
-}
+//       {/* <XStack ai="center" gap="$4">
+//         <Label htmlFor="select-demo-2" f={1} miw={80}>
+//           Native
+//         </Label>
+//         <SelectDemoItem id="select-demo-2" native />
+//       </XStack> */}
+//     </YStack>
+//   )
+// }
 
-const items: { name: string }[] = [
-  { name: '1' },
-  { name: '2' },
-  { name: '3' },
-  { name: '4' },
-  { name: '5' },
-  { name: '6' },
-  { name: '7' },
-  { name: '8' },
-  { name: '9' },
-  { name: '10' },
-];
+// const items: { name: string }[] = [
+//   { name: '1' },
+//   { name: '2' },
+//   { name: '3' },
+//   { name: '4' },
+//   { name: '5' },
+//   { name: '6' },
+//   { name: '7' },
+//   { name: '8' },
+//   { name: '9' },
+//   { name: '10' },
+// ];
 
-let selectedItem: string = items.length > 0 ? items[0]?.name || '' : '';
-const setSelectedItem = (value: string) => {
-  selectedItem = value;
-};
+// let selectedItem: string = items.length > 0 ? items[0]?.name || '' : '';
+// const setSelectedItem = (value: string) => {
+//   selectedItem = value;
+// };
 
-export function SelectDemoItem(props: SelectProps) {
+// export function SelectDemoItem(props: SelectProps) {
 
-  // const [selectedItem, setSelectedItem] = useState(items.length > 0 ? items[0]?.name || '' : '');
+//   // const [selectedItem, setSelectedItem] = useState(items.length > 0 ? items[0]?.name || '' : '');
 
+//   const handleValueChange = (value: string) => {
+//     setSelectedItem(value);
+//     console.log(value);
+//     // Handle any other logic you need here when the value changes
+//   };
 
-  const handleValueChange = (value: string) => {
-    setSelectedItem(value);
-    console.log(value);
-    // Handle any other logic you need here when the value changes
-  };
+//   return (
+//     <View>
+//       <Select value={selectedItem}
+//         onValueChange={handleValueChange}
+//         disablePreventBodyScroll
+//         {...props}>
+//         <Select.Trigger width={80} style={[styles.preferenceButton, {borderRadius: 15}]}>
+//         <Select.Value placeholder="Something" style={{ color: '#FFF5CD' }} /> 
+//         <ChevronDown size={20} color = '#FFF5CD' />
+//         </Select.Trigger>
 
-  return (
-    <View>
-      <Select value={selectedItem}
-        onValueChange={handleValueChange}
-        disablePreventBodyScroll
-        {...props}>
-        <Select.Trigger width={80} style={[styles.preferenceButton, {borderRadius: 15}]}>
-        <Select.Value placeholder="Something" style={{ color: '#FFF5CD' }} /> 
-        <ChevronDown size={20} color = '#FFF5CD' />
-        </Select.Trigger>
+//         <Adapt when="sm" platform="touch">
+//           <Sheet
+//             native={!!props.native}
+//             modal
+//             dismissOnSnapToBottom
+//             animationConfig={{
+//               type: 'spring',
+//               damping: 20,
+//               mass: 1.2,
+//               stiffness: 250,
+//             }}
+//           >
+//             <Sheet.Frame>
+//               <Sheet.ScrollView>
+//                 <Adapt.Contents />
+//               </Sheet.ScrollView>
+//             </Sheet.Frame>
+//             <Sheet.Overlay
+//               animation="lazy"
+//               enterStyle={{ opacity: 0 }}
+//               exitStyle={{ opacity: 0 }}
+//             />
+//           </Sheet>
+//         </Adapt>
 
-        <Adapt when="sm" platform="touch">
-          <Sheet
-            native={!!props.native}
-            modal
-            dismissOnSnapToBottom
-            animationConfig={{
-              type: 'spring',
-              damping: 20,
-              mass: 1.2,
-              stiffness: 250,
-            }}
-          >
-            <Sheet.Frame>
-              <Sheet.ScrollView>
-                <Adapt.Contents />
-              </Sheet.ScrollView>
-            </Sheet.Frame>
-            <Sheet.Overlay
-              animation="lazy"
-              enterStyle={{ opacity: 0 }}
-              exitStyle={{ opacity: 0 }}
-            />
-          </Sheet>
-        </Adapt>
+//         <Select.Content zIndex={200000}>
+//           <Select.ScrollUpButton
+//             alignItems="center"
+//             justifyContent="center"
+//             position="relative"
+//             width="100%"
+//             height="$3"
+//           >
+//             <YStack zIndex={10}>
+//               <ChevronUp size={20} />
+//             </YStack>
+//             <LinearGradient
+//               start={{ x: 0, y: 0 }}
+//               end={{ x: 0, y: 1 }}
+//               colors={['$background', 'transparent']}
+//               style={{ borderRadius: 4 }}
+//             />
+//           </Select.ScrollUpButton>
 
-        <Select.Content zIndex={200000}>
-          <Select.ScrollUpButton
-            alignItems="center"
-            justifyContent="center"
-            position="relative"
-            width="100%"
-            height="$3"
-          >
-            <YStack zIndex={10}>
-              <ChevronUp size={20} />
-            </YStack>
-            <LinearGradient
-              start={{ x: 0, y: 0 }}
-              end={{ x: 0, y: 1 }}
-              colors={['$background', 'transparent']}
-              style={{ borderRadius: 4 }}
-            />
-          </Select.ScrollUpButton>
+//           <Select.Viewport
+//             // to do animations:
+//             // animation="quick"
+//             // animateOnly={['transform', 'opacity']}
+//             // enterStyle={{ o: 0, y: -10 }}
+//             // exitStyle={{ o: 0, y: 10 }}
+//             minWidth={200}
+//           >
+//             <Select.Group>
+//               <Select.Label>Yield</Select.Label>
+//               {/* for longer lists memorizing these is useful */}
+//               {useMemo(
+//                 () =>
+//                   items.map((item, i) => {
+//                     return (
+//                       <Select.Item
+//                         index={i}
+//                         key={item.name}
+//                         value={item.name.toLowerCase()}
+//                       >
+//                         <Select.ItemText>{item.name}</Select.ItemText>
+//                         <Select.ItemIndicator marginLeft="auto">
+//                           <Check size={16} />
+//                         </Select.ItemIndicator>
+//                       </Select.Item>
+//                     )
+//                   }),
+//                 [items]
+//               )}
+//             </Select.Group>
+//             {/* Native gets an extra icon */}
+//             {props.native && (
+//               <YStack
+//                 position="absolute"
+//                 right={0}
+//                 top={0}
+//                 bottom={0}
+//                 alignItems="center"
+//                 justifyContent="center"
+//                 width={'$4'}
+//                 pointerEvents="none"
+//               >
+//                 <ChevronDown color='#FFF5CD'
+//                   size={getFontSize((props.size as FontSizeTokens) ?? '$true')}
+//                 />
+//               </YStack>
+//             )}
+//           </Select.Viewport>
 
-          <Select.Viewport
-            // to do animations:
-            // animation="quick"
-            // animateOnly={['transform', 'opacity']}
-            // enterStyle={{ o: 0, y: -10 }}
-            // exitStyle={{ o: 0, y: 10 }}
-            minWidth={200}
-          >
-            <Select.Group>
-              <Select.Label>Yield</Select.Label>
-              {/* for longer lists memorizing these is useful */}
-              {useMemo(
-                () =>
-                  items.map((item, i) => {
-                    return (
-                      <Select.Item
-                        index={i}
-                        key={item.name}
-                        value={item.name.toLowerCase()}
-                      >
-                        <Select.ItemText>{item.name}</Select.ItemText>
-                        <Select.ItemIndicator marginLeft="auto">
-                          <Check size={16} />
-                        </Select.ItemIndicator>
-                      </Select.Item>
-                    )
-                  }),
-                [items]
-              )}
-            </Select.Group>
-            {/* Native gets an extra icon */}
-            {props.native && (
-              <YStack
-                position="absolute"
-                right={0}
-                top={0}
-                bottom={0}
-                alignItems="center"
-                justifyContent="center"
-                width={'$4'}
-                pointerEvents="none"
-              >
-                <ChevronDown color='#FFF5CD'
-                  size={getFontSize((props.size as FontSizeTokens) ?? '$true')}
-                />
-              </YStack>
-            )}
-          </Select.Viewport>
-
-          <Select.ScrollDownButton
-            alignItems="center"
-            justifyContent="center"
-            position="relative"
-            width="100%"
-            height="$3"
-          >
-            <YStack zIndex={10}>
-              <ChevronDown size={20}  color='#FFF5CD' />
-            </YStack>
-            <LinearGradient
-              start={[0, 0]}
-              end={[0, 1]}
-              fullscreen
-              colors={['transparent', '$background']}
-              borderRadius="$4"
-            />
-          </Select.ScrollDownButton>
-        </Select.Content>
-      </Select>
-    </View>
+//           <Select.ScrollDownButton
+//             alignItems="center"
+//             justifyContent="center"
+//             position="relative"
+//             width="100%"
+//             height="$3"
+//           >
+//             <YStack zIndex={10}>
+//               <ChevronDown size={20}  color='#FFF5CD' />
+//             </YStack>
+//             <LinearGradient
+//               start={[0, 0]}
+//               end={[0, 1]}
+//               fullscreen
+//               colors={['transparent', '$background']}
+//               borderRadius="$4"
+//             />
+//           </Select.ScrollDownButton>
+//         </Select.Content>
+//       </Select>
+//     </View>
     
-  )
-}
+//   )
+// }
 
 
 
@@ -219,7 +218,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const [ingredients, setIngredients] = useState<string>('');
   const [diet, setDiet] = useState<string>('');
   const [showError, setShowError] = useState(false);
-  const [servingsAmount, setServingsAmount] = useState<string | null>(null);
+  const [servingsAmount, setServingsAmount] = useState(1);
   const [generateRecipeBoolean, setGenerateRecipeBoolean] = useState<
     boolean | null
   >(null);
@@ -265,21 +264,6 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
   useEffect(() => {
     resetState();
-    // setGeneratedRecipeTitle('Blueberry Pancakes');
-    // setGeneratedRecipeDescription(
-    //   'Super thick and fluffy blueberry pancakes! Melt in your mouth, golden brown, and bursting with blueberries.',
-    // );
-    // setGeneratedRecipeServingsAmount(2);
-    // setGeneratedRecipeTimeAmount('20 mins');
-    // setGeneratedRecipeComplexityLevel('Easy');
-    // setGeneratedRecipeIngredients(
-    //   '\u2022 1 Egg\n' + '\u2022 2 cups of flour\n' + '\u2022 1 cup of milk',
-    // );
-    // setGeneratedRecipeDirections(
-    //   '1. Mix the milk and vinegar and let it sit for a minute or two (you’re making “buttermilk” here). \n' +
-    //     '2. Whisk the dry ingredients together. Whisk the egg, milk, and melted butter into the dry ingredients until just combined.',
-    // );
-    // setGeneratedRecipeCaloriesPerServing('509');
 
     
   }, []);
@@ -299,6 +283,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     setDiet('');
     setShowError(false);
     setGenerateRecipeBoolean(false);
+    setServingsAmount(1);
   };
 
   const userPreferencePage = () => {
@@ -384,8 +369,32 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
         <View style={{ height: 20 }} />
         <Text style={styles.modalTitleSmaller}>Yield</Text>
-        <SelectDemo />
+        {/* <SelectDemo /> */}
 
+        <View style={[styles.preferenceButton, {borderRadius: 15, width: 80}]}>
+          <Text style={[styles.modalText, {marginBottom: 0}, {fontSize: 16}]}>{servingsAmount}</Text>
+          <View style={{ width: 10 }} />
+          <YStack>
+            <TouchableOpacity 
+              onPress={() => {
+                if (servingsAmount < 9) {
+                  setServingsAmount(servingsAmount + 1);
+                }
+              }}>
+              <ChevronUp marginLeft={10} size={20} color={servingsAmount < 9 ? '#FFF5CD' : 'rgba(255, 245, 205, 0.1)'} />
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              onPress={() => {
+                if (servingsAmount > 1) {
+                  setServingsAmount(servingsAmount - 1);
+                }
+              }} >
+              <ChevronDown marginLeft={10} size={20} color={servingsAmount > 1 ? '#FFF5CD' : 'rgba(255, 245, 205, 0.1)'} />
+            </TouchableOpacity>
+            
+          </YStack>
+        </View>
         <View style={{ height: 20 }} />
         <Button
           style={styles.recipeGeneratorButton}
@@ -648,19 +657,8 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
         scrollViewRef.current.scrollTo({ y: 0, animated: true });
       }
       // Add logic to generate recipe here
+      
       organizeOutput("hey");
-      setGeneratedRecipeTotalFat('16.6g');
-      setGeneratedRecipeSodium('983.3mg');
-      setGeneratedRecipeDietaryFiber('3.6g');
-      setGeneratedRecipeProtein('13.3g');
-      setGeneratedRecipeVitaminC('7.4mg');
-      setGeneratedRecipePotassium('796.6mg');
-      setGeneratedRecipeCholesterol('130.9mg');
-      setGeneratedRecipeTotalCarb('77.9g');
-      setGeneratedRecipeSugars('24.8g');
-      setGeneratedRecipeVitaminA('165.2' + '\u03BC' + 'g');
-      setGeneratedRecipeIron('4mg');
-      setGeneratedRecipePhosphorus('558.2mg');
 
       let applianceString = "";
       for(let i=0; i<applianceArray.length; i++) {
@@ -672,14 +670,16 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
       // setApplianceString(str);
 
-      setServingsAmount(selectedItem);
+      //FIX THIS!!!
+      // setServingsAmount(selectedItem);
+
+      let servingsAmountString = servingsAmount.toString();
 
       if(servingsAmount != null) {
-        makeInput(selectedTime, applianceString, diet, complexityLevel, servingsAmount, ingredients);
+        makeInput(selectedTime, applianceString, diet, complexityLevel, servingsAmountString, ingredients);
       }
 
-
-
+      console.log("SERVINGS " + servingsAmountString);
       
     }
   };
