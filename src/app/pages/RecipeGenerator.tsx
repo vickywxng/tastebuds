@@ -719,22 +719,6 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       }
       // Add logic to generate recipe here
 
-      // const openai = new OpenAI({
-      //   apiKey: process.env.EXPO_PUBLIC_API_KEY_OPENAI, // Replace with your actual API key
-      // });
-
-      // const result = await openai.chat.completions.create({
-      //   model: 'gpt-4o',
-      //   messages: [{ role: 'user', content: inputText }],
-      // });
-
-      // const generatedText = result.choices[0]?.message.content ?? '';
-
-      const generatedText =
-        'Title: Creamy Potato Soup Description: A comforting and creamy potato soup made with simple ingredients, perfect for a quick and satisfying meal. Ingredients: 3 potatoes, 2 sticks of butter, 1 gal of milk Directions: Peel and dice the potatoes. In a large pot, melt the butter over medium heat. Add the diced potatoes and sauté for 2-3 minutes. Pour in the milk and bring to a gentle simmer. Cook for about 10 minutes or until the potatoes are tender. Use a potato masher or immersion blender to blend some of the potatoes to thicken the soup while leaving some chunks for texture. Season with salt and pepper to taste. Serve hot. Calories: Approximately 350 calories';
-
-      organizeOutput(generatedText);
-
       let applianceString = '';
       for (let i = 0; i < applianceArray.length; i++) {
         applianceString += applianceArray[i];
@@ -750,16 +734,30 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
       let servingsAmountString = servingsAmount.toString();
 
-      if (servingsAmount != null) {
-        makeInput(
-          selectedTime,
-          applianceString,
-          diet,
-          complexityLevel,
-          servingsAmountString,
-          ingredients,
-        );
-      }
+      const inputText = makeInput(
+        selectedTime,
+        applianceString,
+        diet,
+        complexityLevel,
+        servingsAmountString,
+        ingredients,
+      );
+
+      // const openai = new OpenAI({
+      //   apiKey: process.env.EXPO_PUBLIC_API_KEY_OPENAI, // Replace with your actual API key
+      // });
+
+      // const result = await openai.chat.completions.create({
+      //   model: 'gpt-4o',
+      //   messages: [{ role: 'user', content: inputText }],
+      // });
+
+      // const generatedText = result.choices[0]?.message.content ?? '';
+
+      const generatedText =
+        'Title: Creamy Potato Soup Description: A comforting and creamy potato soup made with simple ingredients, perfect for a quick and satisfying meal. Ingredients: 3 potatoes, 2 sticks of butter, 1 gal of milk Directions: Peel and dice the potatoes. In a large pot, melt the butter over medium heat. Add the diced potatoes and sauté for 2-3 minutes. Pour in the milk and bring to a gentle simmer. Cook for about 10 minutes or until the potatoes are tender. Use a potato masher or immersion blender to blend some of the potatoes to thicken the soup while leaving some chunks for texture. Season with salt and pepper to taste. Serve hot. Calories: Approximately 350 calories';
+
+      organizeOutput(generatedText);
 
       console.log('SERVINGS ' + servingsAmountString);
     }
@@ -780,8 +778,6 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   };
 
   const organizeOutput = (output: string) => {
-    // let output =
-    //   'Title: Creamy Potato Soup Description: A comforting and creamy potato soup made with simple ingredients, perfect for a quick and satisfying meal. Ingredients: 3 potatoes, 2 sticks of butter, 1 gal of milk. Directions: Peel and dice the potatoes. In a large pot, melt the butter over medium heat. Add the diced potatoes and sauté for 2-3 minutes. Pour in the milk and bring to a gentle simmer. Cook for about 10 minutes or until the potatoes are tender. Use a potato masher or immersion blender to blend some of the potatoes to thicken the soup while leaving some chunks for texture. Season with salt and pepper to taste. Serve hot. Calories: Approximately 350 calories';
     const wordsToSplitBy = [
       'Title: ',
       'Description: ',
