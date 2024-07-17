@@ -20,14 +20,31 @@ import {
   useFocusEffect,
   useRoute,
 } from '@react-navigation/native';
-import { Check, ChevronDown, ChevronUp, CornerDownLeft, Divide } from '@tamagui/lucide-icons';
-import { Adapt, Button, FontSizeTokens, Label, Select, SelectProps, Sheet, XStack, YStack, getFontSize } from 'tamagui';
-import { LinearGradient } from 'tamagui/linear-gradient'
+import {
+  Check,
+  ChevronDown,
+  ChevronUp,
+  CornerDownLeft,
+  Divide,
+} from '@tamagui/lucide-icons';
+import OpenAI from 'openai';
+import {
+  Adapt,
+  Button,
+  FontSizeTokens,
+  getFontSize,
+  Label,
+  Select,
+  SelectProps,
+  Sheet,
+  XStack,
+  YStack,
+} from 'tamagui';
+import { LinearGradient } from 'tamagui/linear-gradient';
 
 type Props = {
   navigation: NavigationProp<any>;
 };
-
 
 // export function SelectDemo() {
 //   return (
@@ -84,7 +101,7 @@ type Props = {
 //         disablePreventBodyScroll
 //         {...props}>
 //         <Select.Trigger width={80} style={[styles.preferenceButton, {borderRadius: 15}]}>
-//         <Select.Value placeholder="Something" style={{ color: '#FFF5CD' }} /> 
+//         <Select.Value placeholder="Something" style={{ color: '#FFF5CD' }} />
 //         <ChevronDown size={20} color = '#FFF5CD' />
 //         </Select.Trigger>
 
@@ -202,11 +219,9 @@ type Props = {
 //         </Select.Content>
 //       </Select>
 //     </View>
-    
+
 //   )
 // }
-
-
 
 const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const scrollViewRef = useRef<ScrollView>(null);
@@ -223,39 +238,66 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     boolean | null
   >(null);
 
-  const [generatedRecipeTitle, setGeneratedRecipeTitle] = useState<string | null>(null);
-  const [generatedRecipeDescription, setGeneratedRecipeDescription] = useState<string | null>(null);
+  const [generatedRecipeTitle, setGeneratedRecipeTitle] = useState<
+    string | null
+  >(null);
+  const [generatedRecipeDescription, setGeneratedRecipeDescription] = useState<
+    string | null
+  >(null);
   const [generatedRecipeServingsAmount, setGeneratedRecipeServingsAmount] =
     useState<number | null>(null);
   const [generatedRecipeTimeAmount, setGeneratedRecipeTimeAmount] = useState<
     string | null
   >(null);
 
-  const [infoArray, setInfoArray] = useState<string[]>([]);
-  const [title, setTitle] = useState<string>('');
-  const [description, setDescription] = useState<string>('');
-  const [ingredientsArray, setIngredientsArray] = useState<string[]>([]);
-  const [directionsArray, setDirectionsArray] = useState<string[]>([]);
-  const [calories, setCalories] = useState<string>('');
-
   //Might need to make time into a number measured in minutes and then convert it into a string
   const [generatedRecipeComplexityLevel, setGeneratedRecipeComplexityLevel] =
     useState<string | null>(null);
-  const [generatedRecipeIngredients, setGeneratedRecipeIngredients] = useState<string | null>(null);
-  const [generatedRecipeDirections, setGeneratedRecipeDirections] = useState<string | null>(null);
-  const [generatedRecipeCaloriesPerServing, setGeneratedRecipeCaloriesPerServing] = useState<string | null>(null);
-  const [generatedRecipeTotalFat, setGeneratedRecipeTotalFat] = useState<string | null >(null);
-  const [generatedRecipeSodium, setGeneratedRecipeSodium] = useState<string | null>(null);
-  const [generatedRecipeDietaryFiber, setGeneratedRecipeDietaryFiber] = useState<string | null>(null);
-  const [generatedRecipeProtein, setGeneratedRecipeProtein] = useState<string | null>(null);
-  const [generatedRecipeVitaminC, setGeneratedRecipeVitaminC] = useState<string | null>(null);
-  const [generatedRecipePotassium, setGeneratedRecipePotassium] = useState<string | null>(null);
-  const [generatedRecipeCholesterol, setGeneratedRecipeCholesterol] = useState<string | null>(null);
-  const [generatedRecipeTotalCarb, setGeneratedRecipeTotalCarb] = useState<string | null>(null);
-  const [generatedRecipeSugars, setGeneratedRecipeSugars] = useState<string | null>(null);
-  const [generatedRecipeVitaminA, setGeneratedRecipeVitaminA] = useState<string | null>(null);
-  const [generatedRecipeIron, setGeneratedRecipeIron] = useState<string | null>(null);
-  const [generatedRecipePhosphorus, setGeneratedRecipePhosphorus] = useState<string | null>(null);
+  const [generatedRecipeIngredients, setGeneratedRecipeIngredients] = useState<
+    string[]
+  >([]);
+  const [generatedRecipeDirections, setGeneratedRecipeDirections] = useState<
+    string[]
+  >([]);
+  const [
+    generatedRecipeCaloriesPerServing,
+    setGeneratedRecipeCaloriesPerServing,
+  ] = useState<string | null>(null);
+  const [generatedRecipeTotalFat, setGeneratedRecipeTotalFat] = useState<
+    string | null
+  >(null);
+  const [generatedRecipeSodium, setGeneratedRecipeSodium] = useState<
+    string | null
+  >(null);
+  const [generatedRecipeDietaryFiber, setGeneratedRecipeDietaryFiber] =
+    useState<string | null>(null);
+  const [generatedRecipeProtein, setGeneratedRecipeProtein] = useState<
+    string | null
+  >(null);
+  const [generatedRecipeVitaminC, setGeneratedRecipeVitaminC] = useState<
+    string | null
+  >(null);
+  const [generatedRecipePotassium, setGeneratedRecipePotassium] = useState<
+    string | null
+  >(null);
+  const [generatedRecipeCholesterol, setGeneratedRecipeCholesterol] = useState<
+    string | null
+  >(null);
+  const [generatedRecipeTotalCarb, setGeneratedRecipeTotalCarb] = useState<
+    string | null
+  >(null);
+  const [generatedRecipeSugars, setGeneratedRecipeSugars] = useState<
+    string | null
+  >(null);
+  const [generatedRecipeVitaminA, setGeneratedRecipeVitaminA] = useState<
+    string | null
+  >(null);
+  const [generatedRecipeIron, setGeneratedRecipeIron] = useState<string | null>(
+    null,
+  );
+  const [generatedRecipePhosphorus, setGeneratedRecipePhosphorus] = useState<
+    string | null
+  >(null);
 
   const route = useRoute();
   const { userId } = route.params as {
@@ -264,8 +306,6 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
   useEffect(() => {
     resetState();
-
-    
   }, []);
 
   useFocusEffect(
@@ -289,7 +329,6 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const userPreferencePage = () => {
     return (
       <View>
-        
         {/* !selectedTime */}
         <TouchableOpacity onPress={() => setSelectedMeal(null)}>
           <MaterialIcons name="arrow-back-ios" size={30} color="#FFF5CD" />
@@ -371,28 +410,47 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
         <Text style={styles.modalTitleSmaller}>Yield</Text>
         {/* <SelectDemo /> */}
 
-        <View style={[styles.preferenceButton, {borderRadius: 15, width: 80}]}>
-          <Text style={[styles.modalText, {marginBottom: 0}, {fontSize: 16}]}>{servingsAmount}</Text>
+        <View
+          style={[styles.preferenceButton, { borderRadius: 15, width: 80 }]}
+        >
+          <Text
+            style={[styles.modalText, { marginBottom: 0 }, { fontSize: 16 }]}
+          >
+            {servingsAmount}
+          </Text>
           <View style={{ width: 10 }} />
           <YStack>
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => {
                 if (servingsAmount < 9) {
                   setServingsAmount(servingsAmount + 1);
                 }
-              }}>
-              <ChevronUp marginLeft={10} size={20} color={servingsAmount < 9 ? '#FFF5CD' : 'rgba(255, 245, 205, 0.1)'} />
+              }}
+            >
+              <ChevronUp
+                marginLeft={10}
+                size={20}
+                color={
+                  servingsAmount < 9 ? '#FFF5CD' : 'rgba(255, 245, 205, 0.1)'
+                }
+              />
             </TouchableOpacity>
 
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => {
                 if (servingsAmount > 1) {
                   setServingsAmount(servingsAmount - 1);
                 }
-              }} >
-              <ChevronDown marginLeft={10} size={20} color={servingsAmount > 1 ? '#FFF5CD' : 'rgba(255, 245, 205, 0.1)'} />
+              }}
+            >
+              <ChevronDown
+                marginLeft={10}
+                size={20}
+                color={
+                  servingsAmount > 1 ? '#FFF5CD' : 'rgba(255, 245, 205, 0.1)'
+                }
+              />
             </TouchableOpacity>
-            
           </YStack>
         </View>
         <View style={{ height: 20 }} />
@@ -428,30 +486,34 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
         <XStack style={styles.container}>
           <YStack style={styles.centeredYStack}>
             <Text style={styles.modalTitleSmaller}>Servings</Text>
-            <Text style={styles.modalLargerText}>
-              {servingsAmount}
-            </Text>
+            <Text style={styles.modalLargerText}>{servingsAmount}</Text>
           </YStack>
           <YStack style={styles.centeredYStack}>
             <Text style={styles.modalTitleSmaller}>Time</Text>
-            <Text style={styles.modalLargerText}>
-              {selectedTime}
-            </Text>
+            <Text style={styles.modalLargerText}>{selectedTime}</Text>
           </YStack>
           <YStack style={styles.centeredYStack}>
             <Text style={styles.modalTitleSmaller}>Complexity</Text>
-            <Text style={styles.modalLargerText}>
-              {complexityLevel}
-            </Text>
+            <Text style={styles.modalLargerText}>{complexityLevel}</Text>
           </YStack>
         </XStack>
 
         <View style={{ height: 30 }} />
         <Text style={styles.modalTitleSmaller}>Ingredients</Text>
-        <Text style={styles.modalLargerText}>{generatedRecipeIngredients}</Text>
+        {generatedRecipeIngredients.map((ingredient, index) => (
+          <View key={index} style={styles.bulletItem}>
+            <Text style={styles.bulletPoint}>•</Text>
+            <Text style={styles.ingredientText}>{ingredient}</Text>
+          </View>
+        ))}
         <View style={{ height: 15 }} />
         <Text style={styles.modalTitleSmaller}>Directions</Text>
-        <Text style={styles.modalLargerText}>{generatedRecipeDirections}</Text>
+        {generatedRecipeDirections.map((direction, index) => (
+          <View key={index} style={styles.orderedItem}>
+            <Text style={styles.orderedNumber}>{index + 1}.</Text>
+            <Text style={styles.directionText}>{direction}</Text>
+          </View>
+        ))}
 
         <View style={{ height: 20 }} />
         <Text style={styles.modalTitleSmaller}>Nutritional Facts</Text>
@@ -634,7 +696,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
   const addToPlanner = () => {};
 
-  const generateRecipe = () => {
+  const generateRecipe = async () => {
     if (
       !selectedTime ||
       applianceArray.length === 0 ||
@@ -652,19 +714,32 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       console.log(diet);
       setGenerateRecipeBoolean(true);
 
-
       if (scrollViewRef.current) {
         scrollViewRef.current.scrollTo({ y: 0, animated: true });
       }
       // Add logic to generate recipe here
-      
-      organizeOutput("hey");
 
-      let applianceString = "";
-      for(let i=0; i<applianceArray.length; i++) {
+      // const openai = new OpenAI({
+      //   apiKey: process.env.EXPO_PUBLIC_API_KEY_OPENAI, // Replace with your actual API key
+      // });
+
+      // const result = await openai.chat.completions.create({
+      //   model: 'gpt-4o',
+      //   messages: [{ role: 'user', content: inputText }],
+      // });
+
+      // const generatedText = result.choices[0]?.message.content ?? '';
+
+      const generatedText =
+        'Title: Creamy Potato Soup Description: A comforting and creamy potato soup made with simple ingredients, perfect for a quick and satisfying meal. Ingredients: 3 potatoes, 2 sticks of butter, 1 gal of milk Directions: Peel and dice the potatoes. In a large pot, melt the butter over medium heat. Add the diced potatoes and sauté for 2-3 minutes. Pour in the milk and bring to a gentle simmer. Cook for about 10 minutes or until the potatoes are tender. Use a potato masher or immersion blender to blend some of the potatoes to thicken the soup while leaving some chunks for texture. Season with salt and pepper to taste. Serve hot. Calories: Approximately 350 calories';
+
+      organizeOutput(generatedText);
+
+      let applianceString = '';
+      for (let i = 0; i < applianceArray.length; i++) {
         applianceString += applianceArray[i];
-        if(i!=applianceArray.length - 1) {
-          applianceString += ", ";
+        if (i != applianceArray.length - 1) {
+          applianceString += ', ';
         }
       }
 
@@ -675,17 +750,22 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
       let servingsAmountString = servingsAmount.toString();
 
-      if(servingsAmount != null) {
-        makeInput(selectedTime, applianceString, diet, complexityLevel, servingsAmountString, ingredients);
+      if (servingsAmount != null) {
+        makeInput(
+          selectedTime,
+          applianceString,
+          diet,
+          complexityLevel,
+          servingsAmountString,
+          ingredients,
+        );
       }
 
-      console.log("SERVINGS " + servingsAmountString);
-      
+      console.log('SERVINGS ' + servingsAmountString);
     }
   };
 
   //convert appliance array to string
-
 
   const makeInput = (
     cookTime: string,
@@ -699,9 +779,9 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     return input;
   };
 
-  const organizeOutput = (givenOutput: string) => {
-    let output =
-      'Title: Creamy Potato Soup Description: A comforting and creamy potato soup made with simple ingredients, perfect for a quick and satisfying meal. Ingredients: 3 potatoes, 2 sticks of butter, 1 gal of milk. Directions: Peel and dice the potatoes. In a large pot, melt the butter over medium heat. Add the diced potatoes and sauté for 2-3 minutes. Pour in the milk and bring to a gentle simmer. Cook for about 10 minutes or until the potatoes are tender. Use a potato masher or immersion blender to blend some of the potatoes to thicken the soup while leaving some chunks for texture. Season with salt and pepper to taste. Serve hot. Calories: Approximately 350 calories';
+  const organizeOutput = (output: string) => {
+    // let output =
+    //   'Title: Creamy Potato Soup Description: A comforting and creamy potato soup made with simple ingredients, perfect for a quick and satisfying meal. Ingredients: 3 potatoes, 2 sticks of butter, 1 gal of milk. Directions: Peel and dice the potatoes. In a large pot, melt the butter over medium heat. Add the diced potatoes and sauté for 2-3 minutes. Pour in the milk and bring to a gentle simmer. Cook for about 10 minutes or until the potatoes are tender. Use a potato masher or immersion blender to blend some of the potatoes to thicken the soup while leaving some chunks for texture. Season with salt and pepper to taste. Serve hot. Calories: Approximately 350 calories';
     const wordsToSplitBy = [
       'Title: ',
       'Description: ',
@@ -710,48 +790,33 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       'Calories: ',
     ];
     const pattern = wordsToSplitBy.join('|');
-    const array = output.split(new RegExp(pattern, 'i'));
-    setInfoArray(array);
+    const infoArray = output.split(new RegExp(pattern, 'i'));
 
     if (infoArray[1]) {
-      setTitle(infoArray[1]);
       setGeneratedRecipeTitle(infoArray[1]);
     }
 
     if (infoArray[2]) {
-      setDescription(infoArray[2]);
       setGeneratedRecipeDescription(infoArray[2]);
     }
 
     if (infoArray[3]) {
-      setIngredientsArray(infoArray[3].split(', '));
-      let str = "";
-      for(let i=0; i<ingredientsArray.length; i++) {
-        str += "\u2022 " + ingredientsArray[i] + "\n";
-      }
-
-      setGeneratedRecipeIngredients(str);
-      console.log(generatedRecipeIngredients);
-
+      setGeneratedRecipeIngredients(infoArray[3].split(', '));
     }
 
     if (infoArray[4]) {
-      setDirectionsArray(infoArray[4].split('. '));
-      
-      let str = "";
-      for(let i=1; i<directionsArray.length; i++) {
-        //FIX THIS, because I had to do < instead of <= since it was doing an empty last line
-        str += i + ". " + directionsArray[i-1] + "\n";
+      let curDirs = infoArray[4];
+      if (curDirs[curDirs.length - 2] === '') {
+        curDirs = curDirs.slice(0, curDirs.length - 2);
       }
-      setGeneratedRecipeDirections(str);
+      setGeneratedRecipeDirections(curDirs.split('. '));
     }
 
     if (infoArray[5]) {
       const regex = /\d+/g;
       const numbers = infoArray[5].match(regex);
       if (numbers && numbers[0]) {
-        setCalories(numbers[0]);
-        setGeneratedRecipeCaloriesPerServing(numbers[0] + "g");
+        setGeneratedRecipeCaloriesPerServing(numbers[0] + 'g');
       }
     }
 
@@ -999,6 +1064,43 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  bulletItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: -7,
+  },
+  bulletPoint: {
+    fontSize: 35,
+    marginRight: 10,
+    marginLeft: 10,
+    color: '#FFF5CD',
+    marginTop: -5,
+  },
+  ingredientText: {
+    fontSize: 16,
+    color: '#FFF5CD',
+    fontWeight: '500',
+    marginLeft: -10,
+  },
+  orderedItem: {
+    flexDirection: 'row',
+    marginRight: 45,
+    marginBottom: 5,
+  },
+  orderedNumber: {
+    fontSize: 18,
+    marginRight: 15,
+    marginLeft: 10,
+    color: '#FFF5CD',
+  },
+  directionText: {
+    fontSize: 16,
+    color: '#FFF5CD',
+    fontWeight: '500',
+    marginTop: 2,
+    marginLeft: -10,
+  },
 });
 
 export default RecipeGenerator;
+
