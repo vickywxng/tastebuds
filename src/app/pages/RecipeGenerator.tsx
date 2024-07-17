@@ -806,7 +806,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
     if (infoArray[4]) {
       let curDirs = infoArray[4];
-      if (curDirs[curDirs.length - 2] === '') {
+      if (curDirs[curDirs.length - 2] === '.') {
         curDirs = curDirs.slice(0, curDirs.length - 2);
       }
       setGeneratedRecipeDirections(curDirs.split('. '));
@@ -1103,4 +1103,3 @@ const styles = StyleSheet.create({
 });
 
 export default RecipeGenerator;
-
