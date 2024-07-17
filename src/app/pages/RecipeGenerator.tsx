@@ -458,7 +458,12 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
           style={styles.recipeGeneratorButton}
           onPress={() => generateRecipe()}
         >
-          <Text style={[styles.modalTitleSmaller, { marginBottom: 0 }]}>
+          <Text
+            style={[
+              styles.modalTitleSmaller,
+              { marginBottom: 0, color: '#FFF5CD' },
+            ]}
+          >
             Generate Recipe
           </Text>
         </Button>
@@ -630,7 +635,12 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
           style={styles.recipeGeneratorButton}
           onPress={() => addToPlanner()}
         >
-          <Text style={[styles.modalTitleSmaller, { marginBottom: 0 }]}>
+          <Text
+            style={[
+              styles.modalTitleSmaller,
+              { marginBottom: 0, color: '#FFF5CD' },
+            ]}
+          >
             Add to planner
           </Text>
         </Button>
