@@ -719,6 +719,8 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       }
       // Add logic to generate recipe here
 
+      //convert appliance array to string
+
       let applianceString = '';
       for (let i = 0; i < applianceArray.length; i++) {
         applianceString += applianceArray[i];
@@ -762,8 +764,6 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       console.log('SERVINGS ' + servingsAmountString);
     }
   };
-
-  //convert appliance array to string
 
   const makeInput = (
     cookTime: string,
