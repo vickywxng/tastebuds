@@ -1,9 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Dimensions,
-  ImageBackground,
-  Linking,
-  Platform,
+  ActivityIndicator,
   ScrollView,
   StyleSheet,
   Text,
@@ -312,6 +309,8 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     string | null
   >(null);
 
+  const [isLoadingIngs, setLoadingIngs] = useState<boolean>(false);
+
   const route = useRoute();
   const { userId } = route.params as {
     userId: string;
@@ -353,6 +352,8 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       }
 
       const selectedImage = result;
+
+      setLoadingIngs(true);
 
       if (selectedImage && selectedImage.assets.length > 0) {
         const firstAsset = selectedImage.assets[0];
@@ -419,8 +420,16 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     const ingredientsCleaned = ingredientsSplit[1];
     if (ingredientsCleaned) {
       setIngredients(ingredientsCleaned);
+      setLoadingIngs(false);
     }
   };
+
+  const LoadingIndicator = () =>
+    isLoadingIngs ? (
+      <View style={{ position: 'absolute', right: 185, top: 225 }}>
+        <ActivityIndicator size="small" color="#FFF5D0" />
+      </View>
+    ) : null;
 
   const userPreferencePage = () => {
     return (
@@ -445,8 +454,10 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
           placeholder="1 gal of milk, 3 potatoes, 2 sticks of butter, etc"
           placeholderTextColor="#AFA26B"
           value={ingredients}
-          onChangeText={(text) => setIngredients(text)}
+          onChangeText={(text) => [setIngredients(text)]}
         />
+
+        <LoadingIndicator />
 
         <TouchableOpacity
           style={styles.uploadImageButton}
