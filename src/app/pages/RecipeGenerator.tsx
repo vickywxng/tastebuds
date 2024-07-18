@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Dimensions,
   ImageBackground,
+  Linking,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -27,6 +29,7 @@ import {
   CornerDownLeft,
   Divide,
 } from '@tamagui/lucide-icons';
+import * as ImagePicker from 'expo-image-picker';
 import {
   collection,
   deleteDoc,
@@ -34,7 +37,11 @@ import {
   getDocs,
   setDoc,
 } from 'firebase/firestore/lite';
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import OpenAI from 'openai';
+import DocumentPicker, {
+  DocumentPickerResponse,
+} from 'react-native-document-picker';
 import {
   Adapt,
   Button,
@@ -49,7 +56,8 @@ import {
 } from 'tamagui';
 import { LinearGradient } from 'tamagui/linear-gradient';
 
-import { db } from '../firebase';
+import { firebaseConfig } from '../../config/firebaseConfig';
+import { db, storage } from '../firebase';
 
 type Props = {
   navigation: NavigationProp<any>;
@@ -331,6 +339,47 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     setServingsAmount(1);
   };
 
+  const pullUpPhotos = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [4, 3],
+        quality: 1,
+      });
+
+      if (result.canceled) {
+        return; // Do nothing if the user cancels image selection
+      }
+
+      const selectedImage = result;
+
+      if (selectedImage && selectedImage.assets.length > 0) {
+        const firstAsset = selectedImage.assets[0];
+
+        if (firstAsset) {
+          const response = await fetch(firstAsset.uri);
+          const blob = await response.blob();
+
+          const filename = firstAsset.uri.substring(
+            firstAsset.uri.lastIndexOf('/') + 1,
+          );
+
+          const storageRef = ref(storage, `images/${filename}`);
+
+          const snapshot = await uploadBytes(storageRef, blob);
+
+          const downloadURL = await getDownloadURL(storageRef);
+
+          console.log('Download URL:', downloadURL);
+        }
+      }
+    } catch (error) {
+      console.error('Error in pullUpPhotos:', error);
+      // Handle error gracefully (e.g., show error message to the user)
+    }
+  };
+
   const userPreferencePage = () => {
     return (
       <View>
@@ -357,7 +406,10 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
           onChangeText={(text) => setIngredients(text)}
         />
 
-        <TouchableOpacity style={styles.uploadImageButton}>
+        <TouchableOpacity
+          style={styles.uploadImageButton}
+          onPress={pullUpPhotos}
+        >
           <Ionicons name="link" size={20} color={'#FFF5CD'} />
           <Text style={styles.uploadImageText}>Upload an Image</Text>
         </TouchableOpacity>
