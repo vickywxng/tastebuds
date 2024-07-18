@@ -372,11 +372,53 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
           const downloadURL = await getDownloadURL(storageRef);
 
           console.log('Download URL:', downloadURL);
+
+          getIngredientsWithImage(downloadURL);
         }
       }
     } catch (error) {
       console.error('Error in pullUpPhotos:', error);
       // Handle error gracefully (e.g., show error message to the user)
+    }
+  };
+
+  const getIngredientsWithImage = async (imageUrl: string) => {
+    const input =
+      'Tell me all of the edible ingredients you see in this image and if possible, mention their quantity as well. I need the response generated in this way: Ingredients: (list of all ingredients seperated by comma)';
+
+    // const openai = new OpenAI({
+    //   apiKey: process.env.EXPO_PUBLIC_API_KEY_OPENAI, // Replace with your actual API key
+    // });
+
+    // const result = await openai.chat.completions.create({
+    //   model: 'gpt-4o',
+    //   messages: [
+    //     {
+    //       role: 'user',
+    //       content: [
+    //         {
+    //           type: 'text',
+    //           text: input,
+    //         },
+    //         {
+    //           type: 'image_url',
+    //           image_url: {
+    //             url: imageUrl,
+    //           },
+    //         },
+    //       ],
+    //     },
+    //   ],
+    // });
+
+    // const ingredientsRaw = result.choices[0]?.message.content ?? '';
+    const ingredientsRaw =
+      'Ingredients: Baguette (2), Apple (3 slices), Butter (two teaspoons)';
+    const ingredientsSplit = ingredientsRaw.split('Ingredients:');
+    console.log(ingredientsSplit[1]);
+    const ingredientsCleaned = ingredientsSplit[1];
+    if (ingredientsCleaned) {
+      setIngredients(ingredientsCleaned);
     }
   };
 
