@@ -27,6 +27,13 @@ import {
   CornerDownLeft,
   Divide,
 } from '@tamagui/lucide-icons';
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  setDoc,
+} from 'firebase/firestore/lite';
 import OpenAI from 'openai';
 import {
   Adapt,
@@ -41,6 +48,8 @@ import {
   YStack,
 } from 'tamagui';
 import { LinearGradient } from 'tamagui/linear-gradient';
+
+import { db } from '../firebase';
 
 type Props = {
   navigation: NavigationProp<any>;
@@ -226,10 +235,10 @@ type Props = {
 const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const scrollViewRef = useRef<ScrollView>(null);
   const [selectedMeal, setSelectedMeal] = useState<string | null>(null);
-  const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [selectedTime, setSelectedTime] = useState<string>('');
   const [applianceArray, setApplianceArray] = useState<string[]>([]);
   const [applianceString, setApplianceString] = useState<string | null>(null);
-  const [complexityLevel, setComplexityLevel] = useState<string | null>(null);
+  const [complexityLevel, setComplexityLevel] = useState<string>('');
   const [ingredients, setIngredients] = useState<string>('');
   const [diet, setDiet] = useState<string>('');
   const [showError, setShowError] = useState(false);
@@ -238,21 +247,17 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     boolean | null
   >(null);
 
-  const [generatedRecipeTitle, setGeneratedRecipeTitle] = useState<
-    string | null
-  >(null);
-  const [generatedRecipeDescription, setGeneratedRecipeDescription] = useState<
-    string | null
-  >(null);
+  const [generatedRecipeTitle, setGeneratedRecipeTitle] = useState<string>('');
+  const [generatedRecipeDescription, setGeneratedRecipeDescription] =
+    useState<string>('');
   const [generatedRecipeServingsAmount, setGeneratedRecipeServingsAmount] =
-    useState<number | null>(null);
-  const [generatedRecipeTimeAmount, setGeneratedRecipeTimeAmount] = useState<
-    string | null
-  >(null);
+    useState<string>('');
+  const [generatedRecipeTimeAmount, setGeneratedRecipeTimeAmount] =
+    useState<string>('');
 
   //Might need to make time into a number measured in minutes and then convert it into a string
   const [generatedRecipeComplexityLevel, setGeneratedRecipeComplexityLevel] =
-    useState<string | null>(null);
+    useState<string>('');
   const [generatedRecipeIngredients, setGeneratedRecipeIngredients] = useState<
     string[]
   >([]);
@@ -316,9 +321,9 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
   const resetState = () => {
     setSelectedMeal(null);
-    setSelectedTime(null);
+    setSelectedTime('');
     setApplianceArray([]);
-    setComplexityLevel(null);
+    setComplexityLevel('');
     setIngredients('');
     setDiet('');
     setShowError(false);
@@ -787,7 +792,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     return input;
   };
 
-  const organizeOutput = (output: string) => {
+  const organizeOutput = async (output: string) => {
     const wordsToSplitBy = [
       'Title: ',
       'Description: ',
@@ -798,35 +803,90 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     const pattern = wordsToSplitBy.join('|');
     const infoArray = output.split(new RegExp(pattern, 'i'));
 
+    let title = '';
     if (infoArray[1]) {
+      title = infoArray[1];
       setGeneratedRecipeTitle(infoArray[1]);
     }
 
+    let description = '';
     if (infoArray[2]) {
+      description = infoArray[2];
       setGeneratedRecipeDescription(infoArray[2]);
     }
 
+    let curIngsArr = [''];
     if (infoArray[3]) {
+      curIngsArr = infoArray[3].split(', ');
       setGeneratedRecipeIngredients(infoArray[3].split(', '));
     }
 
+    let curDirsArr = [''];
     if (infoArray[4]) {
       let curDirs = infoArray[4];
       if (curDirs[curDirs.length - 2] === '.') {
         curDirs = curDirs.slice(0, curDirs.length - 2);
       }
+      curDirsArr = curDirs.split('. ');
       setGeneratedRecipeDirections(curDirs.split('. '));
     }
 
+    let cals = '';
     if (infoArray[5]) {
       const regex = /\d+/g;
       const numbers = infoArray[5].match(regex);
       if (numbers && numbers[0]) {
+        cals = numbers[0];
         setGeneratedRecipeCaloriesPerServing(numbers[0] + 'g');
       }
     }
 
     //TODO: add other nutrition facts!
+
+    saveToHistory(
+      title,
+      description,
+      cals,
+      complexityLevel,
+      servingsAmount.toString(),
+      selectedTime,
+      curIngsArr,
+      curDirsArr,
+    );
+  };
+
+  const saveToHistory = async (
+    title: string,
+    description: string,
+    calories: string,
+    complexity: string,
+    servings: string,
+    time: string,
+    ingredients: string[],
+    directions: string[],
+  ) => {
+    const recipes = collection(
+      db,
+      `allUsers/${userId}/collections/History/Recipes`,
+    );
+    const newDoc = doc(recipes, title);
+    const newInfo = {
+      Calories: calories,
+      Complexity: complexity,
+      Servings: servings,
+      Time: time,
+    };
+    try {
+      await setDoc(newDoc, {
+        Title: title,
+        Description: description,
+        Info: newInfo,
+        Ingredients: ingredients,
+        Directions: directions,
+      });
+    } catch (error) {
+      console.error('Error adding recipe:', error);
+    }
   };
 
   const timeButton = (str: string) => {
