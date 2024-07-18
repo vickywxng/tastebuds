@@ -26,6 +26,7 @@ import {
   Check,
   ChevronDown,
   ChevronUp,
+  Container,
   CornerDownLeft,
   Divide,
 } from '@tamagui/lucide-icons';
@@ -38,10 +39,6 @@ import {
   setDoc,
 } from 'firebase/firestore/lite';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import OpenAI from 'openai';
-import DocumentPicker, {
-  DocumentPickerResponse,
-} from 'react-native-document-picker';
 import {
   Adapt,
   Button,
@@ -63,185 +60,9 @@ type Props = {
   navigation: NavigationProp<any>;
 };
 
-// export function SelectDemo() {
-//   return (
-//     <YStack gap="$4">
-//       <XStack ai="center" gap="$4">
-//         {/* <Label htmlFor="select-demo-1" f={1} miw={80}>
-//           Custom
-//         </Label> */}
-//         <SelectDemoItem id="select-demo-1" />
-//       </XStack>
-
-//       {/* <XStack ai="center" gap="$4">
-//         <Label htmlFor="select-demo-2" f={1} miw={80}>
-//           Native
-//         </Label>
-//         <SelectDemoItem id="select-demo-2" native />
-//       </XStack> */}
-//     </YStack>
-//   )
-// }
-
-// const items: { name: string }[] = [
-//   { name: '1' },
-//   { name: '2' },
-//   { name: '3' },
-//   { name: '4' },
-//   { name: '5' },
-//   { name: '6' },
-//   { name: '7' },
-//   { name: '8' },
-//   { name: '9' },
-//   { name: '10' },
-// ];
-
-// let selectedItem: string = items.length > 0 ? items[0]?.name || '' : '';
-// const setSelectedItem = (value: string) => {
-//   selectedItem = value;
-// };
-
-// export function SelectDemoItem(props: SelectProps) {
-
-//   // const [selectedItem, setSelectedItem] = useState(items.length > 0 ? items[0]?.name || '' : '');
-
-//   const handleValueChange = (value: string) => {
-//     setSelectedItem(value);
-//     console.log(value);
-//     // Handle any other logic you need here when the value changes
-//   };
-
-//   return (
-//     <View>
-//       <Select value={selectedItem}
-//         onValueChange={handleValueChange}
-//         disablePreventBodyScroll
-//         {...props}>
-//         <Select.Trigger width={80} style={[styles.preferenceButton, {borderRadius: 15}]}>
-//         <Select.Value placeholder="Something" style={{ color: '#FFF5CD' }} />
-//         <ChevronDown size={20} color = '#FFF5CD' />
-//         </Select.Trigger>
-
-//         <Adapt when="sm" platform="touch">
-//           <Sheet
-//             native={!!props.native}
-//             modal
-//             dismissOnSnapToBottom
-//             animationConfig={{
-//               type: 'spring',
-//               damping: 20,
-//               mass: 1.2,
-//               stiffness: 250,
-//             }}
-//           >
-//             <Sheet.Frame>
-//               <Sheet.ScrollView>
-//                 <Adapt.Contents />
-//               </Sheet.ScrollView>
-//             </Sheet.Frame>
-//             <Sheet.Overlay
-//               animation="lazy"
-//               enterStyle={{ opacity: 0 }}
-//               exitStyle={{ opacity: 0 }}
-//             />
-//           </Sheet>
-//         </Adapt>
-
-//         <Select.Content zIndex={200000}>
-//           <Select.ScrollUpButton
-//             alignItems="center"
-//             justifyContent="center"
-//             position="relative"
-//             width="100%"
-//             height="$3"
-//           >
-//             <YStack zIndex={10}>
-//               <ChevronUp size={20} />
-//             </YStack>
-//             <LinearGradient
-//               start={{ x: 0, y: 0 }}
-//               end={{ x: 0, y: 1 }}
-//               colors={['$background', 'transparent']}
-//               style={{ borderRadius: 4 }}
-//             />
-//           </Select.ScrollUpButton>
-
-//           <Select.Viewport
-//             // to do animations:
-//             // animation="quick"
-//             // animateOnly={['transform', 'opacity']}
-//             // enterStyle={{ o: 0, y: -10 }}
-//             // exitStyle={{ o: 0, y: 10 }}
-//             minWidth={200}
-//           >
-//             <Select.Group>
-//               <Select.Label>Yield</Select.Label>
-//               {/* for longer lists memorizing these is useful */}
-//               {useMemo(
-//                 () =>
-//                   items.map((item, i) => {
-//                     return (
-//                       <Select.Item
-//                         index={i}
-//                         key={item.name}
-//                         value={item.name.toLowerCase()}
-//                       >
-//                         <Select.ItemText>{item.name}</Select.ItemText>
-//                         <Select.ItemIndicator marginLeft="auto">
-//                           <Check size={16} />
-//                         </Select.ItemIndicator>
-//                       </Select.Item>
-//                     )
-//                   }),
-//                 [items]
-//               )}
-//             </Select.Group>
-//             {/* Native gets an extra icon */}
-//             {props.native && (
-//               <YStack
-//                 position="absolute"
-//                 right={0}
-//                 top={0}
-//                 bottom={0}
-//                 alignItems="center"
-//                 justifyContent="center"
-//                 width={'$4'}
-//                 pointerEvents="none"
-//               >
-//                 <ChevronDown color='#FFF5CD'
-//                   size={getFontSize((props.size as FontSizeTokens) ?? '$true')}
-//                 />
-//               </YStack>
-//             )}
-//           </Select.Viewport>
-
-//           <Select.ScrollDownButton
-//             alignItems="center"
-//             justifyContent="center"
-//             position="relative"
-//             width="100%"
-//             height="$3"
-//           >
-//             <YStack zIndex={10}>
-//               <ChevronDown size={20}  color='#FFF5CD' />
-//             </YStack>
-//             <LinearGradient
-//               start={[0, 0]}
-//               end={[0, 1]}
-//               fullscreen
-//               colors={['transparent', '$background']}
-//               borderRadius="$4"
-//             />
-//           </Select.ScrollDownButton>
-//         </Select.Content>
-//       </Select>
-//     </View>
-
-//   )
-// }
-
 const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const scrollViewRef = useRef<ScrollView>(null);
+  const [showCollectionPopUp, setShowCollectionPopUp] = useState<boolean | null>(null);
   const [selectedMeal, setSelectedMeal] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [applianceArray, setApplianceArray] = useState<string[]>([]);
@@ -337,6 +158,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     setShowError(false);
     setGenerateRecipeBoolean(false);
     setServingsAmount(1);
+    setShowCollectionPopUp(false);
   };
 
   const pullUpPhotos = async () => {
@@ -533,6 +355,8 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
           </Text>
         </View>
       </View>
+
+
     );
   };
 
@@ -702,6 +526,26 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
           </Text>
         </Button>
 
+        <View style={{ height: 10 }} />
+
+        <Button
+          style={styles.recipeGeneratorButton}
+          onPress={() => addToCollection()}
+        >
+          <Text
+            style={[
+              styles.modalTitleSmaller,
+              { marginBottom: 0, color: '#FFF5CD' },
+            ]}
+          >
+            Add to collection
+          </Text>
+        </Button>
+
+        {showCollectionPopUp && (
+            <>{collectionPopUP()}</>
+        )}
+
         {/* Bullet point */}
         {/* <Text>{'\u2022'}</Text> */}
       </View>
@@ -761,7 +605,36 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     setComplexityLevel(complexity);
   };
 
-  const addToPlanner = () => {};
+  const calendarPopUP = () => {
+    return(
+      <Container style={[styles.popUpContainer]}>
+        <Text>Hello</Text>
+      </Container>
+    )
+  }
+
+  const collectionPopUP = () => {
+    return(
+      <View style={[styles.popUpContainer]}>
+      <Text style={[styles.modalTitle, {color: "#E7D37F"}]}>Save to collection</Text>
+      <View style={[styles.popUpInnerContainer]}>
+        {folders.map((folder, index) => (
+          <View key={index}>
+            <Text>{folder[0]}</Text> {/* Display folder name */}
+          </View>
+        ))}
+      </View>
+    </View>
+    )
+  }
+
+  const addToPlanner = () => {
+    
+  };
+
+  const addToCollection = () => {
+    setShowCollectionPopUp(true);
+  };
 
   const generateRecipe = async () => {
     if (
@@ -1217,7 +1090,17 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     marginTop: 2,
     marginLeft: -10,
-  },
+  }, popUpContainer: {
+      flex: 1,
+      backgroundColor: '#E7D37F',
+      justifyContent: 'space-between',
+      borderRadius: 15,
+  }, popUpInnerContainer: {
+    flex: 1,
+    backgroundColor: '#FFF5CD',
+    justifyContent: 'space-between',
+    borderRadius: 7.5,
+}
 });
 
 export default RecipeGenerator;
