@@ -36,9 +36,6 @@ import {
 } from 'firebase/firestore/lite';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
 import OpenAI from 'openai';
-import DocumentPicker, {
-  DocumentPickerResponse,
-} from 'react-native-document-picker';
 import {
   Adapt,
   Button,
@@ -310,6 +307,16 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   >(null);
 
   const [isLoadingIngs, setLoadingIngs] = useState<boolean>(false);
+  const [isLoadingPage, setLoadingPage] = useState<boolean>(false);
+  const [colorIndex, setColorIndex] = useState(0); // State to track current color index
+  const colors = [
+    '#fc853f',
+    '#CCFF66',
+    '#33FF66',
+    '#00CCFF',
+    '#c375ff',
+    '#f553a9',
+  ]; // Array of six colors to cycle through
 
   const route = useRoute();
   const { userId } = route.params as {
@@ -318,6 +325,13 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
   useEffect(() => {
     resetState();
+
+    const intervalId = setInterval(() => {
+      // Function to change indicator color
+      setColorIndex((prevIndex) => (prevIndex + 1) % colors.length); // Cycle through colors
+    }, 1100); // Change color every second (1000 milliseconds)
+
+    return () => clearInterval(intervalId);
   }, []);
 
   useFocusEffect(
@@ -336,6 +350,8 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     setShowError(false);
     setGenerateRecipeBoolean(false);
     setServingsAmount(1);
+    setLoadingIngs(false);
+    setLoadingPage(false);
   };
 
   const pullUpPhotos = async () => {
@@ -424,10 +440,27 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     }
   };
 
-  const LoadingIndicator = () =>
+  const LoadingIndicatorIngs = () =>
     isLoadingIngs ? (
       <View style={{ position: 'absolute', right: 185, top: 225 }}>
         <ActivityIndicator size="small" color="#FFF5D0" />
+      </View>
+    ) : null;
+
+  const LoadingIndicatorPage = () =>
+    isLoadingPage ? (
+      <View
+        style={{
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          width: 432,
+          height: 832,
+          justifyContent: 'center',
+          alignItems: 'center',
+          position: 'absolute',
+          zIndex: 1000,
+        }}
+      >
+        <ActivityIndicator size="large" color={colors[colorIndex]} />
       </View>
     ) : null;
 
@@ -457,7 +490,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
           onChangeText={(text) => [setIngredients(text)]}
         />
 
-        <LoadingIndicator />
+        <LoadingIndicatorIngs />
 
         <TouchableOpacity
           style={styles.uploadImageButton}
@@ -566,7 +599,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
         <View style={{ height: 20 }} />
         <Button
           style={styles.recipeGeneratorButton}
-          onPress={() => generateRecipe()}
+          onPress={() => [generateRecipe(), setLoadingPage(true)]}
         >
           <Text
             style={[
@@ -992,6 +1025,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     } catch (error) {
       console.error('Error adding recipe:', error);
     }
+    setLoadingPage(false);
   };
 
   const timeButton = (str: string) => {
@@ -1053,6 +1087,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <LoadingIndicatorPage />
       <ScrollView
         ref={scrollViewRef}
         contentContainerStyle={styles.scrollViewContent}

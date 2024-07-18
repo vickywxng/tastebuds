@@ -34,6 +34,7 @@
     "react": "18.2.0",
     "react-icons": "^5.2.1",
     "react-native": "^0.74.2",
+    "react-native-animated-loader": "^1.0.0",
     "react-native-document-picker": "^9.3.0",
     "react-native-google-fonts": "^0.0.0",
     "react-native-image-crop-picker": "^0.41.2",
