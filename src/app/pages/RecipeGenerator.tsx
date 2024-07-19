@@ -60,6 +60,10 @@ type Props = {
   navigation: NavigationProp<any>;
 };
 
+type CheckedItems = {
+  [key: string]: boolean;
+};
+
 const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const scrollViewRef = useRef<ScrollView>(null);
   const [showCollectionPopUp, setShowCollectionPopUp] = useState<boolean | null>(null);
@@ -132,6 +136,9 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const [generatedRecipePhosphorus, setGeneratedRecipePhosphorus] = useState<
     string | null
   >(null);
+
+  const [checkedItems, setCheckedItems] = useState<CheckedItems>({});
+  const [collectionSelected, setCollectionSelected] = useState("");
 
   const route = useRoute();
   const { userId } = route.params as {
@@ -613,11 +620,13 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     )
   }
 
+
   const collectionPopUP = async () => {
     const usersCollectionRef = collection(db, `allUsers/${userId}/collections`);
     const querySnapshot = await getDocs(usersCollectionRef);
     const stringArray = [""];
     let collectionSelected = "";
+
 
 
     querySnapshot.forEach((doc) => {
@@ -626,18 +635,22 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
     stringArray.shift();
 
+    
+
     return(
       <View style={[styles.popUpContainer]}>
         <Text style={[styles.modalTitle, {color: "#E7D37F"}]}>Save to collection</Text>
         <View style={[styles.popUpInnerContainer]}>
           {stringArray.map((name) => (
               <TouchableOpacity
-    
-                onPress={() => {
-                  collectionSelected = name;
-    
-                }}
+                key={name}
+                onPress={() => handleCollectionPress(name)}
               >
+                {checkedItems[name] ? (
+                  <MaterialIcons name="check-box" size={24} color="#000" />
+                ) : (
+                  <MaterialIcons name="check-box-outline-blank" size={24} color="#000" />
+                )}
                 <Text>{name}</Text>
               </TouchableOpacity>
             ))
@@ -653,6 +666,14 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       </View>
     )
   }
+
+  const handleCollectionPress = (name: string) => {
+    setCheckedItems((prev) => ({
+      ...prev,
+      [name]: !prev[name],
+    }));
+    setCollectionSelected(name);
+  };
 
   const addToCollectionLogic = async (collectionSelected: string) => {
     
