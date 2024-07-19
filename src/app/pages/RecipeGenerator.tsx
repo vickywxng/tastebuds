@@ -50,6 +50,7 @@ import {
   Select,
   SelectProps,
   Sheet,
+  Spacer,
   XStack,
   YStack,
 } from 'tamagui';
@@ -638,31 +639,49 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     return(
       <View style={[styles.popUpContainer, {marginTop: 20}]}>
         <Text style={[styles.modalTitle, {color: "#365E32"}, {marginTop: 20}, { textAlign: 'center' }]}>Save to collection</Text>
-        <View style={[styles.popUpInnerContainer, {marginRight: 20},{marginLeft: 20},]}>
-          {stringArray.map((name) => (
-              <TouchableOpacity
-                key={name}
-                onPress={() => handleCollectionPress(name)}
-              >
+        <View style={[styles.popUpInnerContainer, {marginRight: 20},{marginLeft: 20}]}>
+          <View style={[{marginTop: 20}, {marginLeft: 20}, {marginBottom: 20}]}>
+            {stringArray.map((name) => (
+                <TouchableOpacity
+                  key={name}
+                  onPress={() => handleCollectionPress(name)}
+                >
                 <XStack>
                   {checkedItems[name] ? (
-                    <MaterialIcons name="check-box" size={24} color="#000" />
+                    <MaterialIcons name="check-box" size={24} color="#365E32" />
                   ) : (
-                    <MaterialIcons name="check-box-outline-blank" size={24} color="#000" />
+                    <MaterialIcons name="check-box-outline-blank" size={24} color="#365E32" />
                   )}
-                  <Text>{name}</Text>
+                  <Text style={[styles.arvoTextNormal, {fontFamily: "Lato"}, {marginLeft: 5}]}>{name}</Text>
                 </XStack>
-              </TouchableOpacity>
-            ))
-            
-            }
-
-            <Button
-              onPress={() => addToCollectionLogic(collectionSelected)}
-            >Save</Button>
-            
+                </TouchableOpacity>
+              ))
+              
+              }
+          </View>
   
         </View>
+
+        <XStack style={[{marginTop: 20}, {marginBottom: 20}, {alignContent: 'center'}]}>
+          <View style={styles.spacer} />
+          <TouchableOpacity
+            onPress={() => setShowCollectionPopUp(false)}
+            style={{marginLeft: 20}}
+            // Also set the array for the checkmarks to false as well!!
+          >
+            <Text style={styles.arvoTextNormal}>Cancel</Text>
+          </TouchableOpacity>
+          <View style={styles.biggerSpacer} />
+          <TouchableOpacity
+            onPress={() => addToCollectionLogic(collectionSelected)}
+            style={{marginRight: 20}}
+          >
+            <Text style={styles.arvoTextNormal}>Save</Text>
+          </TouchableOpacity>
+          <View style={styles.spacer} />
+        </XStack>
+        
+
       </View>
     )
   }
@@ -691,6 +710,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       console.log("error");
     }
     
+    console.log(collectionSelected);
 
   }
 
@@ -1182,7 +1202,15 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF5CD',
     justifyContent: 'space-between',
     borderRadius: 7.5,
-}
+  }, arvoTextNormal: {
+    fontSize: 18,
+    fontFamily: 'Arvo',
+    color: '#365E32',
+  }, spacer: {
+    flex: 1,
+  }, biggerSpacer: {
+    flex: 2,
+  },
 });
 
 export default RecipeGenerator;

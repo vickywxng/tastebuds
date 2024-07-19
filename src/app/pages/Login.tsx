@@ -62,12 +62,11 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={{ flex: 1 }}
     >
-      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.background}>
           <View style={styles.greenCircle} />
           <View style={styles.container}>
             <Text style={styles.title}>Welcome Back!</Text>
-            <Text style={styles.subtitle}>Login to your account</Text>
+            <Text style={styles.subtitle}>Log in to your account</Text>
             <TextInput
               style={styles.input}
               placeholder="Username"
@@ -92,7 +91,6 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
             </Text>
           </View>
         </View>
-      </ScrollView>
     </KeyboardAvoidingView>
   );
 };
