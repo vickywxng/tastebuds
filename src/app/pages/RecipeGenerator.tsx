@@ -12,7 +12,9 @@ import {
   View,
 } from 'react-native';
 import {
+  Entypo,
   FontAwesome,
+  FontAwesome6,
   Ionicons,
   MaterialCommunityIcons,
   MaterialIcons,
@@ -635,8 +637,6 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
     stringArray.shift();
 
-    
-
     return(
       <View style={[styles.popUpContainer]}>
         <Text style={[styles.modalTitle, {color: "#E7D37F"}]}>Save to collection</Text>
@@ -646,12 +646,14 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
                 key={name}
                 onPress={() => handleCollectionPress(name)}
               >
-                {checkedItems[name] ? (
-                  <MaterialIcons name="check-box" size={24} color="#000" />
-                ) : (
-                  <MaterialIcons name="check-box-outline-blank" size={24} color="#000" />
-                )}
-                <Text>{name}</Text>
+                <XStack>
+                  {checkedItems[name] ? (
+                    <MaterialIcons name="check-box" size={24} color="#000" />
+                  ) : (
+                    <MaterialIcons name="check-box-outline-blank" size={24} color="#000" />
+                  )}
+                  <Text>{name}</Text>
+                </XStack>
               </TouchableOpacity>
             ))
             
@@ -661,7 +663,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
               onPress={() => addToCollectionLogic(collectionSelected)}
             >Save</Button>
             
-          
+  
         </View>
       </View>
     )
@@ -909,6 +911,19 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
   const applianceButton = (appliance: string) => {
     const isSelected = applianceArray.includes(appliance);
+    let icon = null;
+
+    if(appliance === "Stove") {
+      icon = <MaterialCommunityIcons name="stove" size={20} color={'#FFF5CD'} />
+    } else if(appliance === "Oven") {
+      icon = <MaterialCommunityIcons name="toaster-oven" size={20} color={'#FFF5CD'} />
+    } else if(appliance === "Microwave") {
+      icon = <MaterialCommunityIcons name="microwave" size={20} color={'#FFF5CD'} />
+    } else if(appliance === "Air Fryer") {
+      icon = <Entypo name="air" size={20} color={'#FFF5CD'} />
+    } else {
+      icon = <FontAwesome6 name="bowl-rice" size={17} color={'#FFF5CD'} />
+    }
 
     return (
       <Button
@@ -918,8 +933,9 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
         ]}
         onPress={() => handleAppliancesSelected(appliance)}
       >
-        <Ionicons name="construct-outline" size={20} color={'#FFF5CD'} />
-        <Text style={{ marginLeft: 5, color: '#FFF5CD' }}>{appliance}</Text>
+
+        {icon}
+        <Text style={{ marginLeft: 2, color: '#FFF5CD' }}>{appliance}</Text>
       </Button>
     );
   };
