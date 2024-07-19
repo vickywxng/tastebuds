@@ -629,8 +629,6 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     const stringArray = [""];
     let collectionSelected = "";
 
-
-
     querySnapshot.forEach((doc) => {
         stringArray.push(doc.id);
     });
@@ -638,9 +636,9 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     stringArray.shift();
 
     return(
-      <View style={[styles.popUpContainer]}>
-        <Text style={[styles.modalTitle, {color: "#E7D37F"}]}>Save to collection</Text>
-        <View style={[styles.popUpInnerContainer]}>
+      <View style={[styles.popUpContainer, {marginTop: 20}]}>
+        <Text style={[styles.modalTitle, {color: "#365E32"}, {marginTop: 20}, { textAlign: 'center' }]}>Save to collection</Text>
+        <View style={[styles.popUpInnerContainer, {marginRight: 20},{marginLeft: 20},]}>
           {stringArray.map((name) => (
               <TouchableOpacity
                 key={name}
