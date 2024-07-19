@@ -1,9 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Dimensions,
-  ImageBackground,
-  Linking,
-  Platform,
+  ActivityIndicator,
   ScrollView,
   StyleSheet,
   Text,
@@ -41,6 +38,7 @@ import {
   setDoc,
 } from 'firebase/firestore/lite';
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage';
+import OpenAI from 'openai';
 import {
   Adapt,
   Button,
@@ -318,6 +316,17 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
   const [checkedItems, setCheckedItems] = useState<CheckedItems>({});
   const [collectionSelected, setCollectionSelected] = useState("");
+  const [isLoadingIngs, setLoadingIngs] = useState<boolean>(false);
+  const [isLoadingPage, setLoadingPage] = useState<boolean>(false);
+  const [colorIndex, setColorIndex] = useState(0); // State to track current color index
+  const colors = [
+    '#fc853f',
+    '#CCFF66',
+    '#33FF66',
+    '#00CCFF',
+    '#c375ff',
+    '#f553a9',
+  ]; // Array of six colors to cycle through
 
   const route = useRoute();
   const { userId } = route.params as {
@@ -326,6 +335,13 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
   useEffect(() => {
     resetState();
+
+    const intervalId = setInterval(() => {
+      // Function to change indicator color
+      setColorIndex((prevIndex) => (prevIndex + 1) % colors.length); // Cycle through colors
+    }, 1100); // Change color every second (1000 milliseconds)
+
+    return () => clearInterval(intervalId);
   }, []);
 
   useFocusEffect(
@@ -346,6 +362,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     setServingsAmount(1);
     setShowCollectionPopUp(false);
     setShowCalendarPopUp(false);
+    setLoadingIngs(false);
   };
 
   const pullUpPhotos = async () => {
@@ -362,6 +379,8 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       }
 
       const selectedImage = result;
+
+      setLoadingIngs(true);
 
       if (selectedImage && selectedImage.assets.length > 0) {
         const firstAsset = selectedImage.assets[0];
@@ -381,6 +400,8 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
           const downloadURL = await getDownloadURL(storageRef);
 
           console.log('Download URL:', downloadURL);
+
+          getIngredientsWithImage(downloadURL);
         }
       }
     } catch (error) {
@@ -388,6 +409,71 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       // Handle error gracefully (e.g., show error message to the user)
     }
   };
+
+  const getIngredientsWithImage = async (imageUrl: string) => {
+    const input =
+      'Tell me all of the edible ingredients you see in this image and if possible, mention their quantity as well. I need the response generated in this way: Ingredients: (list of all ingredients seperated by comma)';
+
+    // const openai = new OpenAI({
+    //   apiKey: process.env.EXPO_PUBLIC_API_KEY_OPENAI, // Replace with your actual API key
+    // });
+
+    // const result = await openai.chat.completions.create({
+    //   model: 'gpt-4o',
+    //   messages: [
+    //     {
+    //       role: 'user',
+    //       content: [
+    //         {
+    //           type: 'text',
+    //           text: input,
+    //         },
+    //         {
+    //           type: 'image_url',
+    //           image_url: {
+    //             url: imageUrl,
+    //           },
+    //         },
+    //       ],
+    //     },
+    //   ],
+    // });
+
+    // const ingredientsRaw = result.choices[0]?.message.content ?? '';
+    const ingredientsRaw =
+      'Ingredients: Baguette (2), Apple (3 slices), Butter (two teaspoons)';
+    const ingredientsSplit = ingredientsRaw.split('Ingredients:');
+    console.log(ingredientsSplit[1]);
+    const ingredientsCleaned = ingredientsSplit[1];
+    if (ingredientsCleaned) {
+      setIngredients(ingredientsCleaned);
+      setLoadingIngs(false);
+    }
+  };
+
+  const LoadingIndicatorIngs = () =>
+    isLoadingIngs ? (
+      <View style={{ position: 'absolute', right: 185, top: 225 }}>
+        <ActivityIndicator size="small" color="#FFF5D0" />
+      </View>
+    ) : null;
+
+  const LoadingIndicatorPage = () =>
+    isLoadingPage ? (
+      <View
+        style={{
+          backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          width: 432,
+          height: 832,
+          justifyContent: 'center',
+          alignItems: 'center',
+          position: 'absolute',
+          zIndex: 1000,
+        }}
+      >
+        <ActivityIndicator size="large" color={colors[colorIndex]} />
+      </View>
+    ) : null;
 
   const userPreferencePage = () => {
     return (
@@ -412,8 +498,10 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
           placeholder="1 gal of milk, 3 potatoes, 2 sticks of butter, etc"
           placeholderTextColor="#AFA26B"
           value={ingredients}
-          onChangeText={(text) => setIngredients(text)}
+          onChangeText={(text) => [setIngredients(text)]}
         />
+
+        <LoadingIndicatorIngs />
 
         <TouchableOpacity
           style={styles.uploadImageButton}
@@ -522,7 +610,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
         <View style={{ height: 20 }} />
         <Button
           style={styles.recipeGeneratorButton}
-          onPress={() => generateRecipe()}
+          onPress={() => [generateRecipe(), setLoadingPage(true)]}
         >
           <Text
             style={[
@@ -1129,6 +1217,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     } catch (error) {
       console.error('Error adding recipe:', error);
     }
+    setLoadingPage(false);
   };
 
   const timeButton = (str: string) => {
@@ -1204,6 +1293,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <LoadingIndicatorPage />
       <ScrollView
         ref={scrollViewRef}
         contentContainerStyle={styles.scrollViewContent}
