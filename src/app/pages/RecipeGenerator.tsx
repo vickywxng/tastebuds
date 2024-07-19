@@ -613,20 +613,67 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     )
   }
 
-  const collectionPopUP = () => {
+  const collectionPopUP = async () => {
+    const usersCollectionRef = collection(db, `allUsers/${userId}/collections`);
+    const querySnapshot = await getDocs(usersCollectionRef);
+    const stringArray = [""];
+    let collectionSelected = "";
+
+
+    querySnapshot.forEach((doc) => {
+        stringArray.push(doc.id);
+    });
+
+    stringArray.shift();
+
     return(
       <View style={[styles.popUpContainer]}>
-      <Text style={[styles.modalTitle, {color: "#E7D37F"}]}>Save to collection</Text>
-      <View style={[styles.popUpInnerContainer]}>
-        {folders.map((folder, index) => (
-          <View key={index}>
-            <Text>{folder[0]}</Text> {/* Display folder name */}
-          </View>
-        ))}
+        <Text style={[styles.modalTitle, {color: "#E7D37F"}]}>Save to collection</Text>
+        <View style={[styles.popUpInnerContainer]}>
+          {stringArray.map((name) => (
+              <TouchableOpacity
+    
+                onPress={() => {
+                  collectionSelected = name;
+    
+                }}
+              >
+                <Text>{name}</Text>
+              </TouchableOpacity>
+            ))
+            
+            }
+
+            <Button
+              onPress={() => addToCollectionLogic(collectionSelected)}
+            >Save</Button>
+            
+          
+        </View>
       </View>
-    </View>
     )
   }
+
+  const addToCollectionLogic = async (collectionSelected: string) => {
+    
+    const usersCollectionRef = collection(db, `allUsers/${userId}/collections/${collectionSelected}/Recipes`);
+    const recipeRef = doc(usersCollectionRef, generatedRecipeTitle);
+    
+
+    try {
+      await setDoc(recipeRef, {
+        Title: generatedRecipeTitle,
+        Ingredients: generatedRecipeIngredients, 
+
+      });
+    } catch (error) {
+      console.log("error");
+    }
+    
+
+  }
+
+  const collectionNamesButton = () => {}
 
   const addToPlanner = () => {
     
