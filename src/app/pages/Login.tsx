@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import {
   Alert,
   ImageBackground,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -55,35 +58,40 @@ const LoginScreen: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.background}>
-      <View style={styles.greenCircle} />
-      <View style={styles.container}>
-        <Text style={styles.title}>Welcome Back!</Text>
-        <Text style={styles.subtitle}>Login to your account</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Username"
-          placeholderTextColor="#AFA26B"
-          onChangeText={(text) => setUsername(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          placeholderTextColor="#AFA26B"
-          secureTextEntry={true}
-          onChangeText={(text) => setPassword(text)}
-        />
-        <Button style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Login</Text>
-        </Button>
-        <Text style={styles.signUpText}>
-          Don't have an account?{' '}
-          <Text style={styles.signUpLink} onPress={goToSignUp}>
-            Sign Up
-          </Text>
-        </Text>
-      </View>
-    </View>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={{ flex: 1 }}
+    >
+        <View style={styles.background}>
+          <View style={styles.greenCircle} />
+          <View style={styles.container}>
+            <Text style={styles.title}>Welcome Back!</Text>
+            <Text style={styles.subtitle}>Log in to your account</Text>
+            <TextInput
+              style={styles.input}
+              placeholder="Username"
+              placeholderTextColor="#AFA26B"
+              onChangeText={(text) => setUsername(text)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Password"
+              placeholderTextColor="#AFA26B"
+              secureTextEntry={true}
+              onChangeText={(text) => setPassword(text)}
+            />
+            <Button style={styles.button} onPress={handleLogin}>
+              <Text style={styles.buttonText}>Login</Text>
+            </Button>
+            <Text style={styles.signUpText}>
+              Don't have an account?{' '}
+              <Text style={styles.signUpLink} onPress={goToSignUp}>
+                Sign Up
+              </Text>
+            </Text>
+          </View>
+        </View>
+    </KeyboardAvoidingView>
   );
 };
 

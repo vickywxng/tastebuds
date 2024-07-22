@@ -22,6 +22,8 @@ const StartScreen: React.FC<Props> = ({ navigation }) => {
       'Arvo-Regular': require('../fonts/Arvo-Regular.ttf'),
       'Arvo-Bold': require('../fonts/Arvo-Bold.ttf'),
       'Jua-Regular': require('../fonts/Jua-Regular.ttf'),
+      'Lato-Bold': require('../fonts/Lato-Bold.ttf'),
+      'Lato-SemiBold': require('../fonts/Lato-Semibold.ttf'),
     });
   }, []);
 

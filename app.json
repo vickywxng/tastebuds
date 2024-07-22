@@ -15,6 +15,12 @@
     "ios": {
       "supportsTablet": true
     },
+    "permissions": {
+      "mediaLibrary": {
+        "read": true,
+        "write": true
+      }
+    },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
@@ -23,7 +29,8 @@
     },
     "plugins": [
       "expo-router",
-      "expo-font"
+      "expo-font",
+      "expo-image-picker"
     ]
   }
 }
