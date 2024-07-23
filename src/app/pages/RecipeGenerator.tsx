@@ -889,7 +889,20 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   };
 
   const calendarPopUP = () => {
-    const dayArray = ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6", "Day 7"];
+    
+    const formatDate = (date: number | Date | undefined) => {
+      return new Intl.DateTimeFormat('en-US', {
+        weekday: 'long', // 'Monday'
+        month: 'long',   // 'July'
+        day: 'numeric'   // '22'
+      }).format(date);
+    };
+
+    // const dayArray = ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6", "Day 7"];
+    const currentDate = new Date();
+    const day2 = new Date(currentDate); // Create a new Date object based on the current date
+    day2.setDate(day2.getDate() + 1); 
+    const dayArray = [formatDate(currentDate), formatDate(day2), "Day 3", "Day 4", "Day 5", "Day 6", "Day 7"];
 
     return(
       <View style={[styles.popUpContainer, {marginTop: 20}]}>
