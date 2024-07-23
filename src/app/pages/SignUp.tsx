@@ -13,8 +13,10 @@ import {
   collection,
   deleteDoc,
   doc,
+  DocumentReference,
   getDocs,
   setDoc,
+  updateDoc,
 } from 'firebase/firestore/lite';
 import { Button } from 'tamagui';
 
@@ -41,13 +43,14 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
       let emailExists = false;
 
       querySnapshot.forEach((doc) => {
-        if (doc.data().username == username) {
+        if (doc.data().username === username) {
           userExists = true;
         }
-        if (doc.data().email == email) {
+        if (doc.data().email === email) {
           emailExists = true;
         }
       });
+
       if (userExists) {
         Alert.alert('Username already exists. Log into your account.');
       } else if (emailExists) {
@@ -60,24 +63,35 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
           password: password,
           email: email,
         });
-        const collections = collection(
+
+        // Reference to collections and planner subcollections
+        const collectionsRef = collection(
           usersCollectionRef,
           docRef.id,
           'collections',
         );
+        const plannerRef = collection(usersCollectionRef, docRef.id, 'planner');
 
-        const dummyDocRef = doc(collections, 'dummyDocument');
-        await setDoc(dummyDocRef, {});
+        // Set up 'collections' subcollection
+        const historyRef = doc(collectionsRef, 'History');
+        const favoritesRef = doc(collectionsRef, 'Favorites');
+        await Promise.all([setDoc(historyRef, {}), setDoc(favoritesRef, {})]);
 
-        await deleteDoc(dummyDocRef);
+        // Set up 'planner' subcollection
+        const dayRefs = [
+          'Day 1',
+          'Day 2',
+          'Day 3',
+          'Day 4',
+          'Day 5',
+          'Day 6',
+          'Day 7',
+        ];
+        const dayDocRefs = dayRefs.map((day) => doc(plannerRef, day));
+        await Promise.all(dayDocRefs.map((docRef) => setDoc(docRef, {})));
 
-        const hisRef = doc(collections, 'History');
-        const favRef = doc(collections, 'Favorites');
-
-        await setDoc(hisRef, {});
-        await setDoc(favRef, {});
-
-        navigation.navigate('Registered', { docId: docRef.id });
+        // Navigate to the next screen after all operations are completed
+        navigation.navigate('Registered', { userId: docRef.id });
       }
     } catch (error) {
       console.error('Error signing up:', error);
