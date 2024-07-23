@@ -1132,10 +1132,20 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       );
       const recipeRef = doc(usersCollectionRef, generatedRecipeTitle);
 
+      const newInfo = {
+        Calories: generatedRecipeCaloriesPerServing,
+        Complexity: complexityLevel,
+        Servings: servingsAmount,
+        Time: selectedTime,
+      };
+
       try {
         await setDoc(recipeRef, {
           Title: generatedRecipeTitle,
+          Description: generatedRecipeDescription,
           Ingredients: generatedRecipeIngredients,
+          Directions: generatedRecipeDirections,
+          Info: newInfo,
         });
         console.log(`Document added to collection ${curCollection}`);
       } catch (error) {
@@ -1155,10 +1165,20 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       );
       const recipeRef = doc(usersCollectionRef, generatedRecipeTitle);
 
+      const newInfo = {
+        Calories: generatedRecipeCaloriesPerServing,
+        Complexity: complexityLevel,
+        Servings: servingsAmount,
+        Time: selectedTime,
+      };
+
       try {
         await setDoc(recipeRef, {
           Title: generatedRecipeTitle,
+          Description: generatedRecipeDescription,
           Ingredients: generatedRecipeIngredients,
+          Directions: generatedRecipeDirections,
+          Info: newInfo,
         });
         console.log(`Document added to ${curDay}`);
       } catch (error) {
@@ -1684,4 +1704,3 @@ const styles = StyleSheet.create({
 });
 
 export default RecipeGenerator;
-

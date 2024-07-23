@@ -29,37 +29,39 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   const [recipes, setRecipes] = useState<string[][]>([]);
   const [selectedRecipes, setSelectedRecipes] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
-
-  const curCollection = collection(
-    db,
-    `allUsers/${userId}/planner/Aug1-2024/Recipes`,
-  );
+  const [dayIndex, setDayIndex] = useState(0);
+  const days = ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'];
   //right now the date is entered manually^^ (aug1-2024)
 
   useEffect(() => {
-    const fetchRecipes = async () => {
-      try {
-        const querySnapshot = await getDocs(curCollection);
-        const updatedRecipes: string[][] = [];
-        querySnapshot.forEach((doc) => {
-          updatedRecipes.push([
-            doc.id,
-            doc.data().Description,
-            doc.data().Info['Time'],
-            doc.data().Info['Complexity'],
-            doc.data().Info['Calories'],
-          ]);
-        });
-        setRecipes(updatedRecipes);
-      } catch (error) {
-        console.error('Error fetching recipes:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchRecipes();
   }, []);
+
+  const fetchRecipes = async () => {
+    const curCollection = collection(
+      db,
+      `allUsers/${userId}/planner/${days[dayIndex]}/Recipes`,
+    );
+    console.log(dayIndex);
+    try {
+      const querySnapshot = await getDocs(curCollection);
+      const updatedRecipes: string[][] = [];
+      querySnapshot.forEach((doc) => {
+        updatedRecipes.push([
+          doc.id,
+          doc.data().Description,
+          doc.data().Info['Time'],
+          doc.data().Info['Complexity'],
+          doc.data().Info['Calories'],
+        ]);
+      });
+      setRecipes(updatedRecipes);
+    } catch (error) {
+      console.error('Error fetching recipes:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const toggleEditMode = () => {
     setEditMode(!editMode);
@@ -81,6 +83,11 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
 
     const recipesToDelete = recipes.filter((_, index) =>
       selectedRecipes.includes(index),
+    );
+
+    const curCollection = collection(
+      db,
+      `allUsers/${userId}/planner/${days[dayIndex]}/Recipes`,
     );
 
     for (let recipe of recipesToDelete) {
@@ -105,9 +112,27 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Ionicons name="chevron-back" size={24} color="#FFF5CD" />
-        <Text style={styles.headerText}>August 1, 2024</Text>
-        <Ionicons name="chevron-forward" size={24} color="#FFF5CD" />
+        {dayIndex > 0 && (
+          <TouchableOpacity
+            onPress={() => {
+              fetchRecipes;
+              setDayIndex(dayIndex - 1);
+            }}
+          >
+            <Ionicons name="chevron-back" size={24} color="#FFF5CD" />
+          </TouchableOpacity>
+        )}
+        <Text style={styles.headerText}>August {dayIndex + 1}, 2024</Text>
+        {dayIndex < 6 && (
+          <TouchableOpacity
+            onPress={() => {
+              fetchRecipes;
+              setDayIndex(dayIndex + 1);
+            }}
+          >
+            <Ionicons name="chevron-forward" size={24} color="#FFF5CD" />
+          </TouchableOpacity>
+        )}
       </View>
       <View style={styles.editSection}>
         <TouchableOpacity onPress={toggleEditMode}>
