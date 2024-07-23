@@ -335,6 +335,9 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     '#f553a9',
   ]; // Array of six colors to cycle through
 
+  const [selectedCollections, setSelectedCollections] = useState<string[]>([]);
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+
   const route = useRoute();
   const { userId } = route.params as {
     userId: string;
@@ -371,6 +374,9 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     setShowCalendarPopUp(false);
     setLoadingIngs(false);
     setLoadingPage(false);
+    setSelectedDays([]);
+    setSelectedCollections([]);
+    setCheckedItems({});
   };
 
   const pullUpPhotos = async () => {
@@ -933,7 +939,10 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
             {dayArray.map((name) => (
               <TouchableOpacity
                 key={name}
-                onPress={() => handleCollectionPress(name)}
+                onPress={() => [
+                  plannerCheck(name),
+                  handleCollectionPress(name),
+                ]}
               >
                 <XStack>
                   {checkedItems[name] ? (
@@ -977,7 +986,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
           </TouchableOpacity>
           <View style={styles.biggerSpacer} />
           <TouchableOpacity
-            onPress={() => addToCollectionLogic(collectionSelected)}
+            onPress={() => [addToPlannerLogic(), setShowCalendarPopUp(false)]}
             style={{ marginRight: 20 }}
           >
             <Text style={styles.arvoTextNormal}>Save</Text>
@@ -1029,7 +1038,10 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
             {stringArray.map((name) => (
               <TouchableOpacity
                 key={name}
-                onPress={() => handleCollectionPress(name)}
+                onPress={() => [
+                  collectionCheck(name),
+                  handleCollectionPress(name),
+                ]}
               >
                 <XStack>
                   {checkedItems[name] ? (
@@ -1073,7 +1085,10 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
           </TouchableOpacity>
           <View style={styles.biggerSpacer} />
           <TouchableOpacity
-            onPress={() => addToCollectionLogic(collectionSelected)}
+            onPress={() => [
+              addToCollectionLogic(),
+              setShowCollectionPopUp(false),
+            ]}
             style={{ marginRight: 20 }}
           >
             <Text style={styles.arvoTextNormal}>Save</Text>
@@ -1092,23 +1107,64 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     setCollectionSelected(name);
   };
 
-  const addToCollectionLogic = async (collectionSelected: string) => {
-    const usersCollectionRef = collection(
-      db,
-      `allUsers/${userId}/collections/${collectionSelected}/Recipes`,
-    );
-    const recipeRef = doc(usersCollectionRef, generatedRecipeTitle);
-
-    try {
-      await setDoc(recipeRef, {
-        Title: generatedRecipeTitle,
-        Ingredients: generatedRecipeIngredients,
-      });
-    } catch (error) {
-      console.log('error');
+  const collectionCheck = (name: string) => {
+    if (selectedCollections.includes(name)) {
+      setSelectedCollections(selectedCollections.filter((i) => i !== name));
+    } else {
+      setSelectedCollections([...selectedCollections, name]);
     }
+  };
 
-    console.log(collectionSelected);
+  const plannerCheck = (name: string) => {
+    if (selectedDays.includes(name)) {
+      setSelectedDays(selectedDays.filter((i) => i !== name));
+    } else {
+      setSelectedDays([...selectedDays, name]);
+    }
+  };
+
+  const addToCollectionLogic = async () => {
+    // Assuming selectedCollections is an array of collection names
+    for (const curCollection of selectedCollections) {
+      const usersCollectionRef = collection(
+        db,
+        `allUsers/${userId}/collections/${curCollection}/Recipes`,
+      );
+      const recipeRef = doc(usersCollectionRef, generatedRecipeTitle);
+
+      try {
+        await setDoc(recipeRef, {
+          Title: generatedRecipeTitle,
+          Ingredients: generatedRecipeIngredients,
+        });
+        console.log(`Document added to collection ${curCollection}`);
+      } catch (error) {
+        console.error('Error adding document:', error);
+      }
+    }
+  };
+
+  const addToPlannerLogic = async () => {
+    // Assuming selectedCollections is an array of collection names
+    console.log(selectedDays);
+    for (const curDay of selectedDays) {
+      console.log('reached loop');
+      const usersCollectionRef = collection(
+        db,
+        `allUsers/${userId}/planner/${curDay}/Recipes`,
+      );
+      const recipeRef = doc(usersCollectionRef, generatedRecipeTitle);
+
+      try {
+        await setDoc(recipeRef, {
+          Title: generatedRecipeTitle,
+          Ingredients: generatedRecipeIngredients,
+        });
+        console.log(`Document added to ${curDay}`);
+      } catch (error) {
+        console.error('Error adding document:', error);
+      }
+    }
   };
 
   const collectionNamesButton = () => {};
@@ -1628,3 +1684,4 @@ const styles = StyleSheet.create({
 });
 
 export default RecipeGenerator;
+
