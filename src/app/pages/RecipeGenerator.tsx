@@ -82,7 +82,7 @@ export function SelectDemo() {
         <SelectDemoItem id="select-demo-2" native />
       </XStack> */}
     </YStack>
-  )
+  );
 }
 
 const items: { name: string }[] = [
@@ -101,9 +101,7 @@ const setSelectedItem = (value: string) => {
 };
 
 export function SelectDemoItem(props: SelectProps) {
-
   // const [selectedItem, setSelectedItem] = useState(items.length > 0 ? items[0]?.name || '' : '');
-
 
   const handleValueChange = (value: string) => {
     setSelectedItem(value);
@@ -113,13 +111,18 @@ export function SelectDemoItem(props: SelectProps) {
 
   return (
     <View>
-      <Select value={selectedItem}
+      <Select
+        value={selectedItem}
         onValueChange={handleValueChange}
         disablePreventBodyScroll
-        {...props}>
-        <Select.Trigger width={80} style={[styles.preferenceButton, {borderRadius: 15}]}>
-        <Select.Value placeholder="Something" style={{ color: '#FFF5CD' }} /> 
-        <ChevronDown size={20} color = '#FFF5CD' />
+        {...props}
+      >
+        <Select.Trigger
+          width={80}
+          style={[styles.preferenceButton, { borderRadius: 15 }]}
+        >
+          <Select.Value placeholder="Something" style={{ color: '#FFF5CD' }} />
+          <ChevronDown size={20} color="#FFF5CD" />
         </Select.Trigger>
 
         <Adapt when="sm" platform="touch">
@@ -191,9 +194,9 @@ export function SelectDemoItem(props: SelectProps) {
                           <Check size={16} />
                         </Select.ItemIndicator>
                       </Select.Item>
-                    )
+                    );
                   }),
-                [items]
+                [items],
               )}
             </Select.Group>
             {/* Native gets an extra icon */}
@@ -208,7 +211,8 @@ export function SelectDemoItem(props: SelectProps) {
                 width={'$4'}
                 pointerEvents="none"
               >
-                <ChevronDown color='#FFF5CD'
+                <ChevronDown
+                  color="#FFF5CD"
                   size={getFontSize((props.size as FontSizeTokens) ?? '$true')}
                 />
               </YStack>
@@ -223,7 +227,7 @@ export function SelectDemoItem(props: SelectProps) {
             height="$3"
           >
             <YStack zIndex={10}>
-              <ChevronDown size={20}  color='#FFF5CD' />
+              <ChevronDown size={20} color="#FFF5CD" />
             </YStack>
             <LinearGradient
               start={[0, 0]}
@@ -236,14 +240,17 @@ export function SelectDemoItem(props: SelectProps) {
         </Select.Content>
       </Select>
     </View>
-    
-  )
+  );
 }
 
 const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const scrollViewRef = useRef<ScrollView>(null);
-  const [showCollectionPopUp, setShowCollectionPopUp] = useState<boolean | null>(null);
-  const [showCalendarPopUp, setShowCalendarPopUp] = useState<boolean | null>(null);
+  const [showCollectionPopUp, setShowCollectionPopUp] = useState<
+    boolean | null
+  >(null);
+  const [showCalendarPopUp, setShowCalendarPopUp] = useState<boolean | null>(
+    null,
+  );
   const [selectedMeal, setSelectedMeal] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [applianceArray, setApplianceArray] = useState<string[]>([]);
@@ -315,7 +322,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   >(null);
 
   const [checkedItems, setCheckedItems] = useState<CheckedItems>({});
-  const [collectionSelected, setCollectionSelected] = useState("");
+  const [collectionSelected, setCollectionSelected] = useState('');
   const [isLoadingIngs, setLoadingIngs] = useState<boolean>(false);
   const [isLoadingPage, setLoadingPage] = useState<boolean>(false);
   const [colorIndex, setColorIndex] = useState(0); // State to track current color index
@@ -327,6 +334,9 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     '#c375ff',
     '#f553a9',
   ]; // Array of six colors to cycle through
+
+  const [selectedCollections, setSelectedCollections] = useState<string[]>([]);
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
 
   const route = useRoute();
   const { userId } = route.params as {
@@ -363,6 +373,10 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     setShowCollectionPopUp(false);
     setShowCalendarPopUp(false);
     setLoadingIngs(false);
+    setLoadingPage(false);
+    setSelectedDays([]);
+    setSelectedCollections([]);
+    setCheckedItems({});
   };
 
   const pullUpPhotos = async () => {
@@ -474,6 +488,8 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
         <ActivityIndicator size="large" color={colors[colorIndex]} />
       </View>
     ) : null;
+
+  const doNothing = () => {};
 
   const userPreferencePage = () => {
     return (
@@ -610,7 +626,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
         <View style={{ height: 20 }} />
         <Button
           style={styles.recipeGeneratorButton}
-          onPress={() => [generateRecipe(), setLoadingPage(true)]}
+          onPress={() => generateRecipe()}
         >
           <Text
             style={[
@@ -630,8 +646,6 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
           </Text>
         </View>
       </View>
-
-
     );
   };
 
@@ -802,9 +816,10 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
         </Button>
 
         {showCalendarPopUp && (
-            <>{calendarPopUP()}
+          <>
+            {calendarPopUP()}
             <View style={{ height: 20 }} />
-            </>
+          </>
         )}
 
         <View style={{ height: 10 }} />
@@ -823,11 +838,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
           </Text>
         </Button>
 
-        {showCollectionPopUp && (
-            <>{collectionPopUP()}</>
-        )}
-
-        
+        {showCollectionPopUp && <>{collectionPopUP()}</>}
 
         {/* Bullet point */}
         {/* <Text>{'\u2022'}</Text> */}
@@ -920,117 +931,195 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
     const dayArray = [formatDate(currentDate), formatDate(day2), formatDate(day3), formatDate(day4), formatDate(day5), formatDate(day6), formatDate(day7)];
 
-    return(
-      <View style={[styles.popUpContainer, {marginTop: 20}]}>
-        <Text style={[styles.modalTitle, {color: "#365E32"}, {marginTop: 20}, { textAlign: 'center' }]}>Add to planner</Text>
-        <View style={[styles.popUpInnerContainer, {marginRight: 20},{marginLeft: 20}]}>
-          <View style={[{marginTop: 20}, {marginLeft: 20}, {marginBottom: 20}]}>
+
+    return (
+      <View style={[styles.popUpContainer, { marginTop: 20 }]}>
+        <Text
+          style={[
+            styles.modalTitle,
+            { color: '#365E32' },
+            { marginTop: 20 },
+            { textAlign: 'center' },
+          ]}
+        >
+          Add to planner
+        </Text>
+        <View
+          style={[
+            styles.popUpInnerContainer,
+            { marginRight: 20 },
+            { marginLeft: 20 },
+          ]}
+        >
+          <View
+            style={[
+              { marginTop: 20 },
+              { marginLeft: 20 },
+              { marginBottom: 20 },
+            ]}
+          >
             {dayArray.map((name) => (
-                <TouchableOpacity
-                  key={name}
-                  onPress={() => handleCollectionPress(name)}
-                >
+              <TouchableOpacity
+                key={name}
+                onPress={() => [
+                  plannerCheck(name),
+                  handleCollectionPress(name),
+                ]}
+              >
                 <XStack>
                   {checkedItems[name] ? (
                     <MaterialIcons name="check-box" size={24} color="#365E32" />
                   ) : (
-                    <MaterialIcons name="check-box-outline-blank" size={24} color="#365E32" />
+                    <MaterialIcons
+                      name="check-box-outline-blank"
+                      size={24}
+                      color="#365E32"
+                    />
                   )}
-                  <Text style={[styles.arvoTextNormal, {fontFamily: "Lato"}, {marginLeft: 5}]}>{name}</Text>
+                  <Text
+                    style={[
+                      styles.arvoTextNormal,
+                      { fontFamily: 'Lato' },
+                      { marginLeft: 5 },
+                    ]}
+                  >
+                    {name}
+                  </Text>
                 </XStack>
-                </TouchableOpacity>
-              ))
-              
-              }
+              </TouchableOpacity>
+            ))}
           </View>
-  
         </View>
 
-        <XStack style={[{marginTop: 20}, {marginBottom: 20}, {alignContent: 'center'}]}>
+        <XStack
+          style={[
+            { marginTop: 20 },
+            { marginBottom: 20 },
+            { alignContent: 'center' },
+          ]}
+        >
           <View style={styles.spacer} />
           <TouchableOpacity
             onPress={() => setShowCalendarPopUp(false)}
-            style={{marginLeft: 20}}
+            style={{ marginLeft: 20 }}
             // Also set the array for the checkmarks to false as well!!
           >
             <Text style={styles.arvoTextNormal}>Cancel</Text>
           </TouchableOpacity>
           <View style={styles.biggerSpacer} />
           <TouchableOpacity
-            onPress={() => addToCollectionLogic(collectionSelected)}
-            style={{marginRight: 20}}
+            onPress={() => [addToPlannerLogic(), setShowCalendarPopUp(false)]}
+            style={{ marginRight: 20 }}
           >
             <Text style={styles.arvoTextNormal}>Save</Text>
           </TouchableOpacity>
           <View style={styles.spacer} />
         </XStack>
-    
       </View>
-    )
-  }
-
+    );
+  };
 
   const collectionPopUP = async () => {
     const usersCollectionRef = collection(db, `allUsers/${userId}/collections`);
     const querySnapshot = await getDocs(usersCollectionRef);
-    const stringArray = [""];
-    let collectionSelected = "";
+    const stringArray = [''];
+    let collectionSelected = '';
 
     querySnapshot.forEach((doc) => {
-        stringArray.push(doc.id);
+      stringArray.push(doc.id);
     });
 
     stringArray.shift();
 
-    return(
-      <View style={[styles.popUpContainer, {marginTop: 20}]}>
-        <Text style={[styles.modalTitle, {color: "#365E32"}, {marginTop: 20}, { textAlign: 'center' }]}>Save to collection</Text>
-        <View style={[styles.popUpInnerContainer, {marginRight: 20},{marginLeft: 20}]}>
-          <View style={[{marginTop: 20}, {marginLeft: 20}, {marginBottom: 20}]}>
+    return (
+      <View style={[styles.popUpContainer, { marginTop: 20 }]}>
+        <Text
+          style={[
+            styles.modalTitle,
+            { color: '#365E32' },
+            { marginTop: 20 },
+            { textAlign: 'center' },
+          ]}
+        >
+          Save to collection
+        </Text>
+        <View
+          style={[
+            styles.popUpInnerContainer,
+            { marginRight: 20 },
+            { marginLeft: 20 },
+          ]}
+        >
+          <View
+            style={[
+              { marginTop: 20 },
+              { marginLeft: 20 },
+              { marginBottom: 20 },
+            ]}
+          >
             {stringArray.map((name) => (
-                <TouchableOpacity
-                  key={name}
-                  onPress={() => handleCollectionPress(name)}
-                >
+              <TouchableOpacity
+                key={name}
+                onPress={() => [
+                  collectionCheck(name),
+                  handleCollectionPress(name),
+                ]}
+              >
                 <XStack>
                   {checkedItems[name] ? (
                     <MaterialIcons name="check-box" size={24} color="#365E32" />
                   ) : (
-                    <MaterialIcons name="check-box-outline-blank" size={24} color="#365E32" />
+                    <MaterialIcons
+                      name="check-box-outline-blank"
+                      size={24}
+                      color="#365E32"
+                    />
                   )}
-                  <Text style={[styles.arvoTextNormal, {fontFamily: "Lato"}, {marginLeft: 5}]}>{name}</Text>
+                  <Text
+                    style={[
+                      styles.arvoTextNormal,
+                      { fontFamily: 'Lato' },
+                      { marginLeft: 5 },
+                    ]}
+                  >
+                    {name}
+                  </Text>
                 </XStack>
-                </TouchableOpacity>
-              ))
-              
-              }
+              </TouchableOpacity>
+            ))}
           </View>
-  
         </View>
 
-        <XStack style={[{marginTop: 20}, {marginBottom: 20}, {alignContent: 'center'}]}>
+        <XStack
+          style={[
+            { marginTop: 20 },
+            { marginBottom: 20 },
+            { alignContent: 'center' },
+          ]}
+        >
           <View style={styles.spacer} />
           <TouchableOpacity
             onPress={() => setShowCollectionPopUp(false)}
-            style={{marginLeft: 20}}
+            style={{ marginLeft: 20 }}
             // Also set the array for the checkmarks to false as well!!
           >
             <Text style={styles.arvoTextNormal}>Cancel</Text>
           </TouchableOpacity>
           <View style={styles.biggerSpacer} />
           <TouchableOpacity
-            onPress={() => addToCollectionLogic(collectionSelected)}
-            style={{marginRight: 20}}
+            onPress={() => [
+              addToCollectionLogic(),
+              setShowCollectionPopUp(false),
+            ]}
+            style={{ marginRight: 20 }}
           >
             <Text style={styles.arvoTextNormal}>Save</Text>
           </TouchableOpacity>
           <View style={styles.spacer} />
         </XStack>
-        
-
       </View>
-    )
-  }
+    );
+  };
 
   const handleCollectionPress = (name: string) => {
     setCheckedItems((prev) => ({
@@ -1040,27 +1129,87 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     setCollectionSelected(name);
   };
 
-  const addToCollectionLogic = async (collectionSelected: string) => {
-    
-    const usersCollectionRef = collection(db, `allUsers/${userId}/collections/${collectionSelected}/Recipes`);
-    const recipeRef = doc(usersCollectionRef, generatedRecipeTitle);
-    
-
-    try {
-      await setDoc(recipeRef, {
-        Title: generatedRecipeTitle,
-        Ingredients: generatedRecipeIngredients, 
-
-      });
-    } catch (error) {
-      console.log("error");
+  const collectionCheck = (name: string) => {
+    if (selectedCollections.includes(name)) {
+      setSelectedCollections(selectedCollections.filter((i) => i !== name));
+    } else {
+      setSelectedCollections([...selectedCollections, name]);
     }
-    
-    console.log(collectionSelected);
+  };
 
-  }
+  const plannerCheck = (name: string) => {
+    if (selectedDays.includes(name)) {
+      setSelectedDays(selectedDays.filter((i) => i !== name));
+    } else {
+      setSelectedDays([...selectedDays, name]);
+    }
+  };
 
-  const collectionNamesButton = () => {}
+  const addToCollectionLogic = async () => {
+    // Assuming selectedCollections is an array of collection names
+    for (const curCollection of selectedCollections) {
+      const usersCollectionRef = collection(
+        db,
+        `allUsers/${userId}/collections/${curCollection}/Recipes`,
+      );
+      const recipeRef = doc(usersCollectionRef, generatedRecipeTitle);
+
+      const newInfo = {
+        Calories: generatedRecipeCaloriesPerServing,
+        Complexity: complexityLevel,
+        Servings: servingsAmount,
+        Time: selectedTime,
+      };
+
+      try {
+        await setDoc(recipeRef, {
+          Title: generatedRecipeTitle,
+          Description: generatedRecipeDescription,
+          Ingredients: generatedRecipeIngredients,
+          Directions: generatedRecipeDirections,
+          Info: newInfo,
+        });
+        console.log(`Document added to collection ${curCollection}`);
+      } catch (error) {
+        console.error('Error adding document:', error);
+      }
+    }
+  };
+
+  const addToPlannerLogic = async () => {
+    // Assuming selectedCollections is an array of collection names
+    console.log(selectedDays);
+    for (const curDay of selectedDays) {
+      console.log('reached loop');
+      const usersCollectionRef = collection(
+        db,
+        `allUsers/${userId}/planner/${curDay}/Recipes`,
+      );
+      const recipeRef = doc(usersCollectionRef, generatedRecipeTitle);
+
+      const newInfo = {
+        Calories: generatedRecipeCaloriesPerServing,
+        Complexity: complexityLevel,
+        Servings: servingsAmount,
+        Time: selectedTime,
+      };
+
+      try {
+        await setDoc(recipeRef, {
+          Title: generatedRecipeTitle,
+          Description: generatedRecipeDescription,
+          Ingredients: generatedRecipeIngredients,
+          Directions: generatedRecipeDirections,
+          Info: newInfo,
+        });
+        console.log(`Document added to ${curDay}`);
+      } catch (error) {
+        console.error('Error adding document:', error);
+      }
+    }
+  };
+
+  const collectionNamesButton = () => {};
 
   const addToPlanner = () => {
     setShowCalendarPopUp(true);
@@ -1087,6 +1236,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       console.log(ingredients);
       console.log(diet);
       setGenerateRecipeBoolean(true);
+      setLoadingPage(true);
 
       if (scrollViewRef.current) {
         scrollViewRef.current.scrollTo({ y: 0, animated: true });
@@ -1278,16 +1428,26 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     const isSelected = applianceArray.includes(appliance);
     let icon = null;
 
-    if(appliance === "Stove") {
-      icon = <MaterialCommunityIcons name="stove" size={20} color={'#FFF5CD'} />
-    } else if(appliance === "Oven") {
-      icon = <MaterialCommunityIcons name="toaster-oven" size={20} color={'#FFF5CD'} />
-    } else if(appliance === "Microwave") {
-      icon = <MaterialCommunityIcons name="microwave" size={20} color={'#FFF5CD'} />
-    } else if(appliance === "Air Fryer") {
-      icon = <Entypo name="air" size={20} color={'#FFF5CD'} />
+    if (appliance === 'Stove') {
+      icon = (
+        <MaterialCommunityIcons name="stove" size={20} color={'#FFF5CD'} />
+      );
+    } else if (appliance === 'Oven') {
+      icon = (
+        <MaterialCommunityIcons
+          name="toaster-oven"
+          size={20}
+          color={'#FFF5CD'}
+        />
+      );
+    } else if (appliance === 'Microwave') {
+      icon = (
+        <MaterialCommunityIcons name="microwave" size={20} color={'#FFF5CD'} />
+      );
+    } else if (appliance === 'Air Fryer') {
+      icon = <Entypo name="air" size={20} color={'#FFF5CD'} />;
     } else {
-      icon = <FontAwesome6 name="bowl-rice" size={17} color={'#FFF5CD'} />
+      icon = <FontAwesome6 name="bowl-rice" size={17} color={'#FFF5CD'} />;
     }
 
     return (
@@ -1298,7 +1458,6 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
         ]}
         onPress={() => handleAppliancesSelected(appliance)}
       >
-
         {icon}
         <Text style={{ marginLeft: 2, color: '#FFF5CD' }}>{appliance}</Text>
       </Button>
@@ -1540,23 +1699,28 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     marginTop: 2,
     marginLeft: -10,
-  }, popUpContainer: {
-      flex: 1,
-      backgroundColor: '#E7D37F',
-      justifyContent: 'space-between',
-      borderRadius: 15,
-  }, popUpInnerContainer: {
+  },
+  popUpContainer: {
+    flex: 1,
+    backgroundColor: '#E7D37F',
+    justifyContent: 'space-between',
+    borderRadius: 15,
+  },
+  popUpInnerContainer: {
     flex: 1,
     backgroundColor: '#FFF5CD',
     justifyContent: 'space-between',
     borderRadius: 7.5,
-  }, arvoTextNormal: {
+  },
+  arvoTextNormal: {
     fontSize: 18,
     fontFamily: 'Arvo',
     color: '#365E32',
-  }, spacer: {
+  },
+  spacer: {
     flex: 1,
-  }, biggerSpacer: {
+  },
+  biggerSpacer: {
     flex: 2,
   },
 });
