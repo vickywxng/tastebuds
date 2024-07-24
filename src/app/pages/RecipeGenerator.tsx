@@ -900,23 +900,23 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
     // const dayArray = ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6", "Day 7"];
     const currentDate = new Date();
-    const day2 = new Date(currentDate); // Create a new Date object based on the current date
+    const day2 = new Date(currentDate); 
     day2.setDate(day2.getDate() + 1); 
 
-    const day3 = new Date(currentDate); // Create a new Date object based on the current date
-    day3.setDate(day3.getDate() + 1); 
+    const day3 = new Date(currentDate); 
+    day3.setDate(day3.getDate() + 2); 
 
-    const day4 = new Date(currentDate); // Create a new Date object based on the current date
-    day4.setDate(day4.getDate() + 1); 
+    const day4 = new Date(currentDate); 
+    day4.setDate(day4.getDate() + 3); 
 
-    const day5 = new Date(currentDate); // Create a new Date object based on the current date
-    day5.setDate(day5.getDate() + 1); 
+    const day5 = new Date(currentDate);
+    day5.setDate(day5.getDate() + 4); 
 
-    const day6 = new Date(currentDate); // Create a new Date object based on the current date
-    day6.setDate(day6.getDate() + 1); 
+    const day6 = new Date(currentDate); 
+    day6.setDate(day6.getDate() + 5); 
 
-    const day7 = new Date(currentDate); // Create a new Date object based on the current date
-    day7.setDate(day7.getDate() + 1); 
+    const day7 = new Date(currentDate); 
+    day7.setDate(day7.getDate() + 6); 
 
     const dayArray = [formatDate(currentDate), formatDate(day2), formatDate(day3), formatDate(day4), formatDate(day5), formatDate(day6), formatDate(day7)];
 
