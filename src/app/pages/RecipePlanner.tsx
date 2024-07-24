@@ -113,7 +113,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     const newIndex = dayIndex + increment;
     console.log('Changing day index to:', newIndex);
     setDayIndex(newIndex);
-    fetchRecipes(newIndex); // Make sure fetchRecipes is called after setting dayIndex
+    fetchRecipes(newIndex);
   };
 
   return (
