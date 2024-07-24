@@ -31,9 +31,29 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   const [loading, setLoading] = useState(true);
   const [dayIndex, setDayIndex] = useState<number>(0);
   const days = ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'];
+  const [collectionNames, setCollectionNames] = useState<string[][]>([['']]);
+  const [addRec, setAddRec] = useState<Boolean>(false);
   //right now the date is entered manually^^ (aug1-2024)
 
   useEffect(() => {
+    const constFetchCollections = async () => {
+      const allCollections = collection(db, `allUsers/${userId}/collections`);
+      const querySnapshot = await getDocs(allCollections);
+      const collArray = [['']];
+      querySnapshot.forEach((collection) => {
+        if (collection.id === 'History') {
+          collArray.push([collection.id, 'history']);
+        } else if (collection.id === 'Favorites') {
+          collArray.push([collection.id, 'heart']);
+        } else {
+          collArray.push([collection.id, collection.data().IconName]);
+        }
+      });
+      collArray.shift();
+      setCollectionNames(collArray);
+    };
+
+    constFetchCollections();
     fetchRecipes(dayIndex);
   }, []);
 
@@ -116,6 +136,28 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     fetchRecipes(newIndex);
   };
 
+  const addPopUp = () => {
+    if (addRec) {
+      return (
+        <View style={styles.popUp}>
+          <Text style={styles.popUpTitle}>Select your collection</Text>
+          <View style={styles.collections}>
+            {collectionNames.map((name, index) => (
+              <TouchableOpacity key={index} style={styles.collection}>
+                <FontAwesome5
+                  name={name[1]}
+                  size={20}
+                  color="#FD9B62"
+                ></FontAwesome5>
+                <Text style={styles.colText}>{name[0]}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+      );
+    }
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -128,6 +170,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
             <Ionicons name="chevron-back" size={24} color="#FFF5CD" />
           </TouchableOpacity>
         )}
+        {dayIndex <= 0 && <View style={{ width: 20 }}></View>}
         <Text style={styles.headerText}>August {dayIndex + 1}, 2024</Text>
         {dayIndex < 6 && (
           <TouchableOpacity
@@ -138,6 +181,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
             <Ionicons name="chevron-forward" size={24} color="#FFF5CD" />
           </TouchableOpacity>
         )}
+        {dayIndex >= 6 && <View style={{ width: 20 }}></View>}
       </View>
       <View style={styles.editSection}>
         <TouchableOpacity
@@ -145,7 +189,13 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
         >
           <Text style={styles.editText}>{editMode ? 'Done' : 'Edit'}</Text>
         </TouchableOpacity>
-        <FontAwesome5 name="plus" size={30} color="#365E32" />
+        <TouchableOpacity
+          onPress={() => {
+            setAddRec(true);
+          }}
+        >
+          <FontAwesome5 name="plus" size={30} color="#365E32" />
+        </TouchableOpacity>
       </View>
       <ScrollView contentContainerStyle={styles.recipes}>
         {loading ? (
@@ -184,6 +234,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
           ))
         )}
       </ScrollView>
+      <View style={styles.popUpContainer}>{addPopUp()}</View>
       <View style={styles.buttons}>
         <TouchableOpacity style={styles.button}>
           <Ionicons name="calendar" size={40} color={'#FFF5CD'} />
@@ -208,7 +259,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#365E32',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     paddingTop: 110,
     paddingBottom: 50,
     paddingLeft: 25,
@@ -266,6 +316,51 @@ const styles = StyleSheet.create({
   recipeDescription: {
     color: '#AFA26B',
     fontSize: 16,
+  },
+  popUpContainer: {
+    position: 'absolute',
+    width: 300,
+    height: 250,
+    marginTop: 350,
+    marginLeft: 64,
+    zIndex: 1000,
+  },
+  popUp: {
+    backgroundColor: '#FD9B62',
+    position: 'absolute',
+    alignItems: 'center',
+    width: 300,
+    height: 250,
+    zIndex: 1000,
+    padding: 10,
+    borderRadius: 15,
+  },
+  popUpTitle: {
+    color: '#FFF5CD',
+    fontSize: 22,
+    fontFamily: 'Arvo-Bold',
+    marginTop: 40,
+    marginBottom: 20,
+  },
+  collections: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+  },
+  collection: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    backgroundColor: '#FFF5CD',
+    padding: 8,
+    borderRadius: 25,
+    width: 125,
+    margin: 5,
+  },
+  colText: {
+    fontFamily: 'Lato-Bold',
+    fontSize: 16,
+    color: '#FD9B62',
+    marginLeft: 10,
   },
   info: {
     flexDirection: 'row',
