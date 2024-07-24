@@ -29,20 +29,20 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   const [recipes, setRecipes] = useState<string[][]>([]);
   const [selectedRecipes, setSelectedRecipes] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
-  const [dayIndex, setDayIndex] = useState(0);
+  const [dayIndex, setDayIndex] = useState<number>(0);
   const days = ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'];
   //right now the date is entered manually^^ (aug1-2024)
 
   useEffect(() => {
-    fetchRecipes();
+    fetchRecipes(dayIndex);
   }, []);
 
-  const fetchRecipes = async () => {
+  const fetchRecipes = async (day: number) => {
     const curCollection = collection(
       db,
-      `allUsers/${userId}/planner/${days[dayIndex]}/Recipes`,
+      `allUsers/${userId}/planner/${days[day]}/Recipes`,
     );
-    console.log(dayIndex);
+    console.log(day);
     try {
       const querySnapshot = await getDocs(curCollection);
       const updatedRecipes: string[][] = [];
@@ -109,14 +109,20 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('Collection', { userId });
   };
 
+  const toggleDay = (increment: number) => {
+    const newIndex = dayIndex + increment;
+    console.log('Changing day index to:', newIndex);
+    setDayIndex(newIndex);
+    fetchRecipes(newIndex); // Make sure fetchRecipes is called after setting dayIndex
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         {dayIndex > 0 && (
           <TouchableOpacity
             onPress={() => {
-              fetchRecipes;
-              setDayIndex(dayIndex - 1);
+              toggleDay(-1);
             }}
           >
             <Ionicons name="chevron-back" size={24} color="#FFF5CD" />
@@ -126,8 +132,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
         {dayIndex < 6 && (
           <TouchableOpacity
             onPress={() => {
-              fetchRecipes;
-              setDayIndex(dayIndex + 1);
+              toggleDay(1);
             }}
           >
             <Ionicons name="chevron-forward" size={24} color="#FFF5CD" />
@@ -154,12 +159,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
               onPress={() => {
                 if (editMode) {
                   toggleRecipeSelection(index);
-                } else {
-                  navigation.navigate('InfoPage', {
-                    userId,
-                    collectionName: 'Default',
-                    curRecipe: recipe[0],
-                  });
                 }
               }}
             >
