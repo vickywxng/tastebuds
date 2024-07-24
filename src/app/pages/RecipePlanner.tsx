@@ -140,7 +140,9 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
         )}
       </View>
       <View style={styles.editSection}>
-        <TouchableOpacity onPress={toggleEditMode}>
+        <TouchableOpacity
+          onPress={editMode ? deleteSelectedRecipes : toggleEditMode}
+        >
           <Text style={styles.editText}>{editMode ? 'Done' : 'Edit'}</Text>
         </TouchableOpacity>
         <FontAwesome5 name="plus" size={30} color="#365E32" />
