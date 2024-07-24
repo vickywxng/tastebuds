@@ -234,7 +234,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
           ))
         )}
       </ScrollView>
-      <View style={styles.popUpContainer}>{addPopUp()}</View>
+      <View style={[styles.popUpContainer]}>{addPopUp()}</View>
       <View style={styles.buttons}>
         <TouchableOpacity style={styles.button}>
           <Ionicons name="calendar" size={40} color={'#FFF5CD'} />
@@ -319,18 +319,15 @@ const styles = StyleSheet.create({
   },
   popUpContainer: {
     position: 'absolute',
-    width: 300,
-    height: 250,
-    marginTop: 350,
-    marginLeft: 64,
+    width: 310,
+    marginTop: 300,
+    marginLeft: 60,
     zIndex: 1000,
   },
   popUp: {
     backgroundColor: '#FD9B62',
     position: 'absolute',
     alignItems: 'center',
-    width: 300,
-    height: 250,
     zIndex: 1000,
     padding: 10,
     borderRadius: 15,
@@ -346,6 +343,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'center',
+    marginVertical: 10,
+    marginBottom: 15,
   },
   collection: {
     flexDirection: 'row',
