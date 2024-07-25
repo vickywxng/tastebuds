@@ -33,6 +33,7 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
   const [directions, setDirections] = useState<string[]>([]);
 
   useEffect(() => {
+    console.log(curRecipe);
     const fetchRecipes = async () => {
       try {
         const curDoc = doc(
@@ -42,8 +43,8 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
         const docSnap = await getDoc(curDoc);
 
         if (docSnap.exists()) {
-          setTitle(docSnap.id);
-          setDescription(docSnap.data().Description);
+          setTitle(docSnap.id.trim());
+          setDescription(docSnap.data().Description.trim());
           setGenInfo([
             docSnap.data().Info['Servings'],
             docSnap.data().Info['Time'],
@@ -80,7 +81,7 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
     <View style={styles.container}>
       <ScrollView
         contentContainerStyle={[
-          { minHeight: Dimensions.get('window').height * 1.5 },
+          { minHeight: Dimensions.get('window').height * 2 },
         ]}
         showsVerticalScrollIndicator={false}
       >

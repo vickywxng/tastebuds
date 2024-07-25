@@ -254,7 +254,6 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const [selectedMeal, setSelectedMeal] = useState<string | null>(null);
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [applianceArray, setApplianceArray] = useState<string[]>([]);
-  const [applianceString, setApplianceString] = useState<string | null>(null);
   const [complexityLevel, setComplexityLevel] = useState<string>('');
   const [ingredients, setIngredients] = useState<string>('');
   const [diet, setDiet] = useState<string>('');
@@ -267,14 +266,8 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   const [generatedRecipeTitle, setGeneratedRecipeTitle] = useState<string>('');
   const [generatedRecipeDescription, setGeneratedRecipeDescription] =
     useState<string>('');
-  const [generatedRecipeServingsAmount, setGeneratedRecipeServingsAmount] =
-    useState<string>('');
-  const [generatedRecipeTimeAmount, setGeneratedRecipeTimeAmount] =
-    useState<string>('');
 
   //Might need to make time into a number measured in minutes and then convert it into a string
-  const [generatedRecipeComplexityLevel, setGeneratedRecipeComplexityLevel] =
-    useState<string>('');
   const [generatedRecipeIngredients, setGeneratedRecipeIngredients] = useState<
     string[]
   >([]);
@@ -285,41 +278,6 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     generatedRecipeCaloriesPerServing,
     setGeneratedRecipeCaloriesPerServing,
   ] = useState<string | null>(null);
-  const [generatedRecipeTotalFat, setGeneratedRecipeTotalFat] = useState<
-    string | null
-  >(null);
-  const [generatedRecipeSodium, setGeneratedRecipeSodium] = useState<
-    string | null
-  >(null);
-  const [generatedRecipeDietaryFiber, setGeneratedRecipeDietaryFiber] =
-    useState<string | null>(null);
-  const [generatedRecipeProtein, setGeneratedRecipeProtein] = useState<
-    string | null
-  >(null);
-  const [generatedRecipeVitaminC, setGeneratedRecipeVitaminC] = useState<
-    string | null
-  >(null);
-  const [generatedRecipePotassium, setGeneratedRecipePotassium] = useState<
-    string | null
-  >(null);
-  const [generatedRecipeCholesterol, setGeneratedRecipeCholesterol] = useState<
-    string | null
-  >(null);
-  const [generatedRecipeTotalCarb, setGeneratedRecipeTotalCarb] = useState<
-    string | null
-  >(null);
-  const [generatedRecipeSugars, setGeneratedRecipeSugars] = useState<
-    string | null
-  >(null);
-  const [generatedRecipeVitaminA, setGeneratedRecipeVitaminA] = useState<
-    string | null
-  >(null);
-  const [generatedRecipeIron, setGeneratedRecipeIron] = useState<string | null>(
-    null,
-  );
-  const [generatedRecipePhosphorus, setGeneratedRecipePhosphorus] = useState<
-    string | null
-  >(null);
 
   const [checkedItems, setCheckedItems] = useState<CheckedItems>({});
   const [collectionSelected, setCollectionSelected] = useState('');
@@ -428,34 +386,34 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     const input =
       'Tell me all of the edible ingredients you see in this image and if possible, mention their quantity as well. I need the response generated in this way: Ingredients: (list of all ingredients seperated by comma)';
 
-    // const openai = new OpenAI({
-    //   apiKey: process.env.EXPO_PUBLIC_API_KEY_OPENAI, // Replace with your actual API key
-    // });
+    const openai = new OpenAI({
+      apiKey: process.env.EXPO_PUBLIC_API_KEY_OPENAI,
+    });
 
-    // const result = await openai.chat.completions.create({
-    //   model: 'gpt-4o',
-    //   messages: [
-    //     {
-    //       role: 'user',
-    //       content: [
-    //         {
-    //           type: 'text',
-    //           text: input,
-    //         },
-    //         {
-    //           type: 'image_url',
-    //           image_url: {
-    //             url: imageUrl,
-    //           },
-    //         },
-    //       ],
-    //     },
-    //   ],
-    // });
+    const result = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'text',
+              text: input,
+            },
+            {
+              type: 'image_url',
+              image_url: {
+                url: imageUrl,
+              },
+            },
+          ],
+        },
+      ],
+    });
 
-    // const ingredientsRaw = result.choices[0]?.message.content ?? '';
-    const ingredientsRaw =
-      'Ingredients: Baguette (2), Apple (3 slices), Butter (two teaspoons)';
+    const ingredientsRaw = result.choices[0]?.message.content ?? '';
+    // const ingredientsRaw =
+    //   'Ingredients: Baguette (2), Apple (3 slices), Butter (two teaspoons)';
     const ingredientsSplit = ingredientsRaw.split('Ingredients:');
     console.log(ingredientsSplit[1]);
     const ingredientsCleaned = ingredientsSplit[1];
@@ -691,113 +649,6 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
         ))}
 
         <View style={{ height: 20 }} />
-        <Text style={styles.modalTitleSmaller}>Nutritional Facts</Text>
-
-        <YStack gap={0}>
-          <XStack>
-            <Text style={styles.modalLargerText}>Calories per serving:</Text>
-            <View style={{ width: 5 }} />
-            <Text style={[styles.modalLargerText, { fontFamily: 'Lato-Bold' }]}>
-              {generatedRecipeCaloriesPerServing}
-            </Text>
-          </XStack>
-
-          <XStack>
-            <Text style={styles.modalLargerText}>Total Fat:</Text>
-            <View style={{ width: 5 }} />
-            <Text style={[styles.modalLargerText, { fontFamily: 'Lato-Bold' }]}>
-              {generatedRecipeTotalFat}
-            </Text>
-          </XStack>
-
-          <XStack>
-            <Text style={styles.modalLargerText}>Sodium:</Text>
-            <View style={{ width: 5 }} />
-            <Text style={[styles.modalLargerText, { fontFamily: 'Lato-Bold' }]}>
-              {generatedRecipeSodium}
-            </Text>
-          </XStack>
-
-          <XStack>
-            <Text style={styles.modalLargerText}>Dietary Fiber:</Text>
-            <View style={{ width: 5 }} />
-            <Text style={[styles.modalLargerText, { fontFamily: 'Lato-Bold' }]}>
-              {generatedRecipeDietaryFiber}
-            </Text>
-          </XStack>
-
-          <XStack>
-            <Text style={styles.modalLargerText}>Protein:</Text>
-            <View style={{ width: 5 }} />
-            <Text style={[styles.modalLargerText, { fontFamily: 'Lato-Bold' }]}>
-              {generatedRecipeProtein}
-            </Text>
-          </XStack>
-
-          <XStack>
-            <Text style={styles.modalLargerText}>VitaminC:</Text>
-            <View style={{ width: 5 }} />
-            <Text style={[styles.modalLargerText, { fontFamily: 'Lato-Bold' }]}>
-              {generatedRecipeVitaminC}
-            </Text>
-          </XStack>
-
-          <XStack>
-            <Text style={styles.modalLargerText}>Potassium:</Text>
-            <View style={{ width: 5 }} />
-            <Text style={[styles.modalLargerText, { fontFamily: 'Lato-Bold' }]}>
-              {generatedRecipePotassium}
-            </Text>
-          </XStack>
-
-          <XStack>
-            <Text style={styles.modalLargerText}>Cholesterol:</Text>
-            <View style={{ width: 5 }} />
-            <Text style={[styles.modalLargerText, { fontFamily: 'Lato-Bold' }]}>
-              {generatedRecipeCholesterol}
-            </Text>
-          </XStack>
-
-          <XStack>
-            <Text style={styles.modalLargerText}>Total Carbohydrate:</Text>
-            <View style={{ width: 5 }} />
-            <Text style={[styles.modalLargerText, { fontFamily: 'Lato-Bold' }]}>
-              {generatedRecipeTotalCarb}
-            </Text>
-          </XStack>
-
-          <XStack>
-            <Text style={styles.modalLargerText}>Sugars:</Text>
-            <View style={{ width: 5 }} />
-            <Text style={[styles.modalLargerText, { fontFamily: 'Lato-Bold' }]}>
-              {generatedRecipeSugars}
-            </Text>
-          </XStack>
-
-          <XStack>
-            <Text style={styles.modalLargerText}>Vitamin A:</Text>
-            <View style={{ width: 5 }} />
-            <Text style={[styles.modalLargerText, { fontFamily: 'Lato-Bold' }]}>
-              {generatedRecipeVitaminA}
-            </Text>
-          </XStack>
-
-          <XStack>
-            <Text style={styles.modalLargerText}>Iron:</Text>
-            <View style={{ width: 5 }} />
-            <Text style={[styles.modalLargerText, { fontFamily: 'Lato-Bold' }]}>
-              {generatedRecipeIron}
-            </Text>
-          </XStack>
-
-          <XStack>
-            <Text style={styles.modalLargerText}>Phosphorus:</Text>
-            <View style={{ width: 5 }} />
-            <Text style={[styles.modalLargerText, { fontFamily: 'Lato-Bold' }]}>
-              {generatedRecipePhosphorus}
-            </Text>
-          </XStack>
-        </YStack>
 
         <View style={{ height: 30 }} />
 
@@ -900,37 +751,52 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   };
 
   const calendarPopUP = () => {
-    
     const formatDate = (date: number | Date | undefined) => {
       return new Intl.DateTimeFormat('en-US', {
         weekday: 'long', // 'Monday'
-        month: 'long',   // 'July'
-        day: 'numeric'   // '22'
+        month: 'long', // 'July'
+        day: 'numeric', // '22'
       }).format(date);
     };
 
-    // const dayArray = ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6", "Day 7"];
     const currentDate = new Date();
-    const day2 = new Date(currentDate); 
-    day2.setDate(day2.getDate() + 1); 
+    const day2 = new Date(currentDate);
+    day2.setDate(day2.getDate() + 1);
 
-    const day3 = new Date(currentDate); 
-    day3.setDate(day3.getDate() + 2); 
+    const day3 = new Date(currentDate);
+    day3.setDate(day3.getDate() + 2);
 
-    const day4 = new Date(currentDate); 
-    day4.setDate(day4.getDate() + 3); 
+    const day4 = new Date(currentDate);
+    day4.setDate(day4.getDate() + 3);
 
     const day5 = new Date(currentDate);
-    day5.setDate(day5.getDate() + 4); 
+    day5.setDate(day5.getDate() + 4);
 
-    const day6 = new Date(currentDate); 
-    day6.setDate(day6.getDate() + 5); 
+    const day6 = new Date(currentDate);
+    day6.setDate(day6.getDate() + 5);
 
-    const day7 = new Date(currentDate); 
-    day7.setDate(day7.getDate() + 6); 
+    const day7 = new Date(currentDate);
+    day7.setDate(day7.getDate() + 6);
 
-    const dayArray = [formatDate(currentDate), formatDate(day2), formatDate(day3), formatDate(day4), formatDate(day5), formatDate(day6), formatDate(day7)];
+    const realDateArray = [
+      formatDate(currentDate),
+      formatDate(day2),
+      formatDate(day3),
+      formatDate(day4),
+      formatDate(day5),
+      formatDate(day6),
+      formatDate(day7),
+    ];
 
+    const dayArray = [
+      'Day 1',
+      'Day 2',
+      'Day 3',
+      'Day 4',
+      'Day 5',
+      'Day 6',
+      'Day 7',
+    ];
 
     return (
       <View style={[styles.popUpContainer, { marginTop: 20 }]}>
@@ -983,7 +849,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
                       { marginLeft: 5 },
                     ]}
                   >
-                    {name}
+                    {realDateArray[dayArray.indexOf(name)]}
                   </Text>
                 </XStack>
               </TouchableOpacity>
@@ -1023,7 +889,6 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     const usersCollectionRef = collection(db, `allUsers/${userId}/collections`);
     const querySnapshot = await getDocs(usersCollectionRef);
     const stringArray = [''];
-    let collectionSelected = '';
 
     querySnapshot.forEach((doc) => {
       stringArray.push(doc.id);
@@ -1159,12 +1024,13 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
         Complexity: complexityLevel,
         Servings: servingsAmount,
         Time: selectedTime,
+        Meal: selectedMeal,
       };
 
       try {
         await setDoc(recipeRef, {
-          Title: generatedRecipeTitle,
-          Description: generatedRecipeDescription,
+          Title: generatedRecipeTitle.trim(),
+          Description: generatedRecipeDescription.trim(),
           Ingredients: generatedRecipeIngredients,
           Directions: generatedRecipeDirections,
           Info: newInfo,
@@ -1192,12 +1058,13 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
         Complexity: complexityLevel,
         Servings: servingsAmount,
         Time: selectedTime,
+        Meal: selectedMeal,
       };
 
       try {
         await setDoc(recipeRef, {
-          Title: generatedRecipeTitle,
-          Description: generatedRecipeDescription,
+          Title: generatedRecipeTitle.trim(),
+          Description: generatedRecipeDescription.trim(),
           Ingredients: generatedRecipeIngredients,
           Directions: generatedRecipeDirections,
           Info: newInfo,
@@ -1208,8 +1075,6 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       }
     }
   };
-
-  const collectionNamesButton = () => {};
 
   const addToPlanner = () => {
     setShowCalendarPopUp(true);
@@ -1270,7 +1135,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       );
 
       // const openai = new OpenAI({
-      //   apiKey: process.env.EXPO_PUBLIC_API_KEY_OPENAI, // Replace with your actual API key
+      //   apiKey: process.env.EXPO_PUBLIC_API_KEY_OPENAI,
       // });
 
       // const result = await openai.chat.completions.create({
@@ -1297,11 +1162,12 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     quantity: string,
     ingredients: string,
   ) => {
-    const input = `Generate me a recipe with these constraints: ${cookTime} cooking time, cooked on ${appliance}, diet ${diet}, ${complexity}, ${quantity} yield. The ingredients available are ${ingredients}. I need the response to be generated in this way: Title: (title of dish) Description: (description of dish) Ingredients: (list of all ingredients separated by a comma) Directions: (list of cooking directions separated by a period) Calories: (calorie amount)`;
+    const input = `Generate me the healthiest recipe possible with these constraints: meal type ${selectedMeal}, ${cookTime} cooking time, cooked on ${appliance}, diet ${diet}, ${complexity}, ${quantity} yield. The ingredients available are ${ingredients}. I need the response to be generated in this way: Title: (title of dish) Description: (description of dish) Ingredients: (list of all ingredients separated by a comma) Directions: (list of cooking directions separated by a period) Calories: (calorie amount). I don't want any numbered lists, bullet lists or any lists that require a new line.`;
     return input;
   };
 
   const organizeOutput = async (output: string) => {
+    console.log(output);
     const wordsToSplitBy = [
       'Title: ',
       'Description: ',
@@ -1346,7 +1212,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       const numbers = infoArray[5].match(regex);
       if (numbers && numbers[0]) {
         cals = numbers[0];
-        setGeneratedRecipeCaloriesPerServing(numbers[0] + 'g');
+        setGeneratedRecipeCaloriesPerServing(numbers[0]);
       }
     }
 
@@ -1384,6 +1250,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
       Complexity: complexity,
       Servings: servings,
       Time: time,
+      Meal: selectedMeal,
     };
     try {
       await setDoc(newDoc, {

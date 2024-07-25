@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Modal,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import {
+  Ionicons,
+  MaterialCommunityIcons,
+  MaterialIcons,
+} from '@expo/vector-icons';
 import { NavigationProp, useRoute } from '@react-navigation/native';
 import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore/lite';
 
@@ -16,6 +18,26 @@ import { db } from '../firebase';
 
 type Props = {
   navigation: NavigationProp<any>;
+};
+
+const icons = (meal: string) => {
+  if (meal === 'Breakfast') {
+    return (
+      <MaterialCommunityIcons name="egg-fried" size={20} color="#FFF5CD" />
+    );
+  } else if (meal === 'Lunch') {
+    return <MaterialCommunityIcons name="food" size={20} color="#FFF5CD" />;
+  } else if (meal === 'Dinner') {
+    return <MaterialIcons name="dinner-dining" size={20} color="#FFF5CD" />;
+  } else if (meal === 'Snack') {
+    return (
+      <MaterialCommunityIcons
+        name="food-apple-outline"
+        size={20}
+        color="#FFF5CD"
+      />
+    );
+  }
 };
 
 const DynamicCollection: React.FC<Props> = ({ navigation }) => {
@@ -31,6 +53,7 @@ const DynamicCollection: React.FC<Props> = ({ navigation }) => {
     db,
     `allUsers/${userId}/collections/${collectionName}/Recipes`,
   );
+  let curtitle = '';
 
   useEffect(() => {
     const fetchRecipes = async () => {
@@ -39,12 +62,14 @@ const DynamicCollection: React.FC<Props> = ({ navigation }) => {
         const updatedRecipes: string[][] = [];
 
         querySnapshot.forEach((doc) => {
+          curtitle = doc.id;
           updatedRecipes.push([
             doc.id,
-            doc.data().Description,
+            doc.data().Description.trim(),
             doc.data().Info['Time'],
             doc.data().Info['Complexity'],
             doc.data().Info['Calories'],
+            doc.data().Info['Meal'], // Ensure this value matches the type
           ]);
         });
 
@@ -70,6 +95,7 @@ const DynamicCollection: React.FC<Props> = ({ navigation }) => {
   };
 
   const goToInfo = (curRecipe: string) => {
+    console.log(curRecipe);
     navigation.navigate('InfoPage', {
       userId,
       collectionName,
@@ -122,37 +148,52 @@ const DynamicCollection: React.FC<Props> = ({ navigation }) => {
           </Text>
         </TouchableOpacity>
         <View style={styles.recipes}>
-          {recipes.map((recipe, index) => (
-            <TouchableOpacity
-              key={index}
-              style={[
-                styles.recipe,
-                selectedRecipes.includes(index) && styles.selectedRecipe,
-              ]}
-              onPress={() =>
-                editMode
-                  ? toggleRecipeSelection(index)
-                  : goToInfo(`${recipe[0]}`)
-              }
-            >
-              <Text style={styles.recipeTitle}>{recipe[0]}</Text>
-              <Text style={styles.recipeDescription}>{recipe[1]}</Text>
-              <View style={styles.info}>
-                <View style={styles.infoElement}>
-                  <Ionicons name="alarm" size={20} color="#FFF5CD" />
-                  <Text style={styles.infoText}>{recipe[2]}</Text>
+          {recipes.map((recipe, index) => {
+            const title =
+              (recipe[0] || '').length >= 24
+                ? recipe[0]?.substring(0, 25) + '...'
+                : recipe[0];
+
+            const description =
+              (recipe[1] || '').length >= 110
+                ? recipe[1]?.substring(0, 111) + '...'
+                : recipe[1];
+
+            return (
+              <TouchableOpacity
+                key={index}
+                style={[
+                  styles.recipe,
+                  selectedRecipes.includes(index) && styles.selectedRecipe,
+                ]}
+                onPress={() =>
+                  editMode
+                    ? toggleRecipeSelection(index)
+                    : goToInfo(recipe[0] + '')
+                }
+              >
+                <Text style={styles.recipeTitle}>{title}</Text>
+                <Text style={styles.recipeDescription}>{description}</Text>
+                <View style={styles.info}>
+                  <View style={[styles.infoElement, { width: 50 }]}>
+                    {icons(recipe[5] + '')}
+                  </View>
+                  <View style={styles.infoElement}>
+                    <Ionicons name="alarm" size={18} color="#FFF5CD" />
+                    <Text style={styles.infoText}>{recipe[2]}</Text>
+                  </View>
+                  <View style={styles.infoElement}>
+                    <Ionicons name="star" size={18} color="#FFF5CD" />
+                    <Text style={styles.infoText}>{recipe[3]}</Text>
+                  </View>
+                  <View style={styles.infoElement}>
+                    <Ionicons name="flame" size={20} color="#FFF5CD" />
+                    <Text style={styles.infoText}>{recipe[4]}</Text>
+                  </View>
                 </View>
-                <View style={styles.infoElement}>
-                  <Ionicons name="star" size={20} color="#FFF5CD" />
-                  <Text style={styles.infoText}>{recipe[3]}</Text>
-                </View>
-                <View style={styles.infoElement}>
-                  <Ionicons name="flame" size={20} color="#FFF5CD" />
-                  <Text style={styles.infoText}>{recipe[4]}</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          ))}
+              </TouchableOpacity>
+            );
+          })}
         </View>
       </ScrollView>
       <View style={styles.buttons}>
@@ -226,7 +267,7 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   infoElement: {
-    width: 95,
+    width: 85,
     height: 37.5,
     flexDirection: 'row',
     justifyContent: 'center',
@@ -238,7 +279,7 @@ const styles = StyleSheet.create({
   },
   infoText: {
     color: '#FFF5CD',
-    fontSize: 13,
+    fontSize: 11,
     fontWeight: 'bold',
     marginLeft: 5,
   },
