@@ -374,7 +374,6 @@ const styles = StyleSheet.create({
   foldersWrapper: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
     paddingTop: 50,
   },
   folders: {
