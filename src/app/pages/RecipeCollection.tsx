@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
+  Dimensions,
   Modal,
   ScrollView,
   StyleSheet,
@@ -87,7 +88,7 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
     for (let infoArr of foldersToDelete) {
       let id = infoArr[0];
       const docRef = doc(collectionsRef, id);
-      deleteDoc(docRef);
+      await deleteDoc(docRef); // Make sure to await here
     }
 
     setFolders(filteredFolders);
@@ -131,7 +132,7 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView>
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <View style={styles.topButtons}>
           <TouchableOpacity
             style={styles.editButton}
@@ -148,42 +149,48 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
             <FontAwesome5 name="plus" size={40} color="#365E32" />
           </TouchableOpacity>
         </View>
-        <View style={styles.folders}>
-          <TouchableOpacity
-            style={styles.folder}
-            onPress={() => !editMode && goIntoCollection('History')}
-          >
-            <FontAwesome5
-              name="history"
-              size={40}
-              color="#365E32"
-            ></FontAwesome5>
-            <Text style={styles.folderText}>History</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.folder}
-            onPress={() => !editMode && goIntoCollection('Favorites')}
-          >
-            <FontAwesome5 name="heart" size={40} color="#365E32"></FontAwesome5>
-            <Text style={styles.folderText}>Favorites</Text>
-          </TouchableOpacity>
-          {folders.map((folder, index) => (
+        <View style={styles.foldersWrapper}>
+          <View style={styles.folders}>
             <TouchableOpacity
-              key={index}
-              style={[
-                styles.folder,
-                selectedFolders.includes(index) && styles.selectedFolder,
-              ]}
-              onPress={() =>
-                editMode
-                  ? toggleFolderSelection(index)
-                  : goIntoCollection(`${folder[0]}`)
-              }
+              style={styles.folder}
+              onPress={() => !editMode && goIntoCollection('History')}
             >
-              <FontAwesome5 name={folder[1]} size={40} color="#365E32" />
-              <Text style={styles.folderText}>{folder[0]}</Text>
+              <FontAwesome5
+                name="history"
+                size={40}
+                color="#365E32"
+              ></FontAwesome5>
+              <Text style={styles.folderText}>History</Text>
             </TouchableOpacity>
-          ))}
+            <TouchableOpacity
+              style={styles.folder}
+              onPress={() => !editMode && goIntoCollection('Favorites')}
+            >
+              <FontAwesome5
+                name="heart"
+                size={40}
+                color="#365E32"
+              ></FontAwesome5>
+              <Text style={styles.folderText}>Favorites</Text>
+            </TouchableOpacity>
+            {folders.map((folder, index) => (
+              <TouchableOpacity
+                key={index}
+                style={[
+                  styles.folder,
+                  selectedFolders.includes(index) && styles.selectedFolder,
+                ]}
+                onPress={() =>
+                  editMode
+                    ? toggleFolderSelection(index)
+                    : goIntoCollection(`${folder[0]}`)
+                }
+              >
+                <FontAwesome5 name={folder[1]} size={40} color="#365E32" />
+                <Text style={styles.folderText}>{folder[0]}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
         </View>
       </ScrollView>
 
@@ -312,10 +319,19 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
   );
 };
 
+const { width, height } = Dimensions.get('window');
+const folderSize = (width - 110) / 2;
+const neededPadding = height / 5;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#E7D37F',
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    paddingBottom: neededPadding,
   },
   topButtons: {
     flexDirection: 'row',
@@ -355,21 +371,25 @@ const styles = StyleSheet.create({
     borderRadius: 0,
     borderWidth: 0,
   },
+  foldersWrapper: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 50,
+  },
   folders: {
     flexDirection: 'row',
-    justifyContent: 'flex-start',
     flexWrap: 'wrap',
-    marginLeft: 25,
-    marginTop: 50,
-    marginBottom: 200,
+    justifyContent: 'center',
+    width: '100%',
   },
   folder: {
     backgroundColor: '#FFF5CD',
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'column',
-    width: 155,
-    height: 155,
+    width: folderSize,
+    height: folderSize,
     borderRadius: 17.5,
     margin: 17.5,
     borderWidth: 2,

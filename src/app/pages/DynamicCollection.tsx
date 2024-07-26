@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
+  Dimensions,
   ScrollView,
   StyleSheet,
   Text,
@@ -138,7 +139,7 @@ const DynamicCollection: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView>
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <TouchableOpacity
           style={styles.editButton}
           onPress={editMode ? deleteSelectedRecipes : toggleEditMode}
@@ -204,7 +205,7 @@ const DynamicCollection: React.FC<Props> = ({ navigation }) => {
           <Ionicons name="create-outline" size={40} color={'#FFF5CD'} />
         </TouchableOpacity>
         <TouchableOpacity style={styles.button} onPress={goToCollection}>
-          <Ionicons name="basket-outline" size={40} color={'#FFF5CD'} />
+          <Ionicons name="basket" size={40} color={'#FFF5CD'} />
         </TouchableOpacity>
       </View>
     </View>
@@ -215,6 +216,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#E7D37F',
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
   },
   editButton: {
     marginTop: 120,

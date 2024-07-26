@@ -79,12 +79,7 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <ScrollView
-        contentContainerStyle={[
-          { minHeight: Dimensions.get('window').height * 2 },
-        ]}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <FontAwesome5
           name="arrow-left"
           size={30}
@@ -130,7 +125,7 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
         </TouchableOpacity>
         <TouchableOpacity style={styles.button}>
           <Ionicons
-            name="basket-outline"
+            name="basket"
             size={40}
             color={'#FFF5CD'}
             onPress={goToCollection}
@@ -141,11 +136,18 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
   );
 };
 
+const { width, height } = Dimensions.get('window');
+const neededPadding = height / 10;
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#365E32',
     fontFamily: 'Arvo-Bold',
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+    paddingBottom: neededPadding,
   },
   content: {
     padding: 45,

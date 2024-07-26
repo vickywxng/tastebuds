@@ -225,7 +225,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
       </View>
       <ScrollView contentContainerStyle={styles.recipes}>
         {loading ? (
-          <Text>Loading...</Text>
+          <Text style={styles.recipeTitle}>Loading...</Text>
         ) : (
           recipes.map((recipe, index) => {
             const title =
