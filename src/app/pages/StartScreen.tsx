@@ -32,7 +32,7 @@ const StartScreen: React.FC<Props> = ({ navigation }) => {
       <View style={styles.container}>
         <Image
           style={styles.logo}
-          source={require('../images/carrot_filled.png')}
+          source={require('../images/sloth.png')}
         />
         <Text style={styles.title}>Let's be tastebuds!</Text>
         <Text style={styles.subtitle}>Help me help you eat healthier</Text>
@@ -71,8 +71,8 @@ const styles = StyleSheet.create({
   logo: {
     backgroundColor: '#365E32',
     borderRadius: 100,
-    width: 175,
-    height: 175,
+    width: 250,
+    height: 250,
     marginBottom: 40,
   },
   title: {
