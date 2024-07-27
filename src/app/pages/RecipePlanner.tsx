@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
+  Animated,
   Dimensions,
+  Easing,
   ImageBackground,
   ScrollView,
   StyleSheet,
@@ -38,7 +40,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   const days = ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'];
   const [collectionNames, setCollectionNames] = useState<string[][]>([['']]);
   const [addRec, setAddRec] = useState<Boolean>(false);
-  //right now the date is entered manually^^ (aug1-2024)
 
   useEffect(() => {
     const constFetchCollections = async () => {
@@ -162,26 +163,104 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     fetchRecipes(newIndex);
   };
 
+  const [popupVisible, setPopupVisible] = useState(false);
+  const [popupTranslateY] = useState(
+    new Animated.Value(Dimensions.get('window').height),
+  );
+  const [popupTranslateX] = useState(
+    new Animated.Value(Dimensions.get('window').width),
+  );
+
+  const openCollection = () => {
+    // Show popup
+    setPopupVisible(true);
+    Animated.timing(popupTranslateX, {
+      toValue: 0, // Slide in from the right
+      duration: 500,
+      easing: Easing.out(Easing.ease),
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const closeCollection = () => {
+    // Hide popup
+    Animated.timing(popupTranslateX, {
+      toValue: Dimensions.get('window').width, // Slide out to the right
+      duration: 500,
+      easing: Easing.out(Easing.ease),
+      useNativeDriver: true,
+    }).start(() => setPopupVisible(false));
+  };
+
+  const popUpCollection = () => {};
+
+  const toggleOpenPopup = () => {
+    // Show popup
+    setPopupVisible(true);
+    Animated.timing(popupTranslateY, {
+      toValue: 0,
+      duration: 500,
+      easing: Easing.out(Easing.ease),
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const toggleClosePopup = () => {
+    // Hide popup
+    Animated.timing(popupTranslateY, {
+      toValue: Dimensions.get('window').height,
+      duration: 500,
+      easing: Easing.out(Easing.ease),
+      useNativeDriver: true,
+    }).start(() => setPopupVisible(false));
+  };
+
   const addPopUp = () => {
     if (addRec) {
       return (
-        <View style={styles.popUp}>
-          <Text style={styles.popUpTitle}>Select your collection</Text>
-          <View style={styles.collections}>
-            {collectionNames.map((name, index) => (
-              <TouchableOpacity key={index} style={styles.collection}>
-                <FontAwesome5
-                  name={name[1]}
-                  size={20}
-                  color="#FD9B62"
-                ></FontAwesome5>
-                <Text style={styles.colText}>{name[0]}</Text>
-              </TouchableOpacity>
-            ))}
+        <Animated.View
+          style={[
+            styles.popUp,
+            {
+              transform: [{ translateY: popupTranslateY }],
+            },
+          ]}
+        >
+          <View style={styles.popUpHeaderSection}>
+            <Text style={styles.popUpTitle}>Recipe Collection</Text>
+            <TouchableOpacity
+              onPress={() => {
+                toggleClosePopup();
+              }}
+            >
+              <Ionicons
+                name="chevron-down"
+                size={30}
+                color="#FFF5CD"
+                style={styles.closePopUp}
+              />
+            </TouchableOpacity>
           </View>
-        </View>
+          <ScrollView contentContainerStyle={styles.collectionScrollView}>
+            <View style={styles.collections}>
+              {collectionNames.map((name, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={[styles.collectionItem]}
+                  onPress={() => {
+                    // Handle collection item press
+                  }}
+                >
+                  <FontAwesome5 name={name[1]} size={40} color="#365E32" />
+                  <Text style={styles.collectionText}>{name[0]}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </ScrollView>
+        </Animated.View>
       );
     }
+    return null;
   };
 
   return (
@@ -218,6 +297,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
         <TouchableOpacity
           onPress={() => {
             setAddRec(true);
+            toggleOpenPopup();
           }}
         >
           <FontAwesome5 name="plus" size={30} color="#365E32" />
@@ -304,6 +384,8 @@ const styles = StyleSheet.create({
     paddingBottom: 50,
     paddingLeft: 25,
     paddingRight: 25,
+    position: 'relative', // Ensure it is on top
+    zIndex: 1,
   },
   headerText: {
     color: '#E7D37F',
@@ -358,49 +440,68 @@ const styles = StyleSheet.create({
     color: '#AFA26B',
     fontSize: 16,
   },
+  popUpHeaderSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  closePopUp: {
+    marginTop: 32,
+    marginRight: 20,
+  },
   popUpContainer: {
     position: 'absolute',
-    width: 310,
-    marginTop: 300,
-    marginLeft: 60,
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center', // Center vertically
+    alignItems: 'center', // Center horizontally
     zIndex: 1000,
+    marginTop: 520,
   },
   popUp: {
     backgroundColor: '#FD9B62',
-    position: 'absolute',
-    alignItems: 'center',
-    zIndex: 1000,
-    padding: 10,
-    borderRadius: 15,
+    zIndex: 1001,
+    padding: 20,
+    borderRadius: 30,
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
   },
   popUpTitle: {
     color: '#FFF5CD',
-    fontSize: 22,
+    marginLeft: 20,
+    fontSize: 24,
     fontFamily: 'Arvo-Bold',
-    marginTop: 40,
-    marginBottom: 20,
+    marginTop: 30,
+  },
+  collectionScrollView: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    paddingBottom: 20,
   },
   collections: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'center',
-    marginVertical: 10,
-    marginBottom: 15,
+    marginBottom: 320,
   },
-  collection: {
-    flexDirection: 'row',
-    justifyContent: 'center',
+  collectionItem: {
     backgroundColor: '#FFF5CD',
-    padding: 8,
-    borderRadius: 25,
-    width: 125,
-    margin: 5,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+    width: (Dimensions.get('window').width - 110) / 2,
+    height: (Dimensions.get('window').width - 110) / 2,
+    borderRadius: 17.5,
+    margin: 17.5,
+    borderWidth: 2,
+    borderColor: 'transparent',
   },
-  colText: {
-    fontFamily: 'Lato-Bold',
+  collectionText: {
+    fontFamily: 'Arvo-Bold',
     fontSize: 16,
-    color: '#FD9B62',
-    marginLeft: 10,
+    color: '#365E32',
+    marginTop: 10,
   },
   info: {
     flexDirection: 'row',
@@ -435,6 +536,7 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     height: 100,
     paddingBottom: 10,
+    zIndex: 1,
   },
   button: {
     flex: 1,
