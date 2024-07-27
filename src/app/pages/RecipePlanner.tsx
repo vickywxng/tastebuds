@@ -183,6 +183,16 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     }).start();
   };
 
+  const showCollectionRecipes = () => {
+    return (
+      <View>
+        <View>
+          <View></View>
+        </View>
+      </View>
+    );
+  };
+
   const SlideInCard = () => (
     <Animated.View
       style={[
@@ -193,14 +203,12 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
       ]}
     >
       <View style={styles.cardHeader}>
-        <Text style={styles.cardTitle}>Card Title</Text>
+        <Text style={styles.cardTitle}>Recipes:</Text>
         <TouchableOpacity onPress={toggleCard}>
-          <Ionicons name="close" size={30} color="#FFF5CD" />
+          <Ionicons name="close" size={35} color="#365E32" />
         </TouchableOpacity>
       </View>
-      <Text style={styles.cardContent}>
-        This is the content of the slide-in card.
-      </Text>
+      {showCollectionRecipes()}
     </Animated.View>
   );
 
@@ -432,25 +440,30 @@ const styles = StyleSheet.create({
     fontFamily: 'Arvo-Bold',
   },
   slideInCard: {
-    backgroundColor: '#FD9B62',
+    position: 'absolute',
+    backgroundColor: '#E7D37F',
     zIndex: 1002,
     padding: 20,
     borderRadius: 30,
+    marginTop: 260,
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
   },
   cardHeader: {
+    padding: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
   cardTitle: {
-    color: '#FFF5CD',
-    fontSize: 24,
+    color: '#365E32',
+    fontSize: 26,
     fontFamily: 'Arvo-Bold',
+    marginTop: 20,
   },
   cardContent: {
-    color: '#FFF5CD',
+    padding: 20,
+    color: '#365E32',
     fontSize: 18,
     marginTop: 20,
   },
