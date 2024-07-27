@@ -146,7 +146,7 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
             style={styles.plus}
             onPress={() => setModalVisible(true)}
           >
-            <FontAwesome5 name="plus" size={40} color="#365E32" />
+            <FontAwesome5 name="plus" size={36} color="#365E32" />
           </TouchableOpacity>
         </View>
         <View style={styles.foldersWrapper}>

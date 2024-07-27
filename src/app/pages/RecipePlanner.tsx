@@ -167,16 +167,41 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   const [popupTranslateY] = useState(
     new Animated.Value(Dimensions.get('window').height),
   );
+  const [collectionVisible, setCardVisible] = useState(false);
+  const [collectionTranslateX] = useState(
+    new Animated.Value(Dimensions.get('window').width),
+  );
 
-  const openCollection = () => {
-    // Show popup
+  const toggleCard = () => {
+    setCardVisible(!collectionVisible);
+    Animated.timing(collectionTranslateX, {
+      toValue: collectionVisible ? Dimensions.get('window').width : 0,
+      duration: 600,
+      easing: Easing.out(Easing.ease),
+      useNativeDriver: true,
+    }).start();
   };
 
-  const closeCollection = () => {
-    // Hide popup
-  };
-
-  const popUpCollection = () => {};
+  const SlideInCard = () => (
+    <Animated.View
+      style={[
+        styles.slideInCard,
+        {
+          transform: [{ translateX: collectionTranslateX }],
+        },
+      ]}
+    >
+      <View style={styles.cardHeader}>
+        <Text style={styles.cardTitle}>Card Title</Text>
+        <TouchableOpacity onPress={toggleCard}>
+          <Ionicons name="close" size={30} color="#FFF5CD" />
+        </TouchableOpacity>
+      </View>
+      <Text style={styles.cardContent}>
+        This is the content of the slide-in card.
+      </Text>
+    </Animated.View>
+  );
 
   const toggleOpenPopup = () => {
     // Show popup
@@ -232,7 +257,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                   key={index}
                   style={[styles.collectionItem]}
                   onPress={() => {
-                    // Handle collection item press
+                    toggleCard();
                   }}
                 >
                   <FontAwesome5 name={name[1]} size={40} color="#365E32" />
@@ -340,6 +365,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
         )}
       </ScrollView>
       <View style={[styles.popUpContainer]}>{addPopUp()}</View>
+      {collectionVisible && <SlideInCard />}
       <View style={styles.buttons}>
         <TouchableOpacity style={styles.button}>
           <Ionicons name="calendar" size={40} color={'#FFF5CD'} />
@@ -391,6 +417,29 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#365E32',
     fontFamily: 'Arvo-Bold',
+  },
+  slideInCard: {
+    backgroundColor: '#FD9B62',
+    zIndex: 1002,
+    padding: 20,
+    borderRadius: 30,
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  cardTitle: {
+    color: '#FFF5CD',
+    fontSize: 24,
+    fontFamily: 'Arvo-Bold',
+  },
+  cardContent: {
+    color: '#FFF5CD',
+    fontSize: 18,
+    marginTop: 20,
   },
   recipes: {
     flexDirection: 'column',
