@@ -40,6 +40,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   const days = ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'];
   const [collectionNames, setCollectionNames] = useState<string[][]>([['']]);
   const [addRec, setAddRec] = useState<Boolean>(false);
+  const [blackout, setBlackout] = useState<Boolean>(false);
 
   useEffect(() => {
     const constFetchCollections = async () => {
@@ -227,46 +228,49 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   const addPopUp = () => {
     if (addRec) {
       return (
-        <Animated.View
-          style={[
-            styles.popUp,
-            {
-              transform: [{ translateY: popupTranslateY }],
-            },
-          ]}
-        >
-          <View style={styles.popUpHeaderSection}>
-            <Text style={styles.popUpTitle}>Recipe Collection</Text>
-            <TouchableOpacity
-              onPress={() => {
-                toggleClosePopup();
-              }}
-            >
-              <Ionicons
-                name="chevron-down"
-                size={30}
-                color="#FFF5CD"
-                style={styles.closePopUp}
-              />
-            </TouchableOpacity>
-          </View>
-          <ScrollView contentContainerStyle={styles.collectionScrollView}>
-            <View style={styles.collections}>
-              {collectionNames.map((name, index) => (
-                <TouchableOpacity
-                  key={index}
-                  style={[styles.collectionItem]}
-                  onPress={() => {
-                    toggleCard();
-                  }}
-                >
-                  <FontAwesome5 name={name[1]} size={40} color="#365E32" />
-                  <Text style={styles.collectionText}>{name[0]}</Text>
-                </TouchableOpacity>
-              ))}
+        <View style={styles.popUpContainer}>
+          <Animated.View
+            style={[
+              styles.popUp,
+              {
+                transform: [{ translateY: popupTranslateY }],
+              },
+            ]}
+          >
+            <View style={styles.popUpHeaderSection}>
+              <Text style={styles.popUpTitle}>Recipe Collection</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  toggleClosePopup();
+                  setBlackout(false);
+                }}
+              >
+                <Ionicons
+                  name="chevron-down"
+                  size={35}
+                  color="#365E32"
+                  style={styles.closePopUp}
+                />
+              </TouchableOpacity>
             </View>
-          </ScrollView>
-        </Animated.View>
+            <ScrollView contentContainerStyle={styles.collectionScrollView}>
+              <View style={styles.collections}>
+                {collectionNames.map((name, index) => (
+                  <TouchableOpacity
+                    key={index}
+                    style={[styles.collectionItem]}
+                    onPress={() => {
+                      toggleCard();
+                    }}
+                  >
+                    <FontAwesome5 name={name[1]} size={40} color="#365E32" />
+                    <Text style={styles.collectionText}>{name[0]}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </ScrollView>
+          </Animated.View>
+        </View>
       );
     }
     return null;
@@ -274,6 +278,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      {blackout && <View style={styles.blackBackground}></View>}
       <View style={styles.header}>
         {dayIndex > 0 && (
           <TouchableOpacity
@@ -307,6 +312,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
           onPress={() => {
             setAddRec(true);
             toggleOpenPopup();
+            setBlackout(true);
           }}
         >
           <FontAwesome5 name="plus" size={30} color="#365E32" />
@@ -364,7 +370,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
           })
         )}
       </ScrollView>
-      <View style={[styles.popUpContainer]}>{addPopUp()}</View>
+      {addPopUp()}
       {collectionVisible && <SlideInCard />}
       <View style={styles.buttons}>
         <TouchableOpacity style={styles.button}>
@@ -385,6 +391,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#E7D37F',
+  },
+  blackBackground: {
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
+    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+    position: 'absolute',
+    zIndex: 1000,
   },
   header: {
     backgroundColor: '#365E32',
@@ -494,7 +507,7 @@ const styles = StyleSheet.create({
     marginTop: 520,
   },
   popUp: {
-    backgroundColor: '#FD9B62',
+    backgroundColor: '#E7D37F',
     zIndex: 1001,
     padding: 20,
     borderRadius: 30,
@@ -502,11 +515,11 @@ const styles = StyleSheet.create({
     height: Dimensions.get('window').height,
   },
   popUpTitle: {
-    color: '#FFF5CD',
+    color: '#365E32',
     marginLeft: 20,
-    fontSize: 24,
+    fontSize: 26,
     fontFamily: 'Arvo-Bold',
-    marginTop: 30,
+    marginTop: 35,
   },
   collectionScrollView: {
     flexGrow: 1,
