@@ -1520,9 +1520,9 @@ const styles = StyleSheet.create({
   },
   mealButton: {
     backgroundColor: '#FD9B62',
-    paddingHorizontal: 10,
-    marginBottom: 10,
-    borderRadius: 50,
+    height: 60,
+    marginBottom: 12,
+    borderRadius: 100,
     justifyContent: 'center',
     alignItems: 'center',
   },

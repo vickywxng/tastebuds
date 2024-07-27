@@ -167,29 +167,13 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   const [popupTranslateY] = useState(
     new Animated.Value(Dimensions.get('window').height),
   );
-  const [popupTranslateX] = useState(
-    new Animated.Value(Dimensions.get('window').width),
-  );
 
   const openCollection = () => {
     // Show popup
-    setPopupVisible(true);
-    Animated.timing(popupTranslateX, {
-      toValue: 0, // Slide in from the right
-      duration: 500,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: true,
-    }).start();
   };
 
   const closeCollection = () => {
     // Hide popup
-    Animated.timing(popupTranslateX, {
-      toValue: Dimensions.get('window').width, // Slide out to the right
-      duration: 500,
-      easing: Easing.out(Easing.ease),
-      useNativeDriver: true,
-    }).start(() => setPopupVisible(false));
   };
 
   const popUpCollection = () => {};
@@ -536,7 +520,7 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     height: 100,
     paddingBottom: 10,
-    zIndex: 1,
+    zIndex: 10000,
   },
   button: {
     flex: 1,
