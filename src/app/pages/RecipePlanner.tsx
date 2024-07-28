@@ -42,6 +42,43 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   const [addRec, setAddRec] = useState<Boolean>(false);
   const [blackout, setBlackout] = useState<Boolean>(false);
 
+  const formatDate = (date: number | Date | undefined) => {
+    return new Intl.DateTimeFormat('en-US', {
+      weekday: 'long', // 'Monday'
+      month: 'long', // 'July'
+      day: 'numeric', // '22'
+    }).format(date);
+  };
+
+  const currentDate = new Date();
+  const day2 = new Date(currentDate);
+  day2.setDate(day2.getDate() + 1);
+
+  const day3 = new Date(currentDate);
+  day3.setDate(day3.getDate() + 2);
+
+  const day4 = new Date(currentDate);
+  day4.setDate(day4.getDate() + 3);
+
+  const day5 = new Date(currentDate);
+  day5.setDate(day5.getDate() + 4);
+
+  const day6 = new Date(currentDate);
+  day6.setDate(day6.getDate() + 5);
+
+  const day7 = new Date(currentDate);
+  day7.setDate(day7.getDate() + 6);
+
+  const realDateArray = [
+    formatDate(currentDate),
+    formatDate(day2),
+    formatDate(day3),
+    formatDate(day4),
+    formatDate(day5),
+    formatDate(day6),
+    formatDate(day7),
+  ];
+
   useEffect(() => {
     const constFetchCollections = async () => {
       const allCollections = collection(db, `allUsers/${userId}/collections`);
@@ -298,7 +335,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
           </TouchableOpacity>
         )}
         {dayIndex <= 0 && <View style={{ width: 20 }}></View>}
-        <Text style={styles.headerText}>August {dayIndex + 1}, 2024</Text>
+        <Text style={styles.headerText}>{realDateArray[dayIndex]}</Text>
         {dayIndex < 6 && (
           <TouchableOpacity
             onPress={() => {
