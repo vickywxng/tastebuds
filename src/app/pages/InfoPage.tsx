@@ -9,7 +9,12 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { FontAwesome5, Ionicons, MaterialIcons } from '@expo/vector-icons';
+import {
+  Feather,
+  FontAwesome5,
+  Ionicons,
+  MaterialIcons,
+} from '@expo/vector-icons';
 import { NavigationProp, useRoute } from '@react-navigation/native';
 import {
   collection,
@@ -436,9 +441,9 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <FontAwesome5
-          name="arrow-left"
-          size={30}
+        <Feather
+          name="chevron-left"
+          size={36}
           color={'#FFF5CD'}
           onPress={goBack}
           style={styles.arrow}
@@ -472,11 +477,8 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
           ))}
         </View>
 
-        <View style={{ padding: 20 }}>
-          <Button
-            style={styles.recipeGeneratorButton}
-            onPress={() => addToPlanner()}
-          >
+        <View style={styles.addToButtonContainer}>
+          <Button style={styles.addToButton} onPress={() => addToPlanner()}>
             <Text
               style={[
                 styles.modalTitleSmaller,
@@ -497,7 +499,7 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
           <View style={{ height: 10 }} />
 
           <Button
-            style={styles.recipeGeneratorButton}
+            style={[styles.addToButton, { marginBottom: 80 }]}
             onPress={() => addToCollection()}
           >
             <Text
@@ -658,10 +660,14 @@ const styles = StyleSheet.create({
     borderRadius: 0,
     borderWidth: 0,
   },
-  recipeGeneratorButton: {
+  addToButtonContainer: {
+    alignItems: 'center',
+  },
+  addToButton: {
     backgroundColor: '#FD9B62',
     paddingHorizontal: 30,
     borderRadius: 50,
+    width: 320,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1000,

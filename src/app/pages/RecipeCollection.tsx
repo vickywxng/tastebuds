@@ -18,6 +18,7 @@ import {
   getDocs,
   setDoc,
 } from 'firebase/firestore/lite';
+import ModalComponent from 'react-native-modal';
 
 import { db } from '../firebase';
 
@@ -32,6 +33,7 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
   const [selectedIcon, setSelectedIcon] = useState('star-o');
   const [editMode, setEditMode] = useState(false);
   const [selectedFolders, setSelectedFolders] = useState<number[]>([]);
+  const [delVisible, setDelVisible] = useState(false);
 
   const route = useRoute();
   const { userId } = route.params as {
@@ -69,16 +71,13 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('Planner', { userId });
   };
 
-  const goBack = () => {
-    navigation.goBack();
-  };
-
   const toggleEditMode = () => {
     setEditMode(!editMode);
     setSelectedFolders([]);
   };
 
   const deleteSelectedFolders = async () => {
+    toggleModal();
     const filteredFolders = folders.filter(
       (_, index) => !selectedFolders.includes(index),
     );
@@ -134,13 +133,60 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
     });
   };
 
+  const toggleModal = () => {
+    setDelVisible(!delVisible);
+  };
+
+  const toggleModalAndEdit = () => {
+    toggleModal();
+    toggleEditMode();
+  };
+
+  const toggleVisible = () => {
+    if (selectedFolders.length > 0) {
+      setDelVisible(true);
+    } else {
+      toggleEditMode();
+    }
+  };
+
+  const DeletePopup = () => {
+    return (
+      <ModalComponent isVisible={delVisible} onBackdropPress={toggleModal}>
+        <View style={styles.popupContainer}>
+          <View style={styles.popup}>
+            <Text style={styles.popupTitle}>Delete collection</Text>
+            <Text style={styles.popupText}>
+              You sure you want to delete all selected collections?
+            </Text>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                onPress={toggleModalAndEdit}
+                style={styles.popupButton}
+              >
+                <Text style={styles.popupButtonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={deleteSelectedFolders}
+                style={styles.popupButton}
+              >
+                <Text style={styles.popupButtonText}>Yes</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </ModalComponent>
+    );
+  };
+
   return (
     <View style={styles.container}>
+      <DeletePopup />
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <View style={styles.topButtons}>
           <TouchableOpacity
             style={styles.editButton}
-            onPress={editMode ? deleteSelectedFolders : toggleEditMode}
+            onPress={editMode ? toggleVisible : toggleEditMode}
           >
             <Text style={styles.editButtonText}>
               {editMode ? 'Done' : 'Edit'}
@@ -467,6 +513,53 @@ const styles = StyleSheet.create({
   selectedFolder: {
     borderColor: 'red',
     borderWidth: 2,
+  },
+  popupContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  popup: {
+    backgroundColor: '#365E32',
+    padding: 20,
+    borderRadius: 15,
+    alignItems: 'center',
+    width: 350,
+    height: 215,
+  },
+  popupTitle: {
+    marginTop: 35,
+    fontSize: 23,
+    color: '#E7D37F',
+    fontFamily: 'Arvo-Bold',
+  },
+  popupText: {
+    color: '#FFF5CD',
+    fontSize: 18,
+    marginVertical: 15,
+    textAlign: 'center',
+    marginHorizontal: 20,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  popupButton: {
+    backgroundColor: '#365E32',
+    justifyContent: 'center',
+    fontSize: 20,
+    padding: 10,
+    marginHorizontal: 15,
+    marginBottom: 35,
+    borderRadius: 5,
+    width: 150,
+    height: 50,
+  },
+  popupButtonText: {
+    color: '#FFF5CD',
+    fontSize: 18,
+    fontFamily: 'Arvo-Regular',
+    textAlign: 'center',
   },
 });
 

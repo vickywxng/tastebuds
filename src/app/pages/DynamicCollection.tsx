@@ -8,12 +8,14 @@ import {
   View,
 } from 'react-native';
 import {
+  Feather,
   Ionicons,
   MaterialCommunityIcons,
   MaterialIcons,
 } from '@expo/vector-icons';
 import { NavigationProp, useRoute } from '@react-navigation/native';
 import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore/lite';
+import ModalComponent from 'react-native-modal';
 
 import { db } from '../firebase';
 
@@ -50,6 +52,7 @@ const DynamicCollection: React.FC<Props> = ({ navigation }) => {
   const [editMode, setEditMode] = useState(false);
   const [recipes, setRecipes] = useState<string[][]>([]);
   const [selectedRecipes, setSelectedRecipes] = useState<number[]>([]);
+  const [delVisible, setDelVisible] = useState(false);
   const curCollection = collection(
     db,
     `allUsers/${userId}/collections/${collectionName}/Recipes`,
@@ -83,6 +86,10 @@ const DynamicCollection: React.FC<Props> = ({ navigation }) => {
     fetchRecipes();
   }, []);
 
+  const toggleModal = () => {
+    setDelVisible(!delVisible);
+  };
+
   const goToGenerator = () => {
     navigation.navigate('Generator', { userId });
   };
@@ -93,6 +100,10 @@ const DynamicCollection: React.FC<Props> = ({ navigation }) => {
 
   const goToCollection = () => {
     navigation.navigate('Collection', { userId });
+  };
+
+  const goBack = () => {
+    navigation.goBack();
   };
 
   const goToInfo = (curRecipe: string) => {
@@ -117,7 +128,16 @@ const DynamicCollection: React.FC<Props> = ({ navigation }) => {
     setSelectedRecipes([]);
   };
 
+  const toggleVisible = () => {
+    if (selectedRecipes.length > 0) {
+      setDelVisible(true);
+    } else {
+      toggleEditMode();
+    }
+  };
+
   const deleteSelectedRecipes = () => {
+    toggleModal();
     const filteredFolders = recipes.filter(
       (_, index) => !selectedRecipes.includes(index),
     );
@@ -137,17 +157,63 @@ const DynamicCollection: React.FC<Props> = ({ navigation }) => {
     setEditMode(false);
   };
 
+  const toggleModalAndEdit = () => {
+    toggleModal();
+    toggleEditMode();
+  };
+
+  const DeletePopup = () => {
+    return (
+      <ModalComponent isVisible={delVisible} onBackdropPress={toggleModal}>
+        <View style={styles.popupContainer}>
+          <View style={styles.popup}>
+            <Text style={styles.popupTitle}>Delete recipe</Text>
+            <Text style={styles.popupText}>
+              You sure you want to delete all selected recipes?
+            </Text>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                onPress={toggleModalAndEdit}
+                style={styles.popupButton}
+              >
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={deleteSelectedRecipes}
+                style={styles.popupButton}
+              >
+                <Text style={styles.buttonText}>Yes</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </ModalComponent>
+    );
+  };
+
   return (
     <View style={styles.container}>
+      <DeletePopup />
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <TouchableOpacity
-          style={styles.editButton}
-          onPress={editMode ? deleteSelectedRecipes : toggleEditMode}
-        >
-          <Text style={styles.editButtonText}>
-            {editMode ? 'Done' : 'Edit'}
-          </Text>
-        </TouchableOpacity>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={goBack} style={{ flexDirection: 'row' }}>
+            <Feather
+              name="chevron-left"
+              size={36}
+              color={'#365E32'}
+              style={styles.arrow}
+            />
+            <Text style={styles.collectionName}>{collectionName}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.editButton}
+            onPress={editMode ? toggleVisible : toggleEditMode}
+          >
+            <Text style={styles.editButtonText}>
+              {editMode ? 'Done' : 'Edit'}
+            </Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.recipes}>
           {recipes.map((recipe, index) => {
             const title =
@@ -217,12 +283,28 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#E7D37F',
   },
+  header: {
+    marginTop: 120,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
   scrollViewContent: {
     flexGrow: 1,
   },
+  arrow: {
+    borderWidth: 0,
+    marginLeft: 30,
+    fontFamily: 'Arvo-Bold',
+  },
+  collectionName: {
+    marginTop: 3,
+    color: '#365E32',
+    fontFamily: 'Arvo-Bold',
+    fontSize: 24,
+  },
   editButton: {
-    marginTop: 120,
-    marginLeft: 31,
+    marginTop: -10,
+    marginRight: 30,
     position: 'relative',
     backgroundColor: '#E7D37F',
     borderWidth: 0,
@@ -304,6 +386,53 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderRadius: 0,
     borderWidth: 0,
+  },
+  popupContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  popup: {
+    backgroundColor: '#365E32',
+    padding: 20,
+    borderRadius: 15,
+    alignItems: 'center',
+    width: 350,
+    height: 215,
+  },
+  popupTitle: {
+    marginTop: 35,
+    fontSize: 23,
+    color: '#E7D37F',
+    fontFamily: 'Arvo-Bold',
+  },
+  popupText: {
+    color: '#FFF5CD',
+    fontSize: 18,
+    marginVertical: 15,
+    textAlign: 'center',
+    marginHorizontal: 20,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  popupButton: {
+    backgroundColor: '#365E32',
+    justifyContent: 'center',
+    fontSize: 20,
+    padding: 10,
+    marginHorizontal: 15,
+    marginBottom: 35,
+    borderRadius: 5,
+    width: 150,
+    height: 50,
+  },
+  buttonText: {
+    color: '#FFF5CD',
+    fontSize: 18,
+    fontFamily: 'Arvo-Regular',
+    textAlign: 'center',
   },
 });
 
