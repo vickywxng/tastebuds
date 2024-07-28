@@ -69,6 +69,10 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('Planner', { userId });
   };
 
+  const goBack = () => {
+    navigation.goBack();
+  };
+
   const toggleEditMode = () => {
     setEditMode(!editMode);
     setSelectedFolders([]);

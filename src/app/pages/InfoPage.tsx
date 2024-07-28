@@ -9,14 +9,25 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { FontAwesome5, Ionicons } from '@expo/vector-icons';
+import { FontAwesome5, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { NavigationProp, useRoute } from '@react-navigation/native';
-import { addDoc, collection, doc, getDoc } from 'firebase/firestore/lite';
+import {
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  setDoc,
+} from 'firebase/firestore/lite';
+import { Button, XStack } from 'tamagui';
 
 import { db } from '../firebase';
 
 type Props = {
   navigation: NavigationProp<any>;
+};
+
+type CheckedItems = {
+  [key: string]: boolean;
 };
 
 const InfoPage: React.FC<Props> = ({ navigation }) => {
@@ -26,11 +37,21 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
     collectionName: string;
     curRecipe: string;
   };
-  const [title, setTitle] = useState<String>('');
+  const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<String>('');
   const [genInfo, setGenInfo] = useState<string[]>([]);
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [directions, setDirections] = useState<string[]>([]);
+  const [showCalendarPopUp, setShowCalendarPopUp] = useState<boolean | null>(
+    null,
+  );
+  const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  const [checkedItems, setCheckedItems] = useState<CheckedItems>({});
+  const [showCollectionPopUp, setShowCollectionPopUp] = useState<
+    boolean | null
+  >(null);
+  const [selectedCollections, setSelectedCollections] = useState<string[]>([]);
+  const [collectionSelected, setCollectionSelected] = useState('');
 
   useEffect(() => {
     console.log(curRecipe);
@@ -49,6 +70,8 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
             docSnap.data().Info['Servings'],
             docSnap.data().Info['Time'],
             docSnap.data().Info['Complexity'],
+            docSnap.data().Info['Calories'],
+            docSnap.data().Info['Meal'],
           ]);
           setIngredients(docSnap.data().Ingredients);
           setDirections(docSnap.data().Directions);
@@ -75,6 +98,339 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
 
   const goBack = () => {
     navigation.goBack();
+  };
+
+  const addToPlanner = () => {
+    setShowCalendarPopUp(true);
+  };
+
+  const addToCollection = () => {
+    setShowCollectionPopUp(true);
+  };
+
+  const handleCollectionPress = (name: string) => {
+    setCheckedItems((prev) => ({
+      ...prev,
+      [name]: !prev[name],
+    }));
+    setCollectionSelected(name);
+  };
+
+  const plannerCheck = (name: string) => {
+    if (selectedDays.includes(name)) {
+      setSelectedDays(selectedDays.filter((i) => i !== name));
+    } else {
+      setSelectedDays([...selectedDays, name]);
+    }
+  };
+
+  const collectionCheck = (name: string) => {
+    if (selectedCollections.includes(name)) {
+      setSelectedCollections(selectedCollections.filter((i) => i !== name));
+    } else {
+      setSelectedCollections([...selectedCollections, name]);
+    }
+  };
+
+  const addToPlannerLogic = async () => {
+    // Assuming selectedCollections is an array of collection names
+    console.log(selectedDays);
+    for (const curDay of selectedDays) {
+      console.log('reached loop');
+      const usersCollectionRef = collection(
+        db,
+        `allUsers/${userId}/planner/${curDay}/Recipes`,
+      );
+      const recipeRef = doc(usersCollectionRef, title);
+
+      const newInfo = {
+        Servings: genInfo[0],
+        Time: genInfo[1],
+        Complexity: genInfo[2],
+        Calories: genInfo[3],
+        Meal: genInfo[4],
+      };
+
+      try {
+        await setDoc(recipeRef, {
+          Title: title.trim(),
+          Description: description.trim(),
+          Ingredients: ingredients,
+          Directions: directions,
+          Info: newInfo,
+        });
+        console.log(`Document added to ${curDay}`);
+      } catch (error) {
+        console.error('Error adding document:', error);
+      }
+    }
+  };
+
+  const addToCollectionLogic = async () => {
+    // Assuming selectedCollections is an array of collection names
+    for (const curCollection of selectedCollections) {
+      const usersCollectionRef = collection(
+        db,
+        `allUsers/${userId}/collections/${curCollection}/Recipes`,
+      );
+      const recipeRef = doc(usersCollectionRef, title);
+
+      const newInfo = {
+        Servings: genInfo[0],
+        Time: genInfo[1],
+        Complexity: genInfo[2],
+        Calories: genInfo[3],
+        Meal: genInfo[4],
+      };
+
+      try {
+        await setDoc(recipeRef, {
+          Title: title.trim(),
+          Description: description.trim(),
+          Ingredients: ingredients,
+          Directions: directions,
+          Info: newInfo,
+        });
+        console.log(`Document added to collection ${curCollection}`);
+      } catch (error) {
+        console.error('Error adding document:', error);
+      }
+    }
+  };
+
+  const collectionPopUP = async () => {
+    const usersCollectionRef = collection(db, `allUsers/${userId}/collections`);
+    const querySnapshot = await getDocs(usersCollectionRef);
+    const stringArray = [''];
+
+    querySnapshot.forEach((doc) => {
+      stringArray.push(doc.id);
+    });
+
+    stringArray.shift();
+
+    return (
+      <View style={[styles.popUpContainer, { marginTop: 20 }]}>
+        <Text
+          style={[
+            styles.modalTitle,
+            { color: '#365E32' },
+            { marginTop: 20 },
+            { textAlign: 'center' },
+          ]}
+        >
+          Save to collection
+        </Text>
+        <View
+          style={[
+            styles.popUpInnerContainer,
+            { marginRight: 20 },
+            { marginLeft: 20 },
+          ]}
+        >
+          <View
+            style={[
+              { marginTop: 20 },
+              { marginLeft: 20 },
+              { marginBottom: 20 },
+            ]}
+          >
+            {stringArray.map((name) => (
+              <TouchableOpacity
+                key={name}
+                onPress={() => [
+                  collectionCheck(name),
+                  handleCollectionPress(name),
+                ]}
+              >
+                <XStack>
+                  {checkedItems[name] ? (
+                    <MaterialIcons name="check-box" size={24} color="#365E32" />
+                  ) : (
+                    <MaterialIcons
+                      name="check-box-outline-blank"
+                      size={24}
+                      color="#365E32"
+                    />
+                  )}
+                  <Text
+                    style={[
+                      styles.arvoTextNormal,
+                      { fontFamily: 'Lato' },
+                      { marginLeft: 5 },
+                    ]}
+                  >
+                    {name}
+                  </Text>
+                </XStack>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        <XStack
+          style={[
+            { marginTop: 20 },
+            { marginBottom: 20 },
+            { alignContent: 'center' },
+          ]}
+        >
+          <View style={styles.spacer} />
+          <TouchableOpacity
+            onPress={() => setShowCollectionPopUp(false)}
+            style={{ marginLeft: 20 }}
+            // Also set the array for the checkmarks to false as well!!
+          >
+            <Text style={styles.arvoTextNormal}>Cancel</Text>
+          </TouchableOpacity>
+          <View style={styles.biggerSpacer} />
+          <TouchableOpacity
+            onPress={() => [
+              addToCollectionLogic(),
+              setShowCollectionPopUp(false),
+            ]}
+            style={{ marginRight: 20 }}
+          >
+            <Text style={styles.arvoTextNormal}>Save</Text>
+          </TouchableOpacity>
+          <View style={styles.spacer} />
+        </XStack>
+      </View>
+    );
+  };
+
+  const calendarPopUP = () => {
+    const formatDate = (date: number | Date | undefined) => {
+      return new Intl.DateTimeFormat('en-US', {
+        weekday: 'long', // 'Monday'
+        month: 'long', // 'July'
+        day: 'numeric', // '22'
+      }).format(date);
+    };
+    const currentDate = new Date();
+    const day2 = new Date(currentDate);
+    day2.setDate(day2.getDate() + 1);
+
+    const day3 = new Date(currentDate);
+    day3.setDate(day3.getDate() + 2);
+
+    const day4 = new Date(currentDate);
+    day4.setDate(day4.getDate() + 3);
+
+    const day5 = new Date(currentDate);
+    day5.setDate(day5.getDate() + 4);
+
+    const day6 = new Date(currentDate);
+    day6.setDate(day6.getDate() + 5);
+
+    const day7 = new Date(currentDate);
+    day7.setDate(day7.getDate() + 6);
+
+    const realDateArray = [
+      formatDate(currentDate),
+      formatDate(day2),
+      formatDate(day3),
+      formatDate(day4),
+      formatDate(day5),
+      formatDate(day6),
+      formatDate(day7),
+    ];
+
+    const dayArray = [
+      'Day 1',
+      'Day 2',
+      'Day 3',
+      'Day 4',
+      'Day 5',
+      'Day 6',
+      'Day 7',
+    ];
+
+    return (
+      <View style={[styles.popUpContainer, { marginTop: 20 }]}>
+        <Text
+          style={[
+            styles.modalTitle,
+            { color: '#365E32' },
+            { marginTop: 20 },
+            { textAlign: 'center' },
+          ]}
+        >
+          Add to planner
+        </Text>
+        <View
+          style={[
+            styles.popUpInnerContainer,
+            { marginRight: 20 },
+            { marginLeft: 20 },
+          ]}
+        >
+          <View
+            style={[
+              { marginTop: 20 },
+              { marginLeft: 20 },
+              { marginBottom: 20 },
+            ]}
+          >
+            {dayArray.map((name) => (
+              <TouchableOpacity
+                key={name}
+                onPress={() => [
+                  plannerCheck(name),
+                  handleCollectionPress(name),
+                ]}
+              >
+                <XStack>
+                  {checkedItems[name] ? (
+                    <MaterialIcons name="check-box" size={24} color="#365E32" />
+                  ) : (
+                    <MaterialIcons
+                      name="check-box-outline-blank"
+                      size={24}
+                      color="#365E32"
+                    />
+                  )}
+                  <Text
+                    style={[
+                      styles.arvoTextNormal,
+                      { fontFamily: 'Lato' },
+                      { marginLeft: 5 },
+                    ]}
+                  >
+                    {realDateArray[dayArray.indexOf(name)]}
+                  </Text>
+                </XStack>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        <XStack
+          style={[
+            { marginTop: 20 },
+            { marginBottom: 20 },
+            { alignContent: 'center' },
+          ]}
+        >
+          <View style={styles.spacer} />
+          <TouchableOpacity
+            onPress={() => setShowCalendarPopUp(false)}
+            style={{ marginLeft: 20 }}
+            // Also set the array for the checkmarks to false as well!!
+          >
+            <Text style={styles.arvoTextNormal}>Cancel</Text>
+          </TouchableOpacity>
+          <View style={styles.biggerSpacer} />
+          <TouchableOpacity
+            onPress={() => [addToPlannerLogic(), setShowCalendarPopUp(false)]}
+            style={{ marginRight: 20 }}
+          >
+            <Text style={styles.arvoTextNormal}>Save</Text>
+          </TouchableOpacity>
+          <View style={styles.spacer} />
+        </XStack>
+      </View>
+    );
   };
 
   return (
@@ -115,6 +471,47 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
             </View>
           ))}
         </View>
+
+        <View style={{ padding: 20 }}>
+          <Button
+            style={styles.recipeGeneratorButton}
+            onPress={() => addToPlanner()}
+          >
+            <Text
+              style={[
+                styles.modalTitleSmaller,
+                { marginBottom: 0, color: '#FFF5CD' },
+              ]}
+            >
+              Add to planner
+            </Text>
+          </Button>
+
+          {showCalendarPopUp && (
+            <>
+              {calendarPopUP()}
+              <View style={{ height: 20 }} />
+            </>
+          )}
+
+          <View style={{ height: 10 }} />
+
+          <Button
+            style={styles.recipeGeneratorButton}
+            onPress={() => addToCollection()}
+          >
+            <Text
+              style={[
+                styles.modalTitleSmaller,
+                { marginBottom: 0, color: '#FFF5CD' },
+              ]}
+            >
+              Add to collection
+            </Text>
+          </Button>
+        </View>
+
+        {showCollectionPopUp && <>{collectionPopUP()}</>}
       </ScrollView>
       <View style={styles.buttons}>
         <TouchableOpacity style={styles.button} onPress={goToPlanner}>
@@ -260,6 +657,49 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderRadius: 0,
     borderWidth: 0,
+  },
+  recipeGeneratorButton: {
+    backgroundColor: '#FD9B62',
+    paddingHorizontal: 30,
+    borderRadius: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 1000,
+  },
+  modalTitle: {
+    fontSize: 24,
+    fontFamily: 'Arvo-Bold',
+    marginBottom: 10,
+    color: '#E7D37F',
+  },
+  modalTitleSmaller: {
+    fontSize: 18,
+    fontFamily: 'Arvo-Bold',
+    marginBottom: 10,
+    color: '#E7D37F',
+  },
+  popUpContainer: {
+    flex: 1,
+    backgroundColor: '#E7D37F',
+    justifyContent: 'space-between',
+    borderRadius: 15,
+  },
+  popUpInnerContainer: {
+    flex: 1,
+    backgroundColor: '#FFF5CD',
+    justifyContent: 'space-between',
+    borderRadius: 7.5,
+  },
+  arvoTextNormal: {
+    fontSize: 18,
+    fontFamily: 'Arvo',
+    color: '#365E32',
+  },
+  spacer: {
+    flex: 1,
+  },
+  biggerSpacer: {
+    flex: 2,
   },
 });
 
