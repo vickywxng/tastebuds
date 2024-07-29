@@ -631,9 +631,9 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                   selectedRecipes.includes(index) && styles.selectedRecipe,
                 ]}
                 onPress={() => {
-                  // if (editMode) {
-                  //   toggleRecipeSelection(index);
-                  // }
+                  if (editMode) {
+                    toggleRecipeSelection(index);
+                  }
                 }}
               >
                 <Text style={styles.recipeTitle}>{title}</Text>
@@ -676,6 +676,9 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     </View>
   );
 };
+
+const { height } = Dimensions.get('window');
+const neededPadding = height / 5;
 
 const styles = StyleSheet.create({
   container: {
@@ -751,6 +754,8 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   recipes: {
+    flexGrow: 1,
+    paddingBottom: neededPadding,
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
@@ -769,7 +774,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   selectedRecipe: {
-    // borderColor: 'red',
+    borderColor: 'red',
     borderWidth: 2,
   },
   unselectedRecipeTitle: {
