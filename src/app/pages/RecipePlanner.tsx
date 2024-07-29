@@ -22,6 +22,7 @@ import { CornerDownLeft } from '@tamagui/lucide-icons';
 import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore/lite';
 
 import { db } from '../firebase';
+import { Spacer } from 'tamagui';
 
 type Props = {
   navigation: NavigationProp<any>;
@@ -357,18 +358,20 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                   {description}
                 </Text>
                 <View style={styles.info}>
-                  <View style={[styles.infoElement, { width: 50 }]}>
+                  {/* <View style={[isSelected ? styles.infoElement : styles.unselectedInfoElement, { width: 50 }]}>
                     {icons(recipe[5] + '')}
-                  </View>
-                  <View style={styles.infoElement}>
+                  </View> */}
+                  <View style={isSelected ? styles.infoElement : styles.unselectedInfoElement}>
                     <Ionicons name="alarm" size={18} color="#FFF5CD" />
                     <Text style={styles.infoText}>{recipe[2]}</Text>
                   </View>
-                  <View style={styles.infoElement}>
+                  <Spacer size={10} />
+                  <View style={isSelected ? styles.infoElement : styles.unselectedInfoElement}>
                     <Ionicons name="star" size={18} color="#FFF5CD" />
                     <Text style={styles.infoText}>{recipe[3]}</Text>
                   </View>
-                  <View style={styles.infoElement}>
+                  <Spacer size={10} />
+                  <View style={isSelected ? styles.infoElement : styles.unselectedInfoElement}>
                     <Ionicons name="flame" size={20} color="#FFF5CD" />
                     <Text style={styles.infoText}>{recipe[4]}</Text>
                   </View>
@@ -683,6 +686,7 @@ const styles = StyleSheet.create({
     marginBottom: 200,
   },
   recipe: {
+    justifyContent: 'space-between',
     backgroundColor: '#FFF5CD',
     width: 375,
     padding: 30,
@@ -797,6 +801,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#AFA26B',
     marginHorizontal: 2.5,
   },
+  unselectedInfoElement: {
+    width: 95,
+    height: 37.5,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 50,
+    paddingHorizontal: 15,
+    backgroundColor: '#E7D37F',
+    marginHorizontal: 2.5,
+  },
   infoText: {
     color: '#FFF5CD',
     fontSize: 13,
@@ -804,7 +819,7 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   unselectedInfoText: {
-    color: '#FFF5CD',
+    color: '#E7D37F',
     fontSize: 13,
     fontWeight: 'bold',
     marginLeft: 5,
