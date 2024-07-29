@@ -44,6 +44,7 @@ import {
   Button,
   FontSizeTokens,
   getFontSize,
+  Image,
   Label,
   Select,
   SelectProps,
@@ -609,7 +610,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
   const generatedRecipePage = () => {
     return (
-      <View style={{ padding: 20 }}>
+      <View style={{ padding: 10 }}>
         <Text style={styles.modalTitle}>Tadaaa, now this what we want...</Text>
         <View style={{ height: 50 }} />
         <Text style={styles.modalTitle}>{generatedRecipeTitle}</Text>
@@ -1349,18 +1350,23 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <LoadingIndicatorPage />
+      <View style={styles.header}>
+        <Image style={styles.logo} source={require('../images/sloth.png')} />
+      </View>
+
       <ScrollView
         ref={scrollViewRef}
         contentContainerStyle={styles.scrollViewContent}
       >
-        <View style={{ padding: 40 }}>
-          <View style={{ height: 50 }} />
+        <View style={{ paddingLeft: 40, paddingRight: 40 }}>
+          {/* adjust this height when adjusting header */}
+          <View style={{ height: 10 }} />
 
           {/* {generatedRecipePage()} */}
 
           {!selectedMeal && !generateRecipeBoolean && (
             <>
-              <View style={{ height: 150 }} />
+              <View style={{ height: 30 }} />
               <Text style={[styles.modalTitle, { textAlign: 'center' }]}>
                 What are we tryna chef up today?
               </Text>
@@ -1411,6 +1417,13 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'baseline',
+  },
+  header: {
+    // backgroundColor: '#82A263',
+    flexDirection: 'row',
+    height: 200,
+    justifyContent: 'space-around',
+    alignItems: 'center',
   },
   buttons: {
     backgroundColor: '#82A263',
@@ -1589,6 +1602,14 @@ const styles = StyleSheet.create({
   },
   biggerSpacer: {
     flex: 2,
+  },
+  logo: {
+    position: 'absolute',
+    top: 70, // Adjust distance from the top
+    left: 40, // Adjust distance from the left
+    width: 90, // Adjust width as needed
+    height: 90, // Adjust height as needed
+    borderRadius: 25, // Adjust to maintain circular shape if desired
   },
 });
 

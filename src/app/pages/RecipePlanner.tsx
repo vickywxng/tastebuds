@@ -18,6 +18,7 @@ import {
   MaterialIcons,
 } from '@expo/vector-icons';
 import { NavigationProp, useRoute } from '@react-navigation/native';
+import { CornerDownLeft } from '@tamagui/lucide-icons';
 import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore/lite';
 
 import { db } from '../firebase';
@@ -32,6 +33,14 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     userId: string;
   };
 
+  const [selectedCollectionName, setSelectedCollectionName] = useState<
+    string | null
+  >(null);
+  // let selectedRecipesArray: string[] = [];
+  const [tempSelectedRecipesArray, setTempSelectedRecipesArray] = useState<
+    string[]
+  >([]);
+  // let tempSelectedRecipesArray: string[] = [];
   const [editMode, setEditMode] = useState(false);
   const [recipes, setRecipes] = useState<string[][]>([]);
   const [selectedRecipes, setSelectedRecipes] = useState<number[]>([]);
@@ -41,6 +50,9 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   const [collectionNames, setCollectionNames] = useState<string[][]>([['']]);
   const [addRec, setAddRec] = useState<Boolean>(false);
   const [blackout, setBlackout] = useState<Boolean>(false);
+  const [selectingRecipe, setSelectingRecipe] = useState<Boolean>(false);
+
+  const [collectionRecipes, setCollectionRecipes] = useState<string[][]>([]);
 
   const formatDate = (date: number | Date | undefined) => {
     return new Intl.DateTimeFormat('en-US', {
@@ -218,15 +230,154 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
       easing: Easing.out(Easing.ease),
       useNativeDriver: true,
     }).start();
+    //TODO: add back button, confirmation
+    //ADD RECIPES HERE --> logic from collection page? keep track of date and collection users selects
+  };
+
+  const toggleRecipeCard = async (collectionName: string) => {
+    setSelectedCollectionName(collectionName);
+
+    let arr = [''];
+
+    let recipesArray: string[][] = [];
+
+    if (collectionName != '') {
+      const usersCollectionRef = collection(
+        db,
+        `allUsers/${userId}/collections/${collectionName}/Recipes`,
+      );
+      // const usersCollectionRef = collection(db, `allUsers/${userId}/collections`);
+      const querySnapshot = await getDocs(usersCollectionRef);
+
+      querySnapshot.forEach((doc) => {
+        arr.push(doc.id);
+        const data = doc.data();
+        const recipeDetails = [
+          doc.id, // Recipe ID
+          data.Description || '', // Recipe Description
+          data.Info['Time'] || '', // Time
+          data.Info['Complexity'] || '', // Complexity
+          data.Info['Calories'] || '', // Calories
+          data.Info['Meal'] || '', // Meal
+        ];
+        recipesArray.push(recipeDetails);
+      });
+
+      arr.shift();
+    }
+
+    setCollectionRecipes(recipesArray);
+    toggleCard();
+    // Fetch recipes for the selected collection
+    // const collectionId = getCollectionIdFromName(collectionName); // Implement this function to map collection names to IDs if needed
+    // await fetchRecipes(collectionId);
+    //TODO: add back button, confirmation
+    //ADD RECIPES HERE --> logic from collection page? keep track of date and collection users selects
   };
 
   const showCollectionRecipes = () => {
+    // console.log("R:" + collectionRecipes);
+
     return (
-      <View>
-        <View>
-          <View></View>
+      // <View>
+      //   {collectionRecipes.map((recipe, index) =>{
+      //     const [description, details, time, complexity, calories, meal] = recipe;
+
+      //     return (
+      //       <View key={index}>
+      //         <Text>{description}</Text>
+      //         <Text>{details}</Text>
+      //         <Text>Time: {time}</Text>
+      //         <Text>Complexity: {complexity}</Text>
+      //         <Text>Calories: {calories}</Text>
+      //         <Text>Meal: {meal}</Text>
+      //       </View>
+      //     );
+      //   })}
+
+      // </View>
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+        <View style={styles.recipes}>
+          {collectionRecipes.map((recipe, index) => {
+            const title =
+              (recipe[0] || '').length >= 24
+                ? recipe[0]?.substring(0, 25) + '...'
+                : recipe[0];
+
+            const description =
+              (recipe[1] || '').length >= 110
+                ? recipe[1]?.substring(0, 111) + '...'
+                : recipe[1];
+
+            const isSelected = tempSelectedRecipesArray.includes(title || '');
+
+            return (
+              <TouchableOpacity
+                key={index}
+                style={[styles.recipe, isSelected && styles.selectedRecipe]}
+                onPress={() => {
+                  const safeTitle = title || '';
+                  if (selectingRecipe) {
+                    if (isSelected) {
+                      // Remove from selected array
+                      const updatedArray = tempSelectedRecipesArray.filter(
+                        (item) => item !== title,
+                      );
+                      // Update state
+                      setTempSelectedRecipesArray(updatedArray);
+                    } else {
+                      // Add to selected array
+                      setTempSelectedRecipesArray([
+                        ...tempSelectedRecipesArray,
+                        safeTitle,
+                      ]);
+                    }
+                  } else {
+                    // Handle non-edit mode if needed
+                  }
+                  showCollectionRecipes();
+                }}
+              >
+                <Text
+                  style={
+                    isSelected
+                      ? styles.recipeTitle
+                      : styles.unselectedRecipeTitle
+                  }
+                >
+                  {title}
+                </Text>
+                <Text
+                  style={
+                    isSelected
+                      ? styles.recipeDescription
+                      : styles.unselectedRecipeDescription
+                  }
+                >
+                  {description}
+                </Text>
+                <View style={styles.info}>
+                  <View style={[styles.infoElement, { width: 50 }]}>
+                    {icons(recipe[5] + '')}
+                  </View>
+                  <View style={styles.infoElement}>
+                    <Ionicons name="alarm" size={18} color="#FFF5CD" />
+                    <Text style={styles.infoText}>{recipe[2]}</Text>
+                  </View>
+                  <View style={styles.infoElement}>
+                    <Ionicons name="star" size={18} color="#FFF5CD" />
+                    <Text style={styles.infoText}>{recipe[3]}</Text>
+                  </View>
+                  <View style={styles.infoElement}>
+                    <Ionicons name="flame" size={20} color="#FFF5CD" />
+                    <Text style={styles.infoText}>{recipe[4]}</Text>
+                  </View>
+                </View>
+              </TouchableOpacity>
+            );
+          })}
         </View>
-      </View>
+      </ScrollView>
     );
   };
 
@@ -240,9 +391,26 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
       ]}
     >
       <View style={styles.cardHeader}>
-        <Text style={styles.cardTitle}>Recipes:</Text>
         <TouchableOpacity onPress={toggleCard}>
-          <Ionicons name="close" size={35} color="#365E32" />
+          <MaterialIcons name="arrow-back-ios" size={35} color="#365E32" />
+        </TouchableOpacity>
+        <Text style={styles.cardTitle}>{selectedCollectionName}</Text>
+        <View style={{ flex: 1 }} />
+        <TouchableOpacity
+          onPress={() => {
+            if (selectingRecipe) {
+              console.log(tempSelectedRecipesArray);
+              // console.log(selectedRecipesArray);
+              // selectedRecipesArray = [""];
+            }
+            setSelectingRecipe(!selectingRecipe);
+          }}
+        >
+          <Text
+            style={[styles.cardTitle, { textAlign: 'right' }, { fontSize: 20 }]}
+          >
+            {selectingRecipe ? 'Done' : 'Select'}
+          </Text>
         </TouchableOpacity>
       </View>
       {showCollectionRecipes()}
@@ -305,7 +473,9 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                     key={index}
                     style={[styles.collectionItem]}
                     onPress={() => {
-                      toggleCard();
+                      const collectionName = name[0] || '';
+                      toggleRecipeCard(collectionName);
+                      // toggleCard();
                     }}
                   >
                     <FontAwesome5 name={name[1]} size={40} color="#365E32" />
@@ -386,9 +556,9 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                   selectedRecipes.includes(index) && styles.selectedRecipe,
                 ]}
                 onPress={() => {
-                  if (editMode) {
-                    toggleRecipeSelection(index);
-                  }
+                  // if (editMode) {
+                  //   toggleRecipeSelection(index);
+                  // }
                 }}
               >
                 <Text style={styles.recipeTitle}>{title}</Text>
@@ -489,14 +659,15 @@ const styles = StyleSheet.create({
   cardHeader: {
     padding: 20,
     flexDirection: 'row',
-    justifyContent: 'space-between',
+    // justifyContent: 'space-between',
     alignItems: 'center',
   },
   cardTitle: {
     color: '#365E32',
     fontSize: 26,
     fontFamily: 'Arvo-Bold',
-    marginTop: 20,
+    // marginTop: 20,
+    textAlign: 'center',
   },
   cardContent: {
     padding: 20,
@@ -522,8 +693,19 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   selectedRecipe: {
-    borderColor: 'red',
+    // borderColor: 'red',
     borderWidth: 2,
+  },
+  unselectedRecipeTitle: {
+    color: '#E7D37F',
+    fontFamily: 'Arvo-Bold',
+    fontSize: 20,
+    marginTop: -5,
+    marginBottom: 10,
+  },
+  unselectedRecipeDescription: {
+    color: '#E7D37F',
+    fontSize: 16,
   },
   recipeTitle: {
     color: '#365E32',
@@ -604,6 +786,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 20,
   },
+
   infoElement: {
     width: 95,
     height: 37.5,
@@ -616,6 +799,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 2.5,
   },
   infoText: {
+    color: '#FFF5CD',
+    fontSize: 13,
+    fontWeight: 'bold',
+    marginLeft: 5,
+  },
+  unselectedInfoText: {
     color: '#FFF5CD',
     fontSize: 13,
     fontWeight: 'bold',
@@ -641,6 +830,22 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderRadius: 0,
     borderWidth: 0,
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+  },
+  editButton: {
+    marginTop: 120,
+    marginLeft: 31,
+    position: 'relative',
+    backgroundColor: '#E7D37F',
+    borderWidth: 0,
+    padding: 10,
+  },
+  editButtonText: {
+    color: '#365E32',
+    fontFamily: 'Arvo-Bold',
+    fontSize: 32,
   },
 });
 
