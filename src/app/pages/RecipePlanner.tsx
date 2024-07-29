@@ -255,7 +255,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
       easing: Easing.out(Easing.ease),
       useNativeDriver: true,
     }).start();
-    //TODO: add back button, confirmation
+    //TODO: confirmation
     //ADD RECIPES HERE --> logic from collection page? keep track of date and collection users selects
   };
 
@@ -362,15 +362,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                         (item) => item !== safeTitle,
                       );
                       setTempSelectedRecipesArray(updatedArray);
-
-                      // Remove from Firestore
-                      try {
-                        const recipeDocRef = doc(curCollection, safeTitle); // Assuming `title` is used as a unique ID
-                        await deleteDoc(recipeDocRef);
-                        console.log('Recipe removed from collection');
-                      } catch (error) {
-                        console.error('Error removing recipe: ', error);
-                      }
                     } else {
                       // Add to selected array
                       setTempSelectedRecipesArray((prevArray) => [
@@ -494,8 +485,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
               setCardVisible(false);
               toggleClosePopup();
               setBlackout(false);
-              setSelectingRecipe(false);
-              setSelectedRecipes([]);
             }
             setSelectingRecipe(!selectingRecipe);
           }}
@@ -569,7 +558,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                     onPress={() => {
                       const collectionName = name[0] || '';
                       toggleRecipeCard(collectionName);
-                      // toggleCard();
                     }}
                   >
                     <FontAwesome5 name={name[1]} size={40} color="#365E32" />
