@@ -19,7 +19,7 @@ import {
 } from '@expo/vector-icons';
 import { NavigationProp, useRoute } from '@react-navigation/native';
 import { CornerDownLeft } from '@tamagui/lucide-icons';
-import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore/lite';
+import { addDoc, collection, deleteDoc, doc, getDocs } from 'firebase/firestore/lite';
 
 import { db } from '../firebase';
 import { Spacer } from 'tamagui';
@@ -134,6 +134,10 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     }
   };
 
+  const handleRecipeSelection = () => {
+
+  }
+  
   const fetchRecipes = async (day: number) => {
     const curCollection = collection(
       db,
@@ -316,26 +320,50 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
               <TouchableOpacity
                 key={index}
                 style={[styles.recipe, isSelected && styles.selectedRecipe]}
-                onPress={() => {
+                onPress={async() => {
+                  const curCollection = collection(
+                    db,
+                    `allUsers/${userId}/planner/${days[dayIndex]}/Recipes`
+                  );
+
                   const safeTitle = title || '';
-                  if (selectingRecipe) {
-                    if (isSelected) {
-                      // Remove from selected array
-                      const updatedArray = tempSelectedRecipesArray.filter(
-                        (item) => item !== title,
-                      );
-                      // Update state
-                      setTempSelectedRecipesArray(updatedArray);
-                    } else {
-                      // Add to selected array
-                      setTempSelectedRecipesArray([
-                        ...tempSelectedRecipesArray,
-                        safeTitle,
-                      ]);
+
+                if (selectingRecipe) {
+                  if (isSelected) {
+                    // Remove from selected array
+                    const updatedArray = tempSelectedRecipesArray.filter(
+                      (item) => item !== safeTitle
+                    );
+                    setTempSelectedRecipesArray(updatedArray);
+
+                    // Remove from Firestore
+                    try {
+                      const recipeDocRef = doc(curCollection, safeTitle); // Assuming `title` is used as a unique ID
+                      await deleteDoc(recipeDocRef);
+                      console.log("Recipe removed from collection");
+                    } catch (error) {
+                      console.error("Error removing recipe: ", error);
                     }
                   } else {
-                    // Handle non-edit mode if needed
+                    // Add to selected array
+                    setTempSelectedRecipesArray((prevArray) => [
+                      ...prevArray,
+                      safeTitle
+                    ]);
+
+                    // Add to Firestore
+                    try {
+                      await addDoc(curCollection, {
+                        ...recipe, // Make sure `recipe` has all the necessary fields
+                        title: safeTitle // Include title if needed
+                      });
+                      console.log("Recipe added to collection");
+                    } catch (error) {
+                      console.error("Error adding recipe: ", error);
+                    }
                   }
+                }
+
                   showCollectionRecipes();
                 }}
               >
