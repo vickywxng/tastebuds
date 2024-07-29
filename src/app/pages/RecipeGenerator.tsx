@@ -1135,19 +1135,21 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
         ingredients,
       );
 
-      // const openai = new OpenAI({
-      //   apiKey: process.env.EXPO_PUBLIC_API_KEY_OPENAI,
-      // });
+      const openai = new OpenAI({
+        apiKey: process.env.EXPO_PUBLIC_API_KEY_OPENAI,
+      });
 
-      // const result = await openai.chat.completions.create({
-      //   model: 'gpt-4o',
-      //   messages: [{ role: 'user', content: inputText }],
-      // });
+      const result = await openai.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [{ role: 'user', content: inputText }],
+      });
 
-      // const generatedText = result.choices[0]?.message.content ?? '';
+      const generatedText = result.choices[0]?.message.content ?? '';
 
-      const generatedText =
-        'Title: Creamy Potato Soup Description: A comforting and creamy potato soup made with simple ingredients, perfect for a quick and satisfying meal. Ingredients: 3 potatoes, 2 sticks of butter, 1 gal of milk Directions: Peel and dice the potatoes. In a large pot, melt the butter over medium heat. Add the diced potatoes and sauté for 2-3 minutes. Pour in the milk and bring to a gentle simmer. Cook for about 10 minutes or until the potatoes are tender. Use a potato masher or immersion blender to blend some of the potatoes to thicken the soup while leaving some chunks for texture. Season with salt and pepper to taste. Serve hot. Calories: Approximately 350 calories';
+      console.log(process.env.EXPO_PUBLIC_API_KEY_OPENAI);
+
+      // const generatedText =
+      //   'Title: Creamy Potato Soup Description: A comforting and creamy potato soup made with simple ingredients, perfect for a quick and satisfying meal. Ingredients: 3 potatoes, 2 sticks of butter, 1 gal of milk Directions: Peel and dice the potatoes. In a large pot, melt the butter over medium heat. Add the diced potatoes and sauté for 2-3 minutes. Pour in the milk and bring to a gentle simmer. Cook for about 10 minutes or until the potatoes are tender. Use a potato masher or immersion blender to blend some of the potatoes to thicken the soup while leaving some chunks for texture. Season with salt and pepper to taste. Serve hot. Calories: Approximately 350 calories';
 
       organizeOutput(generatedText);
 

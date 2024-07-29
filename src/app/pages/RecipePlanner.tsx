@@ -19,7 +19,14 @@ import {
 } from '@expo/vector-icons';
 import { NavigationProp, useRoute } from '@react-navigation/native';
 import { CornerDownLeft } from '@tamagui/lucide-icons';
-import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore/lite';
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+} from 'firebase/firestore/lite';
+import { Spacer } from 'tamagui';
 
 import { db } from '../firebase';
 
@@ -42,6 +49,9 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   >([]);
   // let tempSelectedRecipesArray: string[] = [];
   const [editMode, setEditMode] = useState(false);
+  const [currentDaySelectedRecipes, setCurrentDaySelectedRecipes] = useState<
+    string[][]
+  >([]);
   const [recipes, setRecipes] = useState<string[][]>([]);
   const [selectedRecipes, setSelectedRecipes] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
@@ -234,6 +244,112 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     //ADD RECIPES HERE --> logic from collection page? keep track of date and collection users selects
   };
 
+  const displayCurrentDayRecipes = async () => {
+    let arr = [''];
+
+    let recipesArray: string[][] = [];
+
+    const usersCollectionRef = collection(
+      db,
+      `allUsers/${userId}/planner/${days[dayIndex]}/Recipes`,
+    );
+
+    // const usersCollectionRef = collection(db, `allUsers/${userId}/collections`);
+    const querySnapshot = await getDocs(usersCollectionRef);
+
+    querySnapshot.forEach((doc) => {
+      arr.push(doc.id);
+      const data = doc.data();
+      const recipeDetails = [
+        doc.id, // Recipe ID
+        data.Description || '', // Recipe Description
+        data.Info['Time'] || '', // Time
+        data.Info['Complexity'] || '', // Complexity
+        data.Info['Calories'] || '', // Calories
+        data.Info['Meal'] || '', // Meal
+      ];
+      recipesArray.push(recipeDetails);
+    });
+
+    arr.shift();
+
+    setCurrentDaySelectedRecipes(recipesArray);
+
+    return (
+      <View>
+        {currentDaySelectedRecipes.map((recipe, index) => {
+          const title =
+            (recipe[0] || '').length >= 24
+              ? recipe[0]?.substring(0, 25) + '...'
+              : recipe[0];
+
+          const description =
+            (recipe[1] || '').length >= 110
+              ? recipe[1]?.substring(0, 111) + '...'
+              : recipe[1];
+
+          const isSelected = tempSelectedRecipesArray.includes(title || '');
+
+          return (
+            <TouchableOpacity
+              key={index}
+              style={[styles.recipe, isSelected && styles.selectedRecipe]}
+              onPress={async () => {}}
+            >
+              <Text style={styles.recipeTitle}>{title}</Text>
+              <Text
+                style={
+                  isSelected
+                    ? styles.recipeDescription
+                    : styles.unselectedRecipeDescription
+                }
+              >
+                {description}
+              </Text>
+              <View style={styles.info}>
+                {/* <View style={[isSelected ? styles.infoElement : styles.unselectedInfoElement, { width: 50 }]}>
+                    {icons(recipe[5] + '')}
+                  </View> */}
+                <View
+                  style={
+                    isSelected
+                      ? styles.infoElement
+                      : styles.unselectedInfoElement
+                  }
+                >
+                  <Ionicons name="alarm" size={18} color="#FFF5CD" />
+                  <Text style={styles.infoText}>{recipe[2]}</Text>
+                </View>
+                <Spacer size={10} />
+                <View
+                  style={
+                    isSelected
+                      ? styles.infoElement
+                      : styles.unselectedInfoElement
+                  }
+                >
+                  <Ionicons name="star" size={18} color="#FFF5CD" />
+                  <Text style={styles.infoText}>{recipe[3]}</Text>
+                </View>
+                <Spacer size={10} />
+                <View
+                  style={
+                    isSelected
+                      ? styles.infoElement
+                      : styles.unselectedInfoElement
+                  }
+                >
+                  <Ionicons name="flame" size={20} color="#FFF5CD" />
+                  <Text style={styles.infoText}>{recipe[4]}</Text>
+                </View>
+              </View>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    );
+  };
+
   const toggleRecipeCard = async (collectionName: string) => {
     setSelectedCollectionName(collectionName);
 
@@ -315,26 +431,50 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
               <TouchableOpacity
                 key={index}
                 style={[styles.recipe, isSelected && styles.selectedRecipe]}
-                onPress={() => {
+                onPress={async () => {
+                  const curCollection = collection(
+                    db,
+                    `allUsers/${userId}/planner/${days[dayIndex]}/Recipes`,
+                  );
+
                   const safeTitle = title || '';
+
                   if (selectingRecipe) {
                     if (isSelected) {
                       // Remove from selected array
                       const updatedArray = tempSelectedRecipesArray.filter(
-                        (item) => item !== title,
+                        (item) => item !== safeTitle,
                       );
-                      // Update state
                       setTempSelectedRecipesArray(updatedArray);
+
+                      // Remove from Firestore
+                      try {
+                        const recipeDocRef = doc(curCollection, safeTitle); // Assuming `title` is used as a unique ID
+                        await deleteDoc(recipeDocRef);
+                        console.log('Recipe removed from collection');
+                      } catch (error) {
+                        console.error('Error removing recipe: ', error);
+                      }
                     } else {
                       // Add to selected array
-                      setTempSelectedRecipesArray([
-                        ...tempSelectedRecipesArray,
+                      setTempSelectedRecipesArray((prevArray) => [
+                        ...prevArray,
                         safeTitle,
                       ]);
+
+                      // Add to Firestore
+                      try {
+                        await addDoc(curCollection, {
+                          ...recipe, // Make sure `recipe` has all the necessary fields
+                          title: safeTitle, // Include title if needed
+                        });
+                        console.log('Recipe added to collection');
+                      } catch (error) {
+                        console.error('Error adding recipe: ', error);
+                      }
                     }
-                  } else {
-                    // Handle non-edit mode if needed
                   }
+
                   showCollectionRecipes();
                 }}
               >
@@ -357,18 +497,38 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                   {description}
                 </Text>
                 <View style={styles.info}>
-                  <View style={[styles.infoElement, { width: 50 }]}>
+                  {/* <View style={[isSelected ? styles.infoElement : styles.unselectedInfoElement, { width: 50 }]}>
                     {icons(recipe[5] + '')}
-                  </View>
-                  <View style={styles.infoElement}>
+                  </View> */}
+                  <View
+                    style={
+                      isSelected
+                        ? styles.infoElement
+                        : styles.unselectedInfoElement
+                    }
+                  >
                     <Ionicons name="alarm" size={18} color="#FFF5CD" />
                     <Text style={styles.infoText}>{recipe[2]}</Text>
                   </View>
-                  <View style={styles.infoElement}>
+                  <Spacer size={10} />
+                  <View
+                    style={
+                      isSelected
+                        ? styles.infoElement
+                        : styles.unselectedInfoElement
+                    }
+                  >
                     <Ionicons name="star" size={18} color="#FFF5CD" />
                     <Text style={styles.infoText}>{recipe[3]}</Text>
                   </View>
-                  <View style={styles.infoElement}>
+                  <Spacer size={10} />
+                  <View
+                    style={
+                      isSelected
+                        ? styles.infoElement
+                        : styles.unselectedInfoElement
+                    }
+                  >
                     <Ionicons name="flame" size={20} color="#FFF5CD" />
                     <Text style={styles.infoText}>{recipe[4]}</Text>
                   </View>
@@ -683,6 +843,7 @@ const styles = StyleSheet.create({
     marginBottom: 200,
   },
   recipe: {
+    justifyContent: 'space-between',
     backgroundColor: '#FFF5CD',
     width: 375,
     padding: 30,
@@ -797,6 +958,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#AFA26B',
     marginHorizontal: 2.5,
   },
+  unselectedInfoElement: {
+    width: 95,
+    height: 37.5,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 50,
+    paddingHorizontal: 15,
+    backgroundColor: '#E7D37F',
+    marginHorizontal: 2.5,
+  },
   infoText: {
     color: '#FFF5CD',
     fontSize: 13,
@@ -804,7 +976,7 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   unselectedInfoText: {
-    color: '#FFF5CD',
+    color: '#E7D37F',
     fontSize: 13,
     fontWeight: 'bold',
     marginLeft: 5,
