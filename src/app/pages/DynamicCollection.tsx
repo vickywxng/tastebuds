@@ -197,9 +197,9 @@ const DynamicCollection: React.FC<Props> = ({ navigation }) => {
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <View style={styles.header}>
           <TouchableOpacity onPress={goBack} style={{ flexDirection: 'row' }}>
-            <Feather
-              name="chevron-left"
-              size={36}
+            <MaterialIcons
+              name="arrow-back-ios"
+              size={35}
               color={'#365E32'}
               style={styles.arrow}
             />
@@ -313,7 +313,7 @@ const styles = StyleSheet.create({
   editButtonText: {
     color: '#365E32',
     fontFamily: 'Arvo-Bold',
-    fontSize: 32,
+    fontSize: 20,
   },
   recipes: {
     flexDirection: 'column',
@@ -402,7 +402,7 @@ const styles = StyleSheet.create({
   },
   popupTitle: {
     marginTop: 35,
-    fontSize: 23,
+    fontSize: 26,
     color: '#E7D37F',
     fontFamily: 'Arvo-Bold',
   },

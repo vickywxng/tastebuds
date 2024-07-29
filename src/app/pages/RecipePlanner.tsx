@@ -786,7 +786,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 20,
   },
-
   infoElement: {
     width: 95,
     height: 37.5,
