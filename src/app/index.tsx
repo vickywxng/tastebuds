@@ -7,6 +7,7 @@ import DynamicCollection from './pages/DynamicCollection';
 import InfoPage from './pages/InfoPage';
 import InputOutput from './pages/Input-Output';
 import LoginScreen from './pages/Login';
+import PlannerInfoPage from './pages/PlannerInfoPage';
 import RecipeCollection from './pages/RecipeCollection';
 import RecipeGenerator from './pages/RecipeGenerator';
 import RecipePlanner from './pages/RecipePlanner';
@@ -97,6 +98,13 @@ function App() {
       <Stack.Screen
         name="InfoPage"
         component={InfoPage}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <Stack.Screen
+        name="PlannerInfoPage"
+        component={PlannerInfoPage}
         options={{
           headerShown: false,
         }}

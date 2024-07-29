@@ -219,6 +219,18 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     navigation.navigate('Collection', { userId });
   };
 
+  const goToInfo = (curRecipe: string, dayName: string) => {
+    console.log(curRecipe);
+    console.log(dayName);
+    console.log(userId);
+
+    navigation.navigate('PlannerInfoPage', {
+      userId,
+      dayName,
+      curRecipe,
+    });
+  };
+
   const toggleDay = (increment: number) => {
     const newIndex = dayIndex + increment;
     console.log('Changing day index to:', newIndex);
@@ -633,6 +645,8 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                 onPress={() => {
                   if (editMode) {
                     toggleRecipeSelection(index);
+                  } else {
+                    goToInfo(recipe[0] + '', days[dayIndex] + '');
                   }
                 }}
               >
