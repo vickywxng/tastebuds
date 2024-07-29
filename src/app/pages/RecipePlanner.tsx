@@ -395,6 +395,8 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                           Ingredients: recipe[7],
                           Directions: recipe[8],
                         });
+                        fetchRecipes(dayIndex);
+                        setAddRec(false);
                         console.log('Recipe added to collection');
                       } catch (error) {
                         console.error('Error adding recipe: ', error);
