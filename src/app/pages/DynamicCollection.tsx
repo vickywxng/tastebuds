@@ -217,9 +217,9 @@ const DynamicCollection: React.FC<Props> = ({ navigation }) => {
         <View style={styles.recipes}>
           {recipes.map((recipe, index) => {
             const title =
-              (recipe[0] || '').length >= 24
-                ? recipe[0]?.substring(0, 25) + '...'
-                : recipe[0];
+              (recipe[0]?.trim() || '').length >= 24
+                ? recipe[0]?.trim().substring(0, 25) + '...'
+                : recipe[0]?.trim();
 
             const description =
               (recipe[1] || '').length >= 110
