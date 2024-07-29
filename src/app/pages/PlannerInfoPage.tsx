@@ -69,7 +69,7 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
         const docSnap = await getDoc(curDoc);
 
         if (docSnap.exists()) {
-          setTitle(docSnap.id.trim());
+          setTitle(docSnap.data().Title.trim());
           setDescription(docSnap.data().Description.trim());
           setGenInfo([
             docSnap.data().Info['Servings'],

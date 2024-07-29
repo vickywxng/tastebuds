@@ -489,6 +489,11 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
               console.log(tempSelectedRecipesArray);
               // console.log(selectedRecipesArray);
               // selectedRecipesArray = [""];
+              setCardVisible(false);
+              toggleClosePopup();
+              setBlackout(false);
+              setSelectingRecipe(false);
+              setSelectedRecipes([]);
             }
             setSelectingRecipe(!selectingRecipe);
           }}
@@ -640,7 +645,10 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                 key={index}
                 style={[
                   styles.recipe,
-                  selectedRecipes.includes(index) && styles.selectedRecipe,
+                  selectedRecipes.includes(index) && {
+                    borderWidth: 2,
+                    borderColor: 'red',
+                  },
                 ]}
                 onPress={() => {
                   if (editMode) {
@@ -768,7 +776,6 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   recipes: {
-    flexGrow: 1,
     paddingBottom: neededPadding,
     flexDirection: 'column',
     justifyContent: 'center',
@@ -788,7 +795,7 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
   },
   selectedRecipe: {
-    borderColor: 'red',
+    //borderColor: 'red',
     borderWidth: 2,
   },
   unselectedRecipeTitle: {
