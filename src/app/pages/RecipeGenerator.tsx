@@ -1352,10 +1352,8 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <LoadingIndicatorPage />
-      <View style={styles.header}>
-        <Image style={styles.logo} source={require('../images/sloth.png')} />
-      </View>
-
+      
+      <View style={styles.header}></View>
       <ScrollView
         ref={scrollViewRef}
         contentContainerStyle={styles.scrollViewContent}
@@ -1368,6 +1366,10 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
           {!selectedMeal && !generateRecipeBoolean && (
             <>
+            <View style={{ height: 40 }} />
+            <View style={styles.logoContainer}>
+              <Image style={styles.logo} source={require('../images/SlothYellow.png')} />
+            </View>
               <View style={{ height: 30 }} />
               <Text style={[styles.modalTitle, { textAlign: 'center' }]}>
                 What are we tryna chef up today?
@@ -1423,7 +1425,7 @@ const styles = StyleSheet.create({
   header: {
     // backgroundColor: '#82A263',
     flexDirection: 'row',
-    height: 200,
+    height: 70,
     justifyContent: 'space-around',
     alignItems: 'center',
   },
@@ -1606,12 +1608,17 @@ const styles = StyleSheet.create({
     flex: 2,
   },
   logo: {
-    position: 'absolute',
-    top: 70, // Adjust distance from the top
-    left: 40, // Adjust distance from the left
-    width: 90, // Adjust width as needed
-    height: 90, // Adjust height as needed
-    borderRadius: 25, // Adjust to maintain circular shape if desired
+    // position: 'absolute',
+    // top: 70, // Adjust distance from the top
+    // left: 40, // Adjust distance from the left
+    // width: 90, // Adjust width as needed
+    // height: 90, // Adjust height as needed
+    // borderRadius: 25, // Adjust to maintain circular shape if desired
+  }, 
+  logoContainer: {
+    flex: 1,
+    justifyContent: 'center', // Centers content vertically
+    alignItems: 'center', // Centers content horizontally
   },
 });
 
