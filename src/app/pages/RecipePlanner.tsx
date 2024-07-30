@@ -373,6 +373,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                       const updatedArray = tempSelectedRecipesArray.filter(
                         (item) => item !== safeTitle,
                       );
+                      
                       setTempSelectedRecipesArray(updatedArray);
 
                       // Remove from Firestore
@@ -540,8 +541,13 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
               // Perform your logic here
               newSelectedItemsArray.push(item)
             });
-            console.log(newSelectedItemsArray);
 
+            newSelectedItemsArray.shift();
+            
+            setSelectedRecipesArray(newSelectedItemsArray);
+            setTempSelectedRecipesArray([]);
+
+            console.log(selectedRecipesArray);
           }}
         >
           <Text
@@ -900,7 +906,7 @@ const styles = StyleSheet.create({
     marginTop: 35,
   },
   collectionScrollView: {
-    // flexGrow: 1,
+    flexGrow: 1,
     paddingBottom: 20,
     paddingTop: 30,
   },
