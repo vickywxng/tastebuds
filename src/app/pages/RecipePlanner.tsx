@@ -46,10 +46,10 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     string | null
   >(null);
   // let selectedRecipesArray: string[] = [];
-  const [tempSelectedRecipesArray, setTempSelectedRecipesArray] = useState<
+  const [selectedRecipesArray, setSelectedRecipesArray] = useState<
     string[]
   >([]);
-  // let tempSelectedRecipesArray: string[] = [];
+  // let selectedRecipesArray: string[] = [];
   const [editMode, setEditMode] = useState(false);
   const [recipes, setRecipes] = useState<string[][]>([]);
   const [selectedRecipes, setSelectedRecipes] = useState<number[]>([]);
@@ -61,7 +61,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   const [blackout, setBlackout] = useState<Boolean>(false);
   const [selectingRecipe, setSelectingRecipe] = useState<Boolean>(false);
   const [delVisible, setDelVisible] = useState(false);
-
   const [collectionRecipes, setCollectionRecipes] = useState<string[][]>([]);
 
   const formatDate = (date: number | Date | undefined) => {
@@ -345,148 +344,143 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
 
       // </View>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <View style={styles.recipes}>
-          {collectionRecipes.map((recipe, index) => {
-            const title =
-              (recipe[0]?.trim() || '').length >= 24
-                ? recipe[0]?.trim().substring(0, 25) + '...'
-                : recipe[0]?.trim();
+  <View style={styles.recipes}>
+    {collectionRecipes
+      .filter(recipe => !selectedRecipesArray.includes(recipe[0])) // Filter out recipes that are in selectedRecipesArray
+      .map((recipe, index) => {
+        const title = (recipe[0]?.trim() || '').length >= 24
+          ? recipe[0]?.trim().substring(0, 25) + '...'
+          : recipe[0]?.trim();
 
-            console.log(title);
+        const description = (recipe[1]?.trim() || '').length >= 110
+          ? recipe[1]?.trim().substring(0, 111) + '...'
+          : recipe[1]?.trim();
 
-            const description =
-              (recipe[1]?.trim() || '').length >= 110
-                ? recipe[1]?.trim().substring(0, 111) + '...'
-                : recipe[1]?.trim();
+        const isSelected = selectedRecipesArray.includes(recipe[0] || '');
 
-            console.log(description);
+        return (
+          <TouchableOpacity
+            key={index}
+            style={[styles.recipe, isSelected && styles.selectedRecipe]}
+            onPress={async () => {
+              const curCollection = collection(
+                db,
+                `allUsers/${userId}/planner/${days[dayIndex]}/Recipes`
+              );
 
-            const isSelected = tempSelectedRecipesArray.includes(title || '');
+              const safeTitle = recipe[0] || '';
 
-            return (
-              <TouchableOpacity
-                key={index}
-                style={[styles.recipe, isSelected && styles.selectedRecipe]}
-                onPress={async () => {
-                  const curCollection = collection(
-                    db,
-                    `allUsers/${userId}/planner/${days[dayIndex]}/Recipes`,
+              if (selectingRecipe) {
+                if (isSelected) {
+                  // Remove from selected array
+                  const updatedArray = selectedRecipesArray.filter(
+                    (item) => item !== safeTitle
                   );
+                  setSelectedRecipesArray(updatedArray);
 
-                  const safeTitle = title || '';
-
-                  if (selectingRecipe) {
-                    if (isSelected) {
-                      // Remove from selected array
-                      const updatedArray = tempSelectedRecipesArray.filter(
-                        (item) => item !== safeTitle,
-                      );
-                      setTempSelectedRecipesArray(updatedArray);
-
-                      // Remove from Firestore
-                      try {
-                        const recipeDocRef = doc(curCollection, safeTitle); // Assuming `title` is used as a unique ID
-                        await deleteDoc(recipeDocRef);
-                        console.log('Recipe removed from collection');
-                      } catch (error) {
-                        console.error('Error removing recipe: ', error);
-                      }
-                    } else {
-                      // Add to selected array
-                      setTempSelectedRecipesArray((prevArray) => [
-                        ...prevArray,
-                        safeTitle,
-                      ]);
-
-                      // Add to Firestore
-                      try {
-                        const reciperef = doc(curCollection, safeTitle);
-                        const newInfo = {
-                          Servings: recipe[6],
-                          Time: recipe[2],
-                          Complexity: recipe[3],
-                          Calories: recipe[4],
-                          Meal: recipe[5],
-                        };
-                        await setDoc(reciperef, {
-                          Title: recipe[0],
-                          Description: recipe[1],
-                          Info: newInfo,
-                          Ingredients: recipe[7],
-                          Directions: recipe[8],
-                        });
-                        fetchRecipes(dayIndex);
-                        setAddRec(false);
-                        console.log('Recipe added to collection');
-                      } catch (error) {
-                        console.error('Error adding recipe: ', error);
-                      }
-                    }
+                  // Remove from Firestore
+                  try {
+                    const recipeDocRef = doc(curCollection, safeTitle); // Assuming `title` is used as a unique ID
+                    await deleteDoc(recipeDocRef);
+                    console.log('Recipe removed from collection');
+                  } catch (error) {
+                    console.error('Error removing recipe: ', error);
                   }
+                } else {
+                  // Add to selected array
+                  setSelectedRecipesArray((prevArray) => [
+                    ...prevArray,
+                    safeTitle
+                  ]);
 
-                  showCollectionRecipes();
-                }}
+                  // Add to Firestore
+                  try {
+                    const reciperef = doc(curCollection, safeTitle);
+                    const newInfo = {
+                      Servings: recipe[6],
+                      Time: recipe[2],
+                      Complexity: recipe[3],
+                      Calories: recipe[4],
+                      Meal: recipe[5],
+                    };
+                    await setDoc(reciperef, {
+                      Title: recipe[0],
+                      Description: recipe[1],
+                      Info: newInfo,
+                      Ingredients: recipe[7],
+                      Directions: recipe[8],
+                    });
+                    fetchRecipes(dayIndex);
+                    setAddRec(false);
+                    console.log('Recipe added to collection');
+                  } catch (error) {
+                    console.error('Error adding recipe: ', error);
+                  }
+                }
+              }
+
+              showCollectionRecipes();
+            }}
+          >
+            <Text
+              style={
+                isSelected
+                  ? styles.recipeTitle
+                  : styles.unselectedRecipeTitle
+              }
+            >
+              {title}
+            </Text>
+            <Text
+              style={
+                isSelected
+                  ? styles.recipeDescription
+                  : styles.unselectedRecipeDescription
+              }
+            >
+              {description}
+            </Text>
+            <View style={styles.info}>
+              <View
+                style={
+                  isSelected
+                    ? styles.infoElement
+                    : styles.unselectedInfoElement
+                }
               >
-                <Text
-                  style={
-                    isSelected
-                      ? styles.recipeTitle
-                      : styles.unselectedRecipeTitle
-                  }
-                >
-                  {title}
-                </Text>
-                <Text
-                  style={
-                    isSelected
-                      ? styles.recipeDescription
-                      : styles.unselectedRecipeDescription
-                  }
-                >
-                  {description}
-                </Text>
-                <View style={styles.info}>
-                  {/* <View style={[isSelected ? styles.infoElement : styles.unselectedInfoElement, { width: 50 }]}>
-                    {icons(recipe[5] + '')}
-                  </View> */}
-                  <View
-                    style={
-                      isSelected
-                        ? styles.infoElement
-                        : styles.unselectedInfoElement
-                    }
-                  >
-                    <Ionicons name="alarm" size={18} color="#FFF5CD" />
-                    <Text style={styles.infoText}>{recipe[2]}</Text>
-                  </View>
-                  <Spacer size={10} />
-                  <View
-                    style={
-                      isSelected
-                        ? styles.infoElement
-                        : styles.unselectedInfoElement
-                    }
-                  >
-                    <Ionicons name="star" size={18} color="#FFF5CD" />
-                    <Text style={styles.infoText}>{recipe[3]}</Text>
-                  </View>
-                  <Spacer size={10} />
-                  <View
-                    style={
-                      isSelected
-                        ? styles.infoElement
-                        : styles.unselectedInfoElement
-                    }
-                  >
-                    <Ionicons name="flame" size={20} color="#FFF5CD" />
-                    <Text style={styles.infoText}>{recipe[4]}</Text>
-                  </View>
-                </View>
-              </TouchableOpacity>
-            );
-          })}
+                <Ionicons name="alarm" size={18} color="#FFF5CD" />
+                <Text style={styles.infoText}>{recipe[2]}</Text>
+              </View>
+              <Spacer size={10} />
+              <View
+                style={
+                  isSelected
+                    ? styles.infoElement
+                    : styles.unselectedInfoElement
+                }
+              >
+                <Ionicons name="star" size={18} color="#FFF5CD" />
+                <Text style={styles.infoText}>{recipe[3]}</Text>
+              </View>
+              <Spacer size={10} />
+              <View
+                style={
+                  isSelected
+                    ? styles.infoElement
+                    : styles.unselectedInfoElement
+                }
+              >
+                <Ionicons name="flame" size={20} color="#FFF5CD" />
+                <Text style={styles.infoText}>{recipe[4]}</Text>
+              </View>
+            </View>
+                </TouchableOpacity>
+              );
+            })}
         </View>
       </ScrollView>
+
+
     );
   };
 
@@ -537,7 +531,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
         <TouchableOpacity
           onPress={() => {
             if (selectingRecipe) {
-              console.log(tempSelectedRecipesArray);
+              console.log(selectedRecipesArray);
               // console.log(selectedRecipesArray);
               // selectedRecipesArray = [""];
               setCardVisible(false);
@@ -550,7 +544,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
           <Text
             style={[styles.cardTitle, { textAlign: 'right' }, { fontSize: 20 }]}
           >
-            {selectingRecipe ? 'Done' : 'Select'}
+            {selectingRecipe ? 'Add' : 'Select'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -660,7 +654,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
       </View>
       <View style={styles.editSection}>
         <TouchableOpacity onPress={editMode ? toggleVisible : toggleEditMode}>
-          <Text style={styles.editText}>{editMode ? 'Done' : 'Edit'}</Text>
+          <Text style={styles.editText}>{editMode ? 'Delete' : 'Edit'}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
@@ -904,8 +898,8 @@ const styles = StyleSheet.create({
   },
   collectionScrollView: {
     flexGrow: 1,
-    justifyContent: 'center',
     paddingBottom: 20,
+    paddingTop: 30,
   },
   collections: {
     flexDirection: 'row',
