@@ -352,7 +352,10 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
             return (
               <TouchableOpacity
                 key={index}
-                style={[styles.recipe, isSelected && styles.selectedRecipe]}
+                style={[
+                  styles.recipe,
+                  isSelected && { borderColor: '#00AA00', borderWidth: 2 },
+                ]}
                 onPress={async () => {
                   const curCollection = collection(
                     db,
@@ -695,21 +698,70 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                   }
                 }}
               >
-                <Text style={styles.recipeTitle}>{title}</Text>
-                <Text style={styles.recipeDescription}>{description}</Text>
+                <Text
+                  style={[
+                    styles.recipeTitle,
+                    editMode &&
+                      !selectedRecipes.includes(index) &&
+                      styles.unselectedRecipeTitle,
+                  ]}
+                >
+                  {title}
+                </Text>
+                <Text
+                  style={[
+                    styles.recipeDescription,
+                    editMode &&
+                      !selectedRecipes.includes(index) &&
+                      styles.unselectedRecipeDescription,
+                  ]}
+                >
+                  {description}
+                </Text>
                 <View style={styles.info}>
-                  <View style={[styles.infoElement, { width: 50 }]}>
+                  <View
+                    style={[
+                      [
+                        styles.infoElement,
+                        editMode &&
+                          !selectedRecipes.includes(index) &&
+                          styles.unselectedInfoElement,
+                      ],
+                      { width: 50 },
+                    ]}
+                  >
                     {icons(recipe[5] + '')}
                   </View>
-                  <View style={styles.infoElement}>
+                  <View
+                    style={[
+                      styles.infoElement,
+                      editMode &&
+                        !selectedRecipes.includes(index) &&
+                        styles.unselectedInfoElement,
+                    ]}
+                  >
                     <Ionicons name="alarm" size={18} color="#FFF5CD" />
                     <Text style={styles.infoText}>{recipe[2]}</Text>
                   </View>
-                  <View style={styles.infoElement}>
+                  <View
+                    style={[
+                      styles.infoElement,
+                      editMode &&
+                        !selectedRecipes.includes(index) &&
+                        styles.unselectedInfoElement,
+                    ]}
+                  >
                     <Ionicons name="star" size={18} color="#FFF5CD" />
                     <Text style={styles.infoText}>{recipe[3]}</Text>
                   </View>
-                  <View style={styles.infoElement}>
+                  <View
+                    style={[
+                      styles.infoElement,
+                      editMode &&
+                        !selectedRecipes.includes(index) &&
+                        styles.unselectedInfoElement,
+                    ]}
+                  >
                     <Ionicons name="flame" size={20} color="#FFF5CD" />
                     <Text style={styles.infoText}>{recipe[4]}</Text>
                   </View>
