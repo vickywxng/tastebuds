@@ -45,14 +45,12 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   const [selectedCollectionName, setSelectedCollectionName] = useState<
     string | null
   >(null);
-  // let selectedRecipesArray: string[] = [];
   const [tempSelectedRecipesArray, setTempSelectedRecipesArray] = useState<
     string[]
   >([]);
   const [selectedRecipesArray, setSelectedRecipesArray] = useState<
     string[]
   >([]);
-  // let tempSelectedRecipesArray: string[] = [];
   const [editMode, setEditMode] = useState(false);
   const [recipes, setRecipes] = useState<string[][]>([]);
   const [selectedRecipes, setSelectedRecipes] = useState<number[]>([]);
@@ -205,7 +203,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
       `allUsers/${userId}/planner/${days[dayIndex]}/Recipes`,
     );
   
-    const updatedArray = [...tempSelectedRecipesArray]; // Create a copy of the array
+    const updatedArray = [...selectedRecipesArray]; // Create a copy of the array
   
     for (let recipe of recipesToDelete) {
       const id = recipe[0];
@@ -225,9 +223,9 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     }
     
 
-    console.log(tempSelectedRecipesArray);
+    console.log(selectedRecipesArray);
   
-    setTempSelectedRecipesArray(updatedArray); // Set the updated array once
+    setSelectedRecipesArray(updatedArray); // Set the updated array once
     setRecipes(filteredRecipes);
     setSelectedRecipes([]);
     setEditMode(false);
@@ -297,7 +295,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
 
   const toggleRecipeCard = async (collectionName: string) => {
     setSelectedCollectionName(collectionName);
-    console.log(tempSelectedRecipesArray);
+    // console.log(tempSelectedRecipesArray);
 
     let arr = [''];
 
@@ -377,12 +375,12 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                       setTempSelectedRecipesArray(updatedArray);
 
                       // Remove from Firestore
-                      try {
-                        const recipeDocRef = doc(curCollection, safeTitle); // Assuming `title` is used as a unique ID
-                        await deleteDoc(recipeDocRef);
-                      } catch (error) {
-                        console.error('Error removing recipe: ', error);
-                      }
+                      // try {
+                      //   const recipeDocRef = doc(curCollection, safeTitle); // Assuming `title` is used as a unique ID
+                      //   await deleteDoc(recipeDocRef);
+                      // } catch (error) {
+                      //   console.error('Error removing recipe: ', error);
+                      // }
                     } else {
                       // Add to selected array
                       setTempSelectedRecipesArray((prevArray) => [
@@ -390,28 +388,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                         safeTitle,
                       ]);
 
-                      // Add to Firestore
-                      try {
-                        const reciperef = doc(curCollection, safeTitle);
-                        const newInfo = {
-                          Servings: recipe[6],
-                          Time: recipe[2],
-                          Complexity: recipe[3],
-                          Calories: recipe[4],
-                          Meal: recipe[5],
-                        };
-                        await setDoc(reciperef, {
-                          Title: recipe[0],
-                          Description: recipe[1],
-                          Info: newInfo,
-                          Ingredients: recipe[7],
-                          Directions: recipe[8],
-                        });
-                        fetchRecipes(dayIndex);
-                        setAddRec(false);
-                      } catch (error) {
-                        console.error('Error adding recipe: ', error);
-                      }
+                      
                     }
                   }
 
@@ -526,28 +503,65 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
         <Text style={styles.cardTitle}>{selectedCollectionName}</Text>
         <View style={{ flex: 1 }} />
         <TouchableOpacity
-          onPress={() => {
+          onPress={async () => {
             if (selectingRecipe) {
-              // selectedRecipesArray = [""];
               setCardVisible(false);
               toggleClosePopup();
               setBlackout(false);
             }
             setSelectingRecipe(!selectingRecipe);
-            
+  
             let newSelectedItemsArray = [""];
             tempSelectedRecipesArray.forEach((item) => {
               console.log(item); // Replace this with your desired action
               // Perform your logic here
               newSelectedItemsArray.push(item)
             });
-
+  
             newSelectedItemsArray.shift();
             
             setSelectedRecipesArray(newSelectedItemsArray);
             setTempSelectedRecipesArray([]);
-
-            console.log(selectedRecipesArray);
+  
+            console.log(newSelectedItemsArray); // Use newSelectedItemsArray instead of selectedRecipesArray
+  
+            // Handle asynchronous operations using for...of
+            try {
+              for (const title of newSelectedItemsArray) {
+                const curCollection = collection(
+                  db,
+                  `allUsers/${userId}/planner/${days[dayIndex]}/Recipes`
+                );
+            
+                const reciperef = doc(curCollection, title);
+                const curRecipe = recipes.find(r => r[0] === title); // Find the recipe details by title
+            
+                if (curRecipe) {
+                  const newInfo = {
+                    Servings: curRecipe[6],
+                    Time: curRecipe[2],
+                    Complexity: curRecipe[3],
+                    Calories: curRecipe[4],
+                    Meal: curRecipe[5],
+                  };
+                  await setDoc(reciperef, {
+                    Title: curRecipe[0],
+                    Description: curRecipe[1],
+                    Info: newInfo,
+                    Ingredients: curRecipe[7],
+                    Directions: curRecipe[8],
+                  });
+                } else {
+                  console.error(`Recipe with title "${title}" not found.`);
+                }
+                
+                await fetchRecipes(dayIndex); // Ensure fetchRecipes is awaited if it returns a promise
+                setAddRec(false);
+              }
+            } catch (error) {
+              console.error('Error adding recipe: ', error);
+            }
+            
           }}
         >
           <Text
