@@ -49,6 +49,9 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   const [tempSelectedRecipesArray, setTempSelectedRecipesArray] = useState<
     string[]
   >([]);
+  const [selectedRecipesArray, setSelectedRecipesArray] = useState<
+    string[]
+  >([]);
   // let tempSelectedRecipesArray: string[] = [];
   const [editMode, setEditMode] = useState(false);
   const [recipes, setRecipes] = useState<string[][]>([]);
@@ -206,15 +209,21 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   
     for (let recipe of recipesToDelete) {
       const id = recipe[0];
-      console.log("DELETING:" + id);
-      const docRef = doc(curCollection, id);
-      await deleteDoc(docRef);
-  
-      const index = updatedArray.indexOf(id);
-      if (index > -1) {
-        updatedArray.splice(index, 1); // Remove the id from the array
+    
+      if (typeof id === 'string') { // Check if id is a string
+        console.log("DELETING:" + id);
+        const docRef = doc(curCollection, id);
+        await deleteDoc(docRef);
+    
+        const index = updatedArray.indexOf(id);
+        if (index > -1) {
+          updatedArray.splice(index, 1); // Remove the id from the array
+        }
+      } else {
+        console.error("Invalid id:", id); // Log error if id is not a string
       }
     }
+    
 
     console.log(tempSelectedRecipesArray);
   

@@ -189,7 +189,7 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
             onPress={editMode ? toggleVisible : toggleEditMode}
           >
             <Text style={styles.editButtonText}>
-              {editMode ? 'Done' : 'Edit'}
+              {editMode ? 'Delete' : 'Edit'}
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
