@@ -196,7 +196,7 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
             style={styles.plus}
             onPress={() => setModalVisible(true)}
           >
-            <FontAwesome5 name="plus" size={36} color="#365E32" />
+            <FontAwesome5 name="plus" size={36} color={'#365E32'} />
           </TouchableOpacity>
         </View>
         <View style={styles.foldersWrapper}>
@@ -208,9 +208,16 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
               <FontAwesome5
                 name="history"
                 size={40}
-                color="#365E32"
+                color={editMode ? '#E7D37F' : '#365E32'}
               ></FontAwesome5>
-              <Text style={styles.folderText}>History</Text>
+              <Text
+                style={[
+                  styles.folderText,
+                  editMode && styles.unselectedFolderText,
+                ]}
+              >
+                History
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.folder}
@@ -219,9 +226,16 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
               <FontAwesome5
                 name="heart"
                 size={40}
-                color="#365E32"
+                color={editMode ? '#E7D37F' : '#365E32'}
               ></FontAwesome5>
-              <Text style={styles.folderText}>Favorites</Text>
+              <Text
+                style={[
+                  styles.folderText,
+                  editMode && styles.unselectedFolderText,
+                ]}
+              >
+                Favorites
+              </Text>
             </TouchableOpacity>
             {folders.map((folder, index) => (
               <TouchableOpacity
@@ -236,8 +250,25 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
                     : goIntoCollection(`${folder[0]}`)
                 }
               >
-                <FontAwesome5 name={folder[1]} size={40} color="#365E32" />
-                <Text style={styles.folderText}>{folder[0]}</Text>
+                <FontAwesome5
+                  name={folder[1]}
+                  size={40}
+                  color={
+                    editMode && !selectedFolders.includes(index)
+                      ? '#E7D37F'
+                      : '#365E32'
+                  }
+                />
+                <Text
+                  style={[
+                    styles.folderText,
+                    editMode &&
+                      !selectedFolders.includes(index) &&
+                      styles.unselectedFolderText,
+                  ]}
+                >
+                  {folder[0]}
+                </Text>
               </TouchableOpacity>
             ))}
           </View>
@@ -560,6 +591,9 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: 'Arvo-Regular',
     textAlign: 'center',
+  },
+  unselectedFolderText: {
+    color: '#E7D37F',
   },
 });
 
