@@ -401,7 +401,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                           Directions: recipe[8],
                         });
                         fetchRecipes(dayIndex);
-                        setAddRec(false);
                       } catch (error) {
                         console.error('Error adding recipe: ', error);
                       }
@@ -513,15 +512,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
       ]}
     >
       <View style={styles.cardHeader}>
-        <TouchableOpacity
-          onPress={() => {
-            if (selectingRecipe) {
-              setAddRec(true);
-            } else {
-              toggleCard;
-            }
-          }}
-        >
+        <TouchableOpacity onPress={toggleCard}>
           <MaterialIcons name="arrow-back-ios" size={35} color="#365E32" />
         </TouchableOpacity>
         <Text style={styles.cardTitle}>{selectedCollectionName}</Text>
@@ -531,8 +522,8 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
             if (selectingRecipe) {
               // selectedRecipesArray = [""];
               setCardVisible(false);
-              toggleClosePopup();
-              setBlackout(false);
+              // toggleClosePopup();
+              // setBlackout(false);
             }
             setSelectingRecipe(!selectingRecipe);
 
@@ -569,6 +560,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
 
   const toggleClosePopup = () => {
     // Hide popup
+    setAddRec(false);
     Animated.timing(popupTranslateY, {
       toValue: Dimensions.get('window').height,
       duration: 500,
@@ -593,8 +585,8 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
               <Text style={styles.popUpTitle}>Recipe Collection</Text>
               <TouchableOpacity
                 onPress={() => {
+                  setBlackout(!blackout);
                   toggleClosePopup();
-                  setBlackout(false);
                 }}
               >
                 <Ionicons
