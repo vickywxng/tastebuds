@@ -49,9 +49,9 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   const [tempSelectedRecipesArray, setTempSelectedRecipesArray] = useState<
     string[]
   >([]);
-  const [selectedRecipesArray, setSelectedRecipesArray] = useState<
-    string[]
-  >([]);
+  const [selectedRecipesArray, setSelectedRecipesArray] = useState<string[]>(
+    [],
+  );
   // let tempSelectedRecipesArray: string[] = [];
   const [editMode, setEditMode] = useState(false);
   const [recipes, setRecipes] = useState<string[][]>([]);
@@ -146,7 +146,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     }
   };
 
-
   const fetchRecipes = async (day: number) => {
     const curCollection = collection(
       db,
@@ -195,44 +194,43 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     const filteredRecipes = recipes.filter(
       (_, index) => !selectedRecipes.includes(index),
     );
-  
+
     const recipesToDelete = recipes.filter((_, index) =>
       selectedRecipes.includes(index),
     );
-  
+
     const curCollection = collection(
       db,
       `allUsers/${userId}/planner/${days[dayIndex]}/Recipes`,
     );
-  
+
     const updatedArray = [...tempSelectedRecipesArray]; // Create a copy of the array
-  
+
     for (let recipe of recipesToDelete) {
       const id = recipe[0];
-    
-      if (typeof id === 'string') { // Check if id is a string
-        console.log("DELETING:" + id);
+
+      if (typeof id === 'string') {
+        // Check if id is a string
+        console.log('DELETING:' + id);
         const docRef = doc(curCollection, id);
         await deleteDoc(docRef);
-    
+
         const index = updatedArray.indexOf(id);
         if (index > -1) {
           updatedArray.splice(index, 1); // Remove the id from the array
         }
       } else {
-        console.error("Invalid id:", id); // Log error if id is not a string
+        console.error('Invalid id:', id); // Log error if id is not a string
       }
     }
-    
 
     console.log(tempSelectedRecipesArray);
-  
+
     setTempSelectedRecipesArray(updatedArray); // Set the updated array once
     setRecipes(filteredRecipes);
     setSelectedRecipes([]);
     setEditMode(false);
   };
-  
 
   const goToGenerator = () => {
     navigation.navigate('Generator', { userId });
@@ -243,7 +241,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   };
 
   const goToInfo = (curRecipe: string, dayName: string) => {
-
     navigation.navigate('PlannerInfoPage', {
       userId,
       dayName,
@@ -336,7 +333,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   };
 
   const showCollectionRecipes = () => {
-
     return (
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <View style={styles.recipes}>
@@ -346,12 +342,10 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                 ? recipe[0]?.trim().substring(0, 25) + '...'
                 : recipe[0]?.trim();
 
-
             const description =
               (recipe[1]?.trim() || '').length >= 110
                 ? recipe[1]?.trim().substring(0, 111) + '...'
                 : recipe[1]?.trim();
-
 
             const isSelected = tempSelectedRecipesArray.includes(title || '');
 
@@ -519,7 +513,15 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
       ]}
     >
       <View style={styles.cardHeader}>
-        <TouchableOpacity onPress={toggleCard}>
+        <TouchableOpacity
+          onPress={() => {
+            if (selectingRecipe) {
+              setAddRec(true);
+            } else {
+              toggleCard;
+            }
+          }}
+        >
           <MaterialIcons name="arrow-back-ios" size={35} color="#365E32" />
         </TouchableOpacity>
         <Text style={styles.cardTitle}>{selectedCollectionName}</Text>
@@ -533,15 +535,14 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
               setBlackout(false);
             }
             setSelectingRecipe(!selectingRecipe);
-            
-            let newSelectedItemsArray = [""];
+
+            let newSelectedItemsArray = [''];
             tempSelectedRecipesArray.forEach((item) => {
               console.log(item); // Replace this with your desired action
               // Perform your logic here
-              newSelectedItemsArray.push(item)
+              newSelectedItemsArray.push(item);
             });
             console.log(newSelectedItemsArray);
-
           }}
         >
           <Text
