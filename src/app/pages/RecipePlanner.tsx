@@ -308,7 +308,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
         db,
         `allUsers/${userId}/collections/${collectionName}/Recipes`,
       );
-      // const usersCollectionRef = collection(db, `allUsers/${userId}/collections`);
+
       const querySnapshot = await getDocs(usersCollectionRef);
 
       querySnapshot.forEach((doc) => {
@@ -333,33 +333,11 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
 
     setCollectionRecipes(recipesArray);
     toggleCard();
-    // Fetch recipes for the selected collection
-    // const collectionId = getCollectionIdFromName(collectionName); // Implement this function to map collection names to IDs if needed
-    // await fetchRecipes(collectionId);
-    //TODO: add back button, confirmation
-    //ADD RECIPES HERE --> logic from collection page? keep track of date and collection users selects
   };
 
   const showCollectionRecipes = () => {
 
     return (
-      // <View>
-      //   {collectionRecipes.map((recipe, index) =>{
-      //     const [description, details, time, complexity, calories, meal] = recipe;
-
-      //     return (
-      //       <View key={index}>
-      //         <Text>{description}</Text>
-      //         <Text>{details}</Text>
-      //         <Text>Time: {time}</Text>
-      //         <Text>Complexity: {complexity}</Text>
-      //         <Text>Calories: {calories}</Text>
-      //         <Text>Meal: {meal}</Text>
-      //       </View>
-      //     );
-      //   })}
-
-      // </View>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <View style={styles.recipes}>
           {collectionRecipes.map((recipe, index) => {
@@ -555,6 +533,15 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
               setBlackout(false);
             }
             setSelectingRecipe(!selectingRecipe);
+            
+            let newSelectedItemsArray = [""];
+            tempSelectedRecipesArray.forEach((item) => {
+              console.log(item); // Replace this with your desired action
+              // Perform your logic here
+              newSelectedItemsArray.push(item)
+            });
+            console.log(newSelectedItemsArray);
+
           }}
         >
           <Text
@@ -913,7 +900,7 @@ const styles = StyleSheet.create({
     marginTop: 35,
   },
   collectionScrollView: {
-    flexGrow: 1,
+    // flexGrow: 1,
     paddingBottom: 20,
     paddingTop: 30,
   },
