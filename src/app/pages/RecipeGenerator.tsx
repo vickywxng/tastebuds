@@ -414,7 +414,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
     const ingredientsRaw = result.choices[0]?.message.content ?? '';
     // const ingredientsRaw =
-    //   'Ingredients: Baguette (2), Apple (3 slices), Butter (two teaspoons)';
+    // 'Ingredients: Baguette (2), Apple (3 slices), Butter (two teaspoons)';
     const ingredientsSplit = ingredientsRaw.split('Ingredients:');
     console.log(ingredientsSplit[1]);
     const ingredientsCleaned = ingredientsSplit[1];
@@ -1352,7 +1352,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <LoadingIndicatorPage />
-      
+
       <View style={styles.header}></View>
       <ScrollView
         ref={scrollViewRef}
@@ -1366,10 +1366,13 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
           {!selectedMeal && !generateRecipeBoolean && (
             <>
-            <View style={{ height: 40 }} />
-            <View style={styles.logoContainer}>
-              <Image style={styles.logo} source={require('../images/SlothYellow.png')} />
-            </View>
+              <View style={{ height: 40 }} />
+              <View style={styles.logoContainer}>
+                <Image
+                  style={styles.logo}
+                  source={require('../images/SlothYellow.png')}
+                />
+              </View>
               <View style={{ height: 30 }} />
               <Text style={[styles.modalTitle, { textAlign: 'center' }]}>
                 What are we tryna chef up today?
@@ -1614,7 +1617,7 @@ const styles = StyleSheet.create({
     // width: 90, // Adjust width as needed
     // height: 90, // Adjust height as needed
     // borderRadius: 25, // Adjust to maintain circular shape if desired
-  }, 
+  },
   logoContainer: {
     flex: 1,
     justifyContent: 'center', // Centers content vertically

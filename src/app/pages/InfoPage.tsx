@@ -23,6 +23,7 @@ import {
   getDocs,
   setDoc,
 } from 'firebase/firestore/lite';
+import ModalComponent from 'react-native-modal';
 import { Button, XStack } from 'tamagui';
 
 import { db } from '../firebase';
@@ -47,6 +48,8 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
   const [genInfo, setGenInfo] = useState<string[]>([]);
   const [ingredients, setIngredients] = useState<string[]>([]);
   const [directions, setDirections] = useState<string[]>([]);
+  const [addPlannerVisible, setAddPlannerVisible] = useState(false);
+  const [addCollectionVisible, setAddCollectionVisible] = useState(false);
   const [showCalendarPopUp, setShowCalendarPopUp] = useState<boolean | null>(
     null,
   );
@@ -139,6 +142,7 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
 
   const addToPlannerLogic = async () => {
     // Assuming selectedCollections is an array of collection names
+    setAddPlannerVisible(false);
     console.log(selectedDays);
     for (const curDay of selectedDays) {
       console.log('reached loop');
@@ -173,6 +177,7 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
 
   const addToCollectionLogic = async () => {
     // Assuming selectedCollections is an array of collection names
+    setAddCollectionVisible(false);
     for (const curCollection of selectedCollections) {
       const usersCollectionRef = collection(
         db,
@@ -201,6 +206,77 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
         console.error('Error adding document:', error);
       }
     }
+  };
+
+  const AddPopupPlanner = () => {
+    return (
+      <ModalComponent
+        isVisible={addPlannerVisible}
+        onBackdropPress={() => setAddPlannerVisible(!addPlannerVisible)}
+      >
+        <View style={styles.popupContainerAdd}>
+          <View style={styles.popup}>
+            <Text style={styles.popupTitle}>Add recipes</Text>
+            <Text style={styles.popupText}>
+              You sure you want to add all selected recipe(s) to these days?
+            </Text>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                onPress={() => setAddPlannerVisible(false)}
+                style={styles.popupButton}
+              >
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => [
+                  addToPlannerLogic(),
+                  setShowCalendarPopUp(false),
+                ]}
+                style={styles.popupButton}
+              >
+                <Text style={styles.buttonText}>Yes</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </ModalComponent>
+    );
+  };
+
+  const AddPopupCollection = () => {
+    return (
+      <ModalComponent
+        isVisible={addCollectionVisible}
+        onBackdropPress={() => setAddCollectionVisible(!addCollectionVisible)}
+      >
+        <View style={styles.popupContainerAdd}>
+          <View style={styles.popup}>
+            <Text style={styles.popupTitle}>Add recipes</Text>
+            <Text style={styles.popupText}>
+              You sure you want to add all selected recipe(s) to these
+              collections?
+            </Text>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                onPress={() => setAddCollectionVisible(false)}
+                style={styles.popupButton}
+              >
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => [
+                  addToCollectionLogic(),
+                  setShowCollectionPopUp(false),
+                ]}
+                style={styles.popupButton}
+              >
+                <Text style={styles.buttonText}>Yes</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </ModalComponent>
+    );
   };
 
   const collectionPopUP = async () => {
@@ -290,10 +366,13 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
           </TouchableOpacity>
           <View style={styles.biggerSpacer} />
           <TouchableOpacity
-            onPress={() => [
-              addToCollectionLogic(),
-              setShowCollectionPopUp(false),
-            ]}
+            onPress={() => {
+              if (selectedCollections.length > 0) {
+                setAddCollectionVisible(true);
+              } else {
+                setShowCollectionPopUp(false);
+              }
+            }}
             style={{ marginRight: 20 }}
           >
             <Text style={styles.arvoTextNormal}>Save</Text>
@@ -427,7 +506,13 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
           </TouchableOpacity>
           <View style={styles.biggerSpacer} />
           <TouchableOpacity
-            onPress={() => [addToPlannerLogic(), setShowCalendarPopUp(false)]}
+            onPress={() => {
+              if (selectedDays.length > 0) {
+                setAddPlannerVisible(true);
+              } else {
+                setShowCalendarPopUp(false);
+              }
+            }}
             style={{ marginRight: 20 }}
           >
             <Text style={styles.arvoTextNormal}>Save</Text>
@@ -440,6 +525,8 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <AddPopupPlanner />
+      <AddPopupCollection />
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <Feather
           name="chevron-left"
@@ -476,8 +563,7 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
             </View>
           ))}
         </View>
-
-        <View style={styles.addToButtonContainer}>
+        <View style={{ alignItems: 'center' }}>
           <Button style={styles.addToButton} onPress={() => addToPlanner()}>
             <Text
               style={[
@@ -498,10 +584,7 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
 
           <View style={{ height: 10 }} />
 
-          <Button
-            style={[styles.addToButton, { marginBottom: 80 }]}
-            onPress={() => addToCollection()}
-          >
+          <Button style={styles.addToButton} onPress={() => addToCollection()}>
             <Text
               style={[
                 styles.modalTitleSmaller,
@@ -511,9 +594,10 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
               Add to collection
             </Text>
           </Button>
-        </View>
 
-        {showCollectionPopUp && <>{collectionPopUP()}</>}
+          {showCollectionPopUp && <>{collectionPopUP()}</>}
+        </View>
+        <View style={{ height: 100 }}></View>
       </ScrollView>
       <View style={styles.buttons}>
         <TouchableOpacity style={styles.button} onPress={goToPlanner}>
@@ -667,10 +751,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#FD9B62',
     paddingHorizontal: 30,
     borderRadius: 50,
-    width: 320,
+    width: 350,
     justifyContent: 'center',
     alignItems: 'center',
-    zIndex: 1000,
   },
   modalTitle: {
     fontSize: 24,
@@ -688,6 +771,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#E7D37F',
     justifyContent: 'space-between',
+    width: 350,
     borderRadius: 15,
   },
   popUpInnerContainer: {
@@ -706,6 +790,53 @@ const styles = StyleSheet.create({
   },
   biggerSpacer: {
     flex: 2,
+  },
+  popupContainerAdd: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  popup: {
+    backgroundColor: '#365E32',
+    padding: 20,
+    borderRadius: 15,
+    alignItems: 'center',
+    width: 350,
+    height: 215,
+  },
+  popupTitle: {
+    marginTop: 35,
+    fontSize: 26,
+    color: '#E7D37F',
+    fontFamily: 'Arvo-Bold',
+  },
+  popupText: {
+    color: '#FFF5CD',
+    fontSize: 16,
+    marginVertical: 15,
+    textAlign: 'center',
+    marginHorizontal: 20,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  popupButton: {
+    backgroundColor: '#365E32',
+    justifyContent: 'center',
+    fontSize: 20,
+    padding: 10,
+    marginHorizontal: 15,
+    marginBottom: 35,
+    borderRadius: 5,
+    width: 150,
+    height: 50,
+  },
+  buttonText: {
+    color: '#FFF5CD',
+    fontSize: 18,
+    fontFamily: 'Arvo-Regular',
+    textAlign: 'center',
   },
 });
 
