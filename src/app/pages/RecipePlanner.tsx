@@ -143,14 +143,13 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     }
   };
 
-  const handleRecipeSelection = () => {};
 
   const fetchRecipes = async (day: number) => {
     const curCollection = collection(
       db,
       `allUsers/${userId}/planner/${days[day]}/Recipes`,
     );
-    console.log(day);
+
     try {
       const querySnapshot = await getDocs(curCollection);
       const updatedRecipes: string[][] = [];
@@ -193,26 +192,38 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     const filteredRecipes = recipes.filter(
       (_, index) => !selectedRecipes.includes(index),
     );
-
+  
     const recipesToDelete = recipes.filter((_, index) =>
       selectedRecipes.includes(index),
     );
-
+  
     const curCollection = collection(
       db,
       `allUsers/${userId}/planner/${days[dayIndex]}/Recipes`,
     );
-
+  
+    const updatedArray = [...tempSelectedRecipesArray]; // Create a copy of the array
+  
     for (let recipe of recipesToDelete) {
       const id = recipe[0];
+      console.log("DELETING:" + id);
       const docRef = doc(curCollection, id);
       await deleteDoc(docRef);
+  
+      const index = updatedArray.indexOf(id);
+      if (index > -1) {
+        updatedArray.splice(index, 1); // Remove the id from the array
+      }
     }
 
+    console.log(tempSelectedRecipesArray);
+  
+    setTempSelectedRecipesArray(updatedArray); // Set the updated array once
     setRecipes(filteredRecipes);
     setSelectedRecipes([]);
     setEditMode(false);
   };
+  
 
   const goToGenerator = () => {
     navigation.navigate('Generator', { userId });
@@ -223,9 +234,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   };
 
   const goToInfo = (curRecipe: string, dayName: string) => {
-    console.log(curRecipe);
-    console.log(dayName);
-    console.log(userId);
 
     navigation.navigate('PlannerInfoPage', {
       userId,
@@ -253,7 +261,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
 
   const toggleDay = (increment: number) => {
     const newIndex = dayIndex + increment;
-    console.log('Changing day index to:', newIndex);
     setDayIndex(newIndex);
     fetchRecipes(newIndex);
   };
@@ -281,6 +288,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
 
   const toggleRecipeCard = async (collectionName: string) => {
     setSelectedCollectionName(collectionName);
+    console.log(tempSelectedRecipesArray);
 
     let arr = [''];
 
@@ -324,7 +332,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   };
 
   const showCollectionRecipes = () => {
-    // console.log("R:" + collectionRecipes);
 
     return (
       // <View>
@@ -352,14 +359,12 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                 ? recipe[0]?.trim().substring(0, 25) + '...'
                 : recipe[0]?.trim();
 
-            console.log(title);
 
             const description =
               (recipe[1]?.trim() || '').length >= 110
                 ? recipe[1]?.trim().substring(0, 111) + '...'
                 : recipe[1]?.trim();
 
-            console.log(description);
 
             const isSelected = tempSelectedRecipesArray.includes(title || '');
 
@@ -387,7 +392,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                       try {
                         const recipeDocRef = doc(curCollection, safeTitle); // Assuming `title` is used as a unique ID
                         await deleteDoc(recipeDocRef);
-                        console.log('Recipe removed from collection');
                       } catch (error) {
                         console.error('Error removing recipe: ', error);
                       }
@@ -417,7 +421,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                         });
                         fetchRecipes(dayIndex);
                         setAddRec(false);
-                        console.log('Recipe added to collection');
                       } catch (error) {
                         console.error('Error adding recipe: ', error);
                       }
@@ -537,8 +540,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
         <TouchableOpacity
           onPress={() => {
             if (selectingRecipe) {
-              console.log(tempSelectedRecipesArray);
-              // console.log(selectedRecipesArray);
               // selectedRecipesArray = [""];
               setCardVisible(false);
               toggleClosePopup();
@@ -550,7 +551,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
           <Text
             style={[styles.cardTitle, { textAlign: 'right' }, { fontSize: 20 }]}
           >
-            {selectingRecipe ? 'Done' : 'Select'}
+            {selectingRecipe ? 'Add' : 'Select'}
           </Text>
         </TouchableOpacity>
       </View>
@@ -660,7 +661,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
       </View>
       <View style={styles.editSection}>
         <TouchableOpacity onPress={editMode ? toggleVisible : toggleEditMode}>
-          <Text style={styles.editText}>{editMode ? 'Done' : 'Edit'}</Text>
+          <Text style={styles.editText}>{editMode ? 'Delete' : 'Edit'}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => {
@@ -904,8 +905,8 @@ const styles = StyleSheet.create({
   },
   collectionScrollView: {
     flexGrow: 1,
-    justifyContent: 'center',
     paddingBottom: 20,
+    paddingTop: 30,
   },
   collections: {
     flexDirection: 'row',
