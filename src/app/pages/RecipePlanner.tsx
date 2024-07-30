@@ -27,6 +27,7 @@ import {
   getDocs,
   setDoc,
 } from 'firebase/firestore/lite';
+import ModalComponent from 'react-native-modal';
 import { Spacer } from 'tamagui';
 
 import { db } from '../firebase';
@@ -59,6 +60,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   const [addRec, setAddRec] = useState<Boolean>(false);
   const [blackout, setBlackout] = useState<Boolean>(false);
   const [selectingRecipe, setSelectingRecipe] = useState<Boolean>(false);
+  const [delVisible, setDelVisible] = useState(false);
 
   const [collectionRecipes, setCollectionRecipes] = useState<string[][]>([]);
 
@@ -187,6 +189,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   };
 
   const deleteSelectedRecipes = async () => {
+    toggleModal();
     const filteredRecipes = recipes.filter(
       (_, index) => !selectedRecipes.includes(index),
     );
@@ -229,6 +232,23 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
       dayName,
       curRecipe,
     });
+  };
+
+  const toggleModal = () => {
+    setDelVisible(!delVisible);
+  };
+
+  const toggleModalAndEdit = () => {
+    toggleModal();
+    toggleEditMode();
+  };
+
+  const toggleVisible = () => {
+    if (selectedRecipes.length > 0) {
+      setDelVisible(true);
+    } else {
+      toggleEditMode();
+    }
   };
 
   const toggleDay = (increment: number) => {
@@ -362,6 +382,15 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                         (item) => item !== safeTitle,
                       );
                       setTempSelectedRecipesArray(updatedArray);
+
+                      // Remove from Firestore
+                      try {
+                        const recipeDocRef = doc(curCollection, safeTitle); // Assuming `title` is used as a unique ID
+                        await deleteDoc(recipeDocRef);
+                        console.log('Recipe removed from collection');
+                      } catch (error) {
+                        console.error('Error removing recipe: ', error);
+                      }
                     } else {
                       // Add to selected array
                       setTempSelectedRecipesArray((prevArray) => [
@@ -458,6 +487,35 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
           })}
         </View>
       </ScrollView>
+    );
+  };
+
+  const DeletePopup = () => {
+    return (
+      <ModalComponent isVisible={delVisible} onBackdropPress={toggleModal}>
+        <View style={styles.popupContainer}>
+          <View style={styles.popup}>
+            <Text style={styles.popupTitle}>Delete recipe</Text>
+            <Text style={styles.popupText}>
+              You sure you want to delete all selected recipes?
+            </Text>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                onPress={toggleModalAndEdit}
+                style={styles.popupButton}
+              >
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={deleteSelectedRecipes}
+                style={styles.popupButton}
+              >
+                <Text style={styles.buttonText}>Yes</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </ModalComponent>
     );
   };
 
@@ -575,6 +633,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <DeletePopup />
       {blackout && <View style={styles.blackBackground}></View>}
       <View style={styles.header}>
         {dayIndex > 0 && (
@@ -600,9 +659,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
         {dayIndex >= 6 && <View style={{ width: 20 }}></View>}
       </View>
       <View style={styles.editSection}>
-        <TouchableOpacity
-          onPress={editMode ? deleteSelectedRecipes : toggleEditMode}
-        >
+        <TouchableOpacity onPress={editMode ? toggleVisible : toggleEditMode}>
           <Text style={styles.editText}>{editMode ? 'Done' : 'Edit'}</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -948,6 +1005,53 @@ const styles = StyleSheet.create({
     color: '#365E32',
     fontFamily: 'Arvo-Bold',
     fontSize: 32,
+  },
+  popupContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  popup: {
+    backgroundColor: '#365E32',
+    padding: 20,
+    borderRadius: 15,
+    alignItems: 'center',
+    width: 350,
+    height: 215,
+  },
+  popupTitle: {
+    marginTop: 35,
+    fontSize: 26,
+    color: '#E7D37F',
+    fontFamily: 'Arvo-Bold',
+  },
+  popupText: {
+    color: '#FFF5CD',
+    fontSize: 18,
+    marginVertical: 15,
+    textAlign: 'center',
+    marginHorizontal: 20,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  popupButton: {
+    backgroundColor: '#365E32',
+    justifyContent: 'center',
+    fontSize: 20,
+    padding: 10,
+    marginHorizontal: 15,
+    marginBottom: 35,
+    borderRadius: 5,
+    width: 150,
+    height: 50,
+  },
+  buttonText: {
+    color: '#FFF5CD',
+    fontSize: 18,
+    fontFamily: 'Arvo-Regular',
+    textAlign: 'center',
   },
 });
 
