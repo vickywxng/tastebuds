@@ -64,6 +64,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   const [blackout, setBlackout] = useState<Boolean>(false);
   const [selectingRecipe, setSelectingRecipe] = useState<Boolean>(false);
   const [delVisible, setDelVisible] = useState(false);
+  const [addVisible, setAddVisible] = useState(false);
 
   const [collectionRecipes, setCollectionRecipes] = useState<string[][]>([]);
 
@@ -505,6 +506,38 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     );
   };
 
+  const AddPopup = () => {
+    return (
+      <ModalComponent
+        isVisible={addVisible}
+        onBackdropPress={() => setAddVisible(false)}
+      >
+        <View style={styles.popupContainer}>
+          <View style={styles.popup}>
+            <Text style={styles.popupTitle}>Add recipes</Text>
+            <Text style={styles.popupText}>
+              You sure you want to add these recipes to this day?
+            </Text>
+            <View style={styles.buttonContainer}>
+              <TouchableOpacity
+                onPress={() => setAddVisible(false)}
+                style={styles.popupButton}
+              >
+                <Text style={styles.buttonText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => [setAddVisible(false), setCardVisible(false)]}
+                style={styles.popupButton}
+              >
+                <Text style={styles.buttonText}>Yes</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </ModalComponent>
+    );
+  };
+
   const SlideInCard = () => (
     <Animated.View
       style={[
@@ -522,9 +555,9 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
         <View style={{ flex: 1 }} />
         <TouchableOpacity
           onPress={() => {
-            if (selectingRecipe) {
+            if (selectingRecipe && tempSelectedRecipesArray.length > 0) {
               // selectedRecipesArray = [""];
-              setCardVisible(false);
+              setAddVisible(true);
               // toggleClosePopup();
               // setBlackout(false);
             }
@@ -627,6 +660,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <DeletePopup />
+      <AddPopup />
       {blackout && <View style={styles.blackBackground}></View>}
       <View style={styles.header}>
         {dayIndex > 0 && (

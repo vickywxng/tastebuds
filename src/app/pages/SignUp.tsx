@@ -30,6 +30,7 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
 
   const goToLogin = () => {
     navigation.navigate('Login');
@@ -57,6 +58,8 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
         Alert.alert(
           'Email already has a username attached. Log into your account.',
         );
+      } else if (password != confirmPassword) {
+        Alert.alert('Passwords do not match. Please try again.');
       } else {
         const docRef = await addDoc(usersCollectionRef, {
           username: username,
@@ -130,7 +133,7 @@ const SignUpScreen: React.FC<Props> = ({ navigation }) => {
           placeholder="Confirm password"
           placeholderTextColor="#AFA26B"
           secureTextEntry={true}
-          onChangeText={(text) => setPassword(text)}
+          onChangeText={(text) => setConfirmPassword(text)}
         />
         <Button style={styles.button} onPress={handleSignUp}>
           <Text style={styles.buttonText}>Sign Up</Text>
