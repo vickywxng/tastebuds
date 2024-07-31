@@ -182,6 +182,7 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <DeletePopup />
+      <View style={styles.header}></View>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <View style={styles.topButtons}>
           <TouchableOpacity
@@ -409,6 +410,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#E7D37F',
   },
+  header: {
+    //backgroundColor: 'red',
+    flexDirection: 'row',
+    height: 70,
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
   scrollViewContent: {
     flexGrow: 1,
     justifyContent: 'center',
@@ -417,7 +425,7 @@ const styles = StyleSheet.create({
   topButtons: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 120,
+    marginTop: 30,
   },
   editButton: {
     backgroundColor: '#E7D37F',

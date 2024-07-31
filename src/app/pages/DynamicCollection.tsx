@@ -194,6 +194,7 @@ const DynamicCollection: React.FC<Props> = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <DeletePopup />
+      <View style={styles.fixedHeader}></View>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <View style={styles.header}>
           <TouchableOpacity onPress={goBack} style={{ flexDirection: 'row' }}>
@@ -332,8 +333,15 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#E7D37F',
   },
+  fixedHeader: {
+    //backgroundColor: 'red',
+    flexDirection: 'row',
+    height: 70,
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
   header: {
-    marginTop: 120,
+    marginTop: 50,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
@@ -362,7 +370,7 @@ const styles = StyleSheet.create({
   editButtonText: {
     color: '#365E32',
     fontFamily: 'Arvo-Bold',
-    fontSize: 20,
+    fontSize: 24,
   },
   recipes: {
     flexDirection: 'column',

@@ -527,6 +527,7 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
     <View style={styles.container}>
       <AddPopupPlanner />
       <AddPopupCollection />
+      <View style={styles.header}></View>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
         <Feather
           name="chevron-left"
@@ -628,6 +629,13 @@ const styles = StyleSheet.create({
     backgroundColor: '#365E32',
     fontFamily: 'Arvo-Bold',
   },
+  header: {
+    //backgroundColor: 'red',
+    flexDirection: 'row',
+    height: 70,
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
   scrollViewContent: {
     flexGrow: 1,
     paddingBottom: neededPadding,
@@ -637,7 +645,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Arvo-Bold',
   },
   arrow: {
-    marginTop: 100,
+    marginTop: 30,
     borderWidth: 0,
     marginLeft: 30,
     fontFamily: 'Arvo-Bold',
