@@ -170,24 +170,24 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   }
   
   // Effect to track changes in selectingRecipe
-  useEffect(() => {
-    const prevSelectingRecipe = prevSelectingRecipeRef.current;
-    if (prevSelectingRecipe === true && selectingRecipe === false) {
-      // Code to execute when selectingRecipe changes from true to false
-      // //("CLICKING ADD");
-      // //("Current:", currentSelectedRecipes);
-      currentSelectedRecipes.forEach(async (recipe) => {
-        // //("HELLO");
-        try {
-          await addToFirestore(recipe);
-        } catch (error) {
-          console.error("Error adding recipe:", error);
-        }
-      });
-    }
-    // Update the ref to the current value of selectingRecipe
-    prevSelectingRecipeRef.current = selectingRecipe;
-  }, [selectingRecipe, currentSelectedRecipes, addToFirestore]);
+  // useEffect(() => {
+  //   const prevSelectingRecipe = prevSelectingRecipeRef.current;
+  //   if (prevSelectingRecipe === true && selectingRecipe === false) {
+  //     // Code to execute when selectingRecipe changes from true to false
+  //     // //("CLICKING ADD");
+  //     // //("Current:", currentSelectedRecipes);
+  //     currentSelectedRecipes.forEach(async (recipe) => {
+  //       // //("HELLO");
+  //       try {
+  //         await addToFirestore(recipe);
+  //       } catch (error) {
+  //         console.error("Error adding recipe:", error);
+  //       }
+  //     });
+  //   }
+  //   // Update the ref to the current value of selectingRecipe
+  //   prevSelectingRecipeRef.current = selectingRecipe;
+  // }, [selectingRecipe, currentSelectedRecipes, addToFirestore]);
 
   useEffect(() => {
     const constFetchCollections = async () => {
@@ -438,7 +438,8 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   
             return (
               <View key={index}>
-                {tempSelectedRecipesArray.length === 0 || !tempSelectedRecipesArray.includes(title) ? (
+                {/* {tempSelectedRecipesArray.length === 0 || !tempSelectedRecipesArray.includes(title) ? ( */}
+                {(
                   <TouchableOpacity
                     key={index}
                     style={[
@@ -448,7 +449,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                     
                     onPress={async () => {
                       
-
+                      console.log("ADDING: " + recipe);
                       // addRecipeToArray(recipe);
                       // //(tempSelectedRecipesArray);
   
@@ -538,7 +539,8 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                       </View>
                     </View>
                   </TouchableOpacity>
-                ) : null}
+                // ) : null}
+                )}
               </View>
             );
           })}
@@ -643,6 +645,15 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
               // setBlackout(false);
             }
             setSelectingRecipe(!selectingRecipe);
+
+            currentSelectedRecipes.forEach(async (recipe) => {
+              // //("HELLO");
+              try {
+                await addToFirestore(recipe);
+              } catch (error) {
+                console.error("Error adding recipe:", error);
+              }
+            });
 
             let newSelectedItemsArray = [''];
             tempSelectedRecipesArray.forEach((item) => {
