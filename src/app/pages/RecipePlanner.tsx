@@ -444,7 +444,15 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                 ? recipe[1]?.trim().substring(0, 111) + '...'
                 : recipe[1]?.trim() || ''; // Default to empty string if undefined
   
-            const isSelected = tempSelectedRecipesArray.includes(title);
+            // const isSelected = tempSelectedRecipesArray.includes(title);
+            // const isSelected = currentSelectedRecipes.includes(title);
+            let isSelected = false;
+
+            currentSelectedRecipes.forEach((selectedRecipe) => {
+              if (selectedRecipe[0].indexOf(title) != -1) {
+                isSelected = true;
+              }
+            });
 
             console.log("TEMP SELECTED ARRAY" + tempSelectedRecipesArray);
   
