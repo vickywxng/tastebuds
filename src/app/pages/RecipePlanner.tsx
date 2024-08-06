@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Animated,
   Dimensions,
@@ -18,7 +18,7 @@ import {
   MaterialIcons,
 } from '@expo/vector-icons';
 import { NavigationProp, useRoute } from '@react-navigation/native';
-import { CornerDownLeft } from '@tamagui/lucide-icons';
+import { CornerDownLeft, Currency } from '@tamagui/lucide-icons';
 import {
   addDoc,
   collection,
@@ -53,6 +53,8 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     [],
   );
   // let tempSelectedRecipesArray: string[] = [];
+  const [currentSelectedRecipes, setCurrentSelectedRecipes] = useState<any[][]>([]);
+
   const [editMode, setEditMode] = useState(false);
   const [recipes, setRecipes] = useState<string[][]>([]);
   const [selectedRecipes, setSelectedRecipes] = useState<number[]>([]);
@@ -104,6 +106,89 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     formatDate(day6),
     formatDate(day7),
   ];
+
+  const prevSelectingRecipeRef = useRef(selectingRecipe);
+
+  // let currentSelectedRecipes: any[][] = [];
+  
+  const addRecipeToArray = (recipe: any[]) => {
+    const recipeDetails: any[] = [
+      recipe[0], // Title
+      recipe[1], // Description
+      recipe[2], // Time
+      recipe[3], // Complexity
+      recipe[4], // Calories
+      recipe[5], // Meal
+      recipe[6], // Servings
+      recipe[7], // Ingredients
+      recipe[8], // Directions
+    ];
+    console.log("adding");
+    // Create a temporary array and add the new recipe
+    const updatedRecipes = [...currentSelectedRecipes, recipeDetails];
+    
+    // Update the state with the temporary array
+    setCurrentSelectedRecipes(updatedRecipes);
+
+    console.log("THE CURRENT RECIPES ARE" + currentSelectedRecipes)
+  };
+
+
+  const addToFirestore = async (recipe: any[]) => {
+    // console.log("ADDED!");
+    try {
+      const curCollection = collection(
+        db,
+        `allUsers/${userId}/planner/${days[dayIndex]}/Recipes`,
+      );
+
+      const title =
+              (recipe[0]?.trim() || '').length >= 24
+                ? recipe[0]?.trim().substring(0, 25) + '...'
+                : recipe[0]?.trim() || ''; // Default to empty string if undefined
+  
+      const safeTitle = title;
+
+      const reciperef = doc(curCollection, safeTitle);
+      const newInfo = {
+        Servings: recipe[6],
+        Time: recipe[2],
+        Complexity: recipe[3],
+        Calories: recipe[4],
+        Meal: recipe[5],
+      };
+      await setDoc(reciperef, {
+        Title: recipe[0],
+        Description: recipe[1],
+        Info: newInfo,
+        Ingredients: recipe[7],
+        Directions: recipe[8],
+      });
+      fetchRecipes(dayIndex);
+    } catch (error) {
+      console.error('Error adding recipe: ', error);
+    }
+  }
+  
+  // Effect to track changes in selectingRecipe
+  useEffect(() => {
+    const prevSelectingRecipe = prevSelectingRecipeRef.current;
+    if (prevSelectingRecipe === true && selectingRecipe === false) {
+      // Code to execute when selectingRecipe changes from true to false
+      // console.log("CLICKING ADD");
+      // console.log("Current:", currentSelectedRecipes);
+      currentSelectedRecipes.forEach(async (recipe) => {
+        // console.log("HELLO");
+        try {
+          await addToFirestore(recipe);
+        } catch (error) {
+          console.error("Error adding recipe:", error);
+        }
+      });
+    }
+    // Update the ref to the current value of selectingRecipe
+    prevSelectingRecipeRef.current = selectingRecipe;
+  }, [selectingRecipe, currentSelectedRecipes, addToFirestore]);
 
   useEffect(() => {
     const constFetchCollections = async () => {
@@ -225,7 +310,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
       }
     }
 
-    console.log(tempSelectedRecipesArray);
+    // console.log(tempSelectedRecipesArray);
 
     setTempSelectedRecipesArray(updatedArray); // Set the updated array once
     setRecipes(filteredRecipes);
@@ -295,7 +380,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
 
   const toggleRecipeCard = async (collectionName: string) => {
     setSelectedCollectionName(collectionName);
-    console.log(tempSelectedRecipesArray);
+    // console.log(tempSelectedRecipesArray);
 
     let arr = [''];
 
@@ -333,60 +418,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     toggleCard();
   };
 
-  let currentSelectedRecipes: any[][] = [];
   
-  const addRecipeToArray = (recipe: any[]) => {
-    console.log("HEY");
-    const recipeDetails = [
-      recipe[0], // Title
-      recipe[1], // Description
-      recipe[2], // Time
-      recipe[3], // Complexity
-      recipe[4], // Calories
-      recipe[5], // Meal
-      recipe[6], // Servings
-      recipe[7], // Ingredients
-      recipe[8], // Directions
-    ];
-    currentSelectedRecipes.push(recipeDetails);
-    console.log("CURRENT RECIPE:" + currentSelectedRecipes);
-  };
-
-  const addToFirestore = async (recipe: any[]) => {
-    console.log("ADDED!");
-    try {
-      const curCollection = collection(
-        db,
-        `allUsers/${userId}/planner/${days[dayIndex]}/Recipes`,
-      );
-
-      const title =
-              (recipe[0]?.trim() || '').length >= 24
-                ? recipe[0]?.trim().substring(0, 25) + '...'
-                : recipe[0]?.trim() || ''; // Default to empty string if undefined
-  
-      const safeTitle = title;
-
-      const reciperef = doc(curCollection, safeTitle);
-      const newInfo = {
-        Servings: recipe[6],
-        Time: recipe[2],
-        Complexity: recipe[3],
-        Calories: recipe[4],
-        Meal: recipe[5],
-      };
-      await setDoc(reciperef, {
-        Title: recipe[0],
-        Description: recipe[1],
-        Info: newInfo,
-        Ingredients: recipe[7],
-        Directions: recipe[8],
-      });
-      fetchRecipes(dayIndex);
-    } catch (error) {
-      console.error('Error adding recipe: ', error);
-    }
-  }
 
   const showCollectionRecipes = () => {
     return (
@@ -418,7 +450,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                     onPress={async () => {
                       
   
-                      console.log(tempSelectedRecipesArray);
+                      // console.log(tempSelectedRecipesArray);
   
                       const safeTitle = title;
   
@@ -595,14 +627,14 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
         <View style={{ flex: 1 }} />
         <TouchableOpacity
           onPress={() => {
-            if(selectingRecipe) {
-              console.log("CLICKING ADD");
-              console.log("Current:" + currentSelectedRecipes);
-              currentSelectedRecipes.forEach((recipe) => {
-                console.log("HELLO");
-                addToFirestore(recipe);
-              });
-            }
+            // if(selectingRecipe) {
+            //   console.log("CLICKING ADD");
+            //   console.log("Current:" + currentSelectedRecipes);
+            //   currentSelectedRecipes.forEach((recipe) => {
+            //     console.log("HELLO");
+            //     addToFirestore(recipe);
+            //   });
+            // }
             if (selectingRecipe && tempSelectedRecipesArray.length > 0) {
               // selectedRecipesArray = [""];
               setAddVisible(true);
@@ -619,9 +651,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
             });
 
             
-
-            // 
-            // console.log(newSelectedItemsArray);
           }}
         >
           <Text
