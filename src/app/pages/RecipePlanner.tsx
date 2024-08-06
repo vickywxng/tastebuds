@@ -479,10 +479,10 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                         
                         if (isSelected) {
                           // Remove from selected array
-                          // const updatedArray = tempSelectedRecipesArray.filter(
-                          //   (item) => item !== safeTitle,
-                          // );
-                          // setTempSelectedRecipesArray(updatedArray);
+                          const updatedArray = currentSelectedRecipes.filter(
+                            (item) => item[0] !== safeTitle,
+                          );
+                          setCurrentSelectedRecipes(updatedArray);
   
                           // // Remove from Firestore
                           // try {
