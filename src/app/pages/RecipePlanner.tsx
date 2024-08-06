@@ -333,6 +333,61 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     toggleCard();
   };
 
+  let currentSelectedRecipes: any[][] = [];
+  
+  const addRecipeToArray = (recipe: any[]) => {
+    console.log("HEY");
+    const recipeDetails = [
+      recipe[0], // Title
+      recipe[1], // Description
+      recipe[2], // Time
+      recipe[3], // Complexity
+      recipe[4], // Calories
+      recipe[5], // Meal
+      recipe[6], // Servings
+      recipe[7], // Ingredients
+      recipe[8], // Directions
+    ];
+    currentSelectedRecipes.push(recipeDetails);
+    console.log("CURRENT RECIPE:" + currentSelectedRecipes);
+  };
+
+  const addToFirestore = async (recipe: any[]) => {
+    console.log("ADDED!");
+    try {
+      const curCollection = collection(
+        db,
+        `allUsers/${userId}/planner/${days[dayIndex]}/Recipes`,
+      );
+
+      const title =
+              (recipe[0]?.trim() || '').length >= 24
+                ? recipe[0]?.trim().substring(0, 25) + '...'
+                : recipe[0]?.trim() || ''; // Default to empty string if undefined
+  
+      const safeTitle = title;
+
+      const reciperef = doc(curCollection, safeTitle);
+      const newInfo = {
+        Servings: recipe[6],
+        Time: recipe[2],
+        Complexity: recipe[3],
+        Calories: recipe[4],
+        Meal: recipe[5],
+      };
+      await setDoc(reciperef, {
+        Title: recipe[0],
+        Description: recipe[1],
+        Info: newInfo,
+        Ingredients: recipe[7],
+        Directions: recipe[8],
+      });
+      fetchRecipes(dayIndex);
+    } catch (error) {
+      console.error('Error adding recipe: ', error);
+    }
+  }
+
   const showCollectionRecipes = () => {
     return (
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
@@ -359,11 +414,9 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                       styles.recipe,
                       isSelected && { borderColor: '#00AA00', borderWidth: 2 },
                     ]}
+                    
                     onPress={async () => {
-                      const curCollection = collection(
-                        db,
-                        `allUsers/${userId}/planner/${days[dayIndex]}/Recipes`,
-                      );
+                      
   
                       console.log(tempSelectedRecipesArray);
   
@@ -372,46 +425,29 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                       if (selectingRecipe) {
                         if (isSelected) {
                           // Remove from selected array
-                          const updatedArray = tempSelectedRecipesArray.filter(
-                            (item) => item !== safeTitle,
-                          );
-                          setTempSelectedRecipesArray(updatedArray);
+                          // const updatedArray = tempSelectedRecipesArray.filter(
+                          //   (item) => item !== safeTitle,
+                          // );
+                          // setTempSelectedRecipesArray(updatedArray);
   
-                          // Remove from Firestore
-                          try {
-                            const recipeDocRef = doc(curCollection, safeTitle);
-                            await deleteDoc(recipeDocRef);
-                          } catch (error) {
-                            console.error('Error removing recipe: ', error);
-                          }
+                          // // Remove from Firestore
+                          // try {
+                          //   const recipeDocRef = doc(curCollection, safeTitle);
+                          //   await deleteDoc(recipeDocRef);
+                          // } catch (error) {
+                          //   console.error('Error removing recipe: ', error);
+                          // }
                         } else {
                           // Add to selected array
                           setTempSelectedRecipesArray((prevArray) => [
                             ...prevArray,
                             safeTitle,
                           ]);
+
+                          addRecipeToArray(recipe);
   
                           // Add to Firestore
-                          try {
-                            const reciperef = doc(curCollection, safeTitle);
-                            const newInfo = {
-                              Servings: recipe[6],
-                              Time: recipe[2],
-                              Complexity: recipe[3],
-                              Calories: recipe[4],
-                              Meal: recipe[5],
-                            };
-                            await setDoc(reciperef, {
-                              Title: recipe[0],
-                              Description: recipe[1],
-                              Info: newInfo,
-                              Ingredients: recipe[7],
-                              Directions: recipe[8],
-                            });
-                            fetchRecipes(dayIndex);
-                          } catch (error) {
-                            console.error('Error adding recipe: ', error);
-                          }
+                          
                         }
                       }
                     }}
@@ -559,6 +595,14 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
         <View style={{ flex: 1 }} />
         <TouchableOpacity
           onPress={() => {
+            if(selectingRecipe) {
+              console.log("CLICKING ADD");
+              console.log("Current:" + currentSelectedRecipes);
+              currentSelectedRecipes.forEach((recipe) => {
+                console.log("HELLO");
+                addToFirestore(recipe);
+              });
+            }
             if (selectingRecipe && tempSelectedRecipesArray.length > 0) {
               // selectedRecipesArray = [""];
               setAddVisible(true);
@@ -573,6 +617,10 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
               // Perform your logic here
               newSelectedItemsArray.push(item);
             });
+
+            
+
+            // 
             // console.log(newSelectedItemsArray);
           }}
         >
