@@ -129,7 +129,8 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     
     // Update the state with the temporary array
     setCurrentSelectedRecipes(updatedRecipes);
-    //("THE CURRENT RECIPES ARE" + currentSelectedRecipes)
+    
+    console.log("THE CURRENT RECIPES ARE" + currentSelectedRecipes);
   };
 
 
@@ -450,7 +451,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                     onPress={async () => {
                       
                       console.log("ADDING: " + recipe);
-                      // addRecipeToArray(recipe);
+                      addRecipeToArray(recipe);
                       // //(tempSelectedRecipesArray);
   
                       const safeTitle = title;
