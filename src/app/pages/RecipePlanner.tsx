@@ -123,19 +123,18 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
       recipe[7], // Ingredients
       recipe[8], // Directions
     ];
-    console.log("adding");
+    //("adding");
     // Create a temporary array and add the new recipe
     const updatedRecipes = [...currentSelectedRecipes, recipeDetails];
     
     // Update the state with the temporary array
     setCurrentSelectedRecipes(updatedRecipes);
-
-    console.log("THE CURRENT RECIPES ARE" + currentSelectedRecipes)
+    //("THE CURRENT RECIPES ARE" + currentSelectedRecipes)
   };
 
 
   const addToFirestore = async (recipe: any[]) => {
-    // console.log("ADDED!");
+    // //("ADDED!");
     try {
       const curCollection = collection(
         db,
@@ -175,10 +174,10 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     const prevSelectingRecipe = prevSelectingRecipeRef.current;
     if (prevSelectingRecipe === true && selectingRecipe === false) {
       // Code to execute when selectingRecipe changes from true to false
-      // console.log("CLICKING ADD");
-      // console.log("Current:", currentSelectedRecipes);
+      // //("CLICKING ADD");
+      // //("Current:", currentSelectedRecipes);
       currentSelectedRecipes.forEach(async (recipe) => {
-        // console.log("HELLO");
+        // //("HELLO");
         try {
           await addToFirestore(recipe);
         } catch (error) {
@@ -297,7 +296,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
 
       if (typeof id === 'string') {
         // Check if id is a string
-        // console.log('DELETING:' + id);
+        // //('DELETING:' + id);
         const docRef = doc(curCollection, id);
         await deleteDoc(docRef);
 
@@ -310,7 +309,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
       }
     }
 
-    // console.log(tempSelectedRecipesArray);
+    // //(tempSelectedRecipesArray);
 
     setTempSelectedRecipesArray(updatedArray); // Set the updated array once
     setRecipes(filteredRecipes);
@@ -380,7 +379,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
 
   const toggleRecipeCard = async (collectionName: string) => {
     setSelectedCollectionName(collectionName);
-    // console.log(tempSelectedRecipesArray);
+    // //(tempSelectedRecipesArray);
 
     let arr = [''];
 
@@ -449,12 +448,14 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                     
                     onPress={async () => {
                       
-  
-                      // console.log(tempSelectedRecipesArray);
+
+                      // addRecipeToArray(recipe);
+                      // //(tempSelectedRecipesArray);
   
                       const safeTitle = title;
   
                       if (selectingRecipe) {
+                        
                         if (isSelected) {
                           // Remove from selected array
                           // const updatedArray = tempSelectedRecipesArray.filter(
@@ -476,7 +477,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                             safeTitle,
                           ]);
 
-                          addRecipeToArray(recipe);
+                          
   
                           // Add to Firestore
                           
@@ -645,7 +646,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
 
             let newSelectedItemsArray = [''];
             tempSelectedRecipesArray.forEach((item) => {
-              // console.log(item); // Replace this with your desired action
+              // //(item); // Replace this with your desired action
               // Perform your logic here
               newSelectedItemsArray.push(item);
             });
