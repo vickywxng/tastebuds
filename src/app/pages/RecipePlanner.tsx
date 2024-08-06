@@ -170,6 +170,15 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     }
   }
   
+  useEffect(() => {
+    console.log("CURRENT SELECTED RECIPES: ", currentSelectedRecipes);
+  }, [currentSelectedRecipes]); // This runs every time currentSelectedRecipes changes
+
+  const clearRecipes = () => {
+      console.log("SETTING TO NULL");
+      setCurrentSelectedRecipes([]);
+  };
+
   // Effect to track changes in selectingRecipe
   // useEffect(() => {
   //   const prevSelectingRecipe = prevSelectingRecipeRef.current;
@@ -437,7 +446,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   
             const isSelected = tempSelectedRecipesArray.includes(title);
 
-            console.log(tempSelectedRecipesArray);
+            console.log("TEMP SELECTED ARRAY" + tempSelectedRecipesArray);
   
             return (
               <View key={index}>
@@ -458,8 +467,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                       const safeTitle = title;
   
                       if (selectingRecipe) {
-                        console.log("ADDING: " + recipe);
-                        addRecipeToArray(recipe);
+                        
                         
                         if (isSelected) {
                           // Remove from selected array
@@ -481,7 +489,8 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                           //   ...prevArray,
                           //   safeTitle,
                           // ]);
-
+                          console.log("ADDING: " + recipe);
+                          addRecipeToArray(recipe);
                           
   
                           // Add to Firestore
@@ -655,9 +664,14 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
               try {
                 await addToFirestore(recipe);
 
+                const title =
+                  (recipe[0]?.trim() || '').length >= 24
+                    ? recipe[0]?.trim().substring(0, 25) + '...'
+                    : recipe[0]?.trim() || ''; // Default to empty string if undefined
+      
                 setTempSelectedRecipesArray((prevArray) => [
                   ...prevArray,
-                  recipe[0], // Add the first element of recipe to the array
+                  title, // Add the first element of recipe to the array
                 ]);
 
                 console.log("TEMP:" + tempSelectedRecipesArray);
@@ -667,12 +681,18 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
               }
             });
 
-            let newSelectedItemsArray = [''];
-            tempSelectedRecipesArray.forEach((item) => {
-              // //(item); // Replace this with your desired action
-              // Perform your logic here
-              newSelectedItemsArray.push(item);
-            });
+            console.log("SETTING TO NULL")
+            
+            clearRecipes();
+
+            console.log("CURRENT SELECTED RECIPEs" + currentSelectedRecipes)
+
+            // let newSelectedItemsArray = [''];
+            // tempSelectedRecipesArray.forEach((item) => {
+            //   // //(item); // Replace this with your desired action
+            //   // Perform your logic here
+            //   newSelectedItemsArray.push(item);
+            // });
 
             
           }}
