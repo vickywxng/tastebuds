@@ -659,6 +659,8 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                   ...prevArray,
                   recipe[0], // Add the first element of recipe to the array
                 ]);
+
+                console.log("TEMP:" + tempSelectedRecipesArray);
                 
               } catch (error) {
                 console.error("Error adding recipe:", error);
