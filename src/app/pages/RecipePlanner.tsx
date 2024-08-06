@@ -436,11 +436,13 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                 : recipe[1]?.trim() || ''; // Default to empty string if undefined
   
             const isSelected = tempSelectedRecipesArray.includes(title);
+
+            console.log(tempSelectedRecipesArray);
   
             return (
               <View key={index}>
-                {/* {tempSelectedRecipesArray.length === 0 || !tempSelectedRecipesArray.includes(title) ? ( */}
-                {(
+                {tempSelectedRecipesArray.length === 0 || !tempSelectedRecipesArray.includes(title) ? ( 
+                // {(
                   <TouchableOpacity
                     key={index}
                     style={[
@@ -450,13 +452,14 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                     
                     onPress={async () => {
                       
-                      console.log("ADDING: " + recipe);
-                      addRecipeToArray(recipe);
+                      
                       // //(tempSelectedRecipesArray);
   
                       const safeTitle = title;
   
                       if (selectingRecipe) {
+                        console.log("ADDING: " + recipe);
+                        addRecipeToArray(recipe);
                         
                         if (isSelected) {
                           // Remove from selected array
@@ -474,10 +477,10 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                           // }
                         } else {
                           // Add to selected array
-                          setTempSelectedRecipesArray((prevArray) => [
-                            ...prevArray,
-                            safeTitle,
-                          ]);
+                          // setTempSelectedRecipesArray((prevArray) => [
+                          //   ...prevArray,
+                          //   safeTitle,
+                          // ]);
 
                           
   
@@ -540,8 +543,8 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                       </View>
                     </View>
                   </TouchableOpacity>
-                // ) : null}
-                )}
+                ) : null}
+                {/* )} */}
               </View>
             );
           })}
@@ -651,6 +654,12 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
               // //("HELLO");
               try {
                 await addToFirestore(recipe);
+
+                setTempSelectedRecipesArray((prevArray) => [
+                  ...prevArray,
+                  recipe[0], // Add the first element of recipe to the array
+                ]);
+                
               } catch (error) {
                 console.error("Error adding recipe:", error);
               }
