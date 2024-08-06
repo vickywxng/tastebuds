@@ -58,6 +58,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   // let tempSelectedRecipesArray: string[] = [];
   const [currentSelectedRecipes, setCurrentSelectedRecipes] = useState<any[][]>([]);
 
+  const [dailyRecipes, setDailyRecipes] = useState<string[][]>([[], [], [], [], [], [], []]);
   const [editMode, setEditMode] = useState(false);
   const [recipes, setRecipes] = useState<string[][]>([]);
   const [selectedRecipes, setSelectedRecipes] = useState<number[]>([]);
@@ -465,15 +466,14 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
             }
           
             // Map recipes to update the specific day with the new title
-            const dailyRecipes: string[][] = recipes.map((subArray, idx) =>
-              idx === dayIndex ? [...subArray, title] : subArray
-            );
+            // const dailyRecipes: string[][] = recipes.map((subArray, idx) =>
+            //   idx === dayIndex ? [...subArray, title] : subArray
+            // );
           
             // Safe check for undefined values and conditional logic
             const isTitleNotInDay = dailyRecipes[dayIndex]?.includes(title) === false;
-          
-          
 
+    
             return (
               <View key={index}>
                 {/* {tempSelectedRecipesArray.length === 0 || !tempSelectedRecipesArray.includes(title) ? (  */}
@@ -701,9 +701,17 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                   title, // Add the first element of recipe to the array
                 ]);
 
-                let dailyRecipes: string[][] = recipes.map((subArray, idx) =>
-                  idx === dayIndex ? [...subArray, title] : subArray
+                // Update the recipes array
+                const updatedRecipes = recipes.map((subArray, index) =>
+                  index === dayIndex ? [...subArray, title] : subArray
                 );
+
+                // Set the updated recipes to state
+                setDailyRecipes(updatedRecipes);
+
+                // let dailyRecipes: string[][] = recipes.map((subArray, idx) =>
+                //   idx === dayIndex ? [...subArray, title] : subArray
+                // );
 
 
                 console.log("TEMP:" + tempSelectedRecipesArray);
