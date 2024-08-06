@@ -42,6 +42,9 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     userId: string;
   };
 
+  // let dailyRecipes: string[][] = [[], [], [], [], [], [], []];
+
+
   const [selectedCollectionName, setSelectedCollectionName] = useState<
     string | null
   >(null);
@@ -456,10 +459,26 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
 
             console.log("TEMP SELECTED ARRAY" + tempSelectedRecipesArray);
   
+            if (dayIndex < 0 || dayIndex >= recipes.length) {
+              console.error('dayIndex is out of bounds');
+              return null; // Or handle the error appropriately
+            }
+          
+            // Map recipes to update the specific day with the new title
+            const dailyRecipes: string[][] = recipes.map((subArray, idx) =>
+              idx === dayIndex ? [...subArray, title] : subArray
+            );
+          
+            // Safe check for undefined values and conditional logic
+            const isTitleNotInDay = dailyRecipes[dayIndex]?.includes(title) === false;
+          
+          
+
             return (
               <View key={index}>
-                {tempSelectedRecipesArray.length === 0 || !tempSelectedRecipesArray.includes(title) ? ( 
-                // {(
+                {/* {tempSelectedRecipesArray.length === 0 || !tempSelectedRecipesArray.includes(title) ? (  */}
+                {/* {( */}
+                {dailyRecipes[dayIndex] && isTitleNotInDay ? (
                   <TouchableOpacity
                     key={index}
                     style={[
@@ -681,6 +700,11 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                   ...prevArray,
                   title, // Add the first element of recipe to the array
                 ]);
+
+                let dailyRecipes: string[][] = recipes.map((subArray, idx) =>
+                  idx === dayIndex ? [...subArray, title] : subArray
+                );
+
 
                 console.log("TEMP:" + tempSelectedRecipesArray);
                 
