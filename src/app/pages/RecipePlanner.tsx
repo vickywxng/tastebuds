@@ -436,156 +436,136 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   const showCollectionRecipes = () => {
     return (
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-        <View style={styles.recipes}>
-          {collectionRecipes.map((recipe, index) => {
-            const title =
-              (recipe[0]?.trim() || '').length >= 24
-                ? recipe[0]?.trim().substring(0, 25) + '...'
-                : recipe[0]?.trim() || ''; // Default to empty string if undefined
-  
-            const description =
-              (recipe[1]?.trim() || '').length >= 110
-                ? recipe[1]?.trim().substring(0, 111) + '...'
-                : recipe[1]?.trim() || ''; // Default to empty string if undefined
-  
-            // const isSelected = tempSelectedRecipesArray.includes(title);
-            // const isSelected = currentSelectedRecipes.includes(title);
-            let isSelected = false;
+  <View style={styles.recipes}>
+    {collectionRecipes.map((recipe, index) => {
+      const title =
+        (recipe[0]?.trim() || '').length >= 24
+          ? recipe[0]?.trim().substring(0, 25) + '...'
+          : recipe[0]?.trim() || ''; // Default to empty string if undefined
 
-            currentSelectedRecipes.forEach((selectedRecipe) => {
-              if (selectedRecipe[0].indexOf(title) != -1) {
-                isSelected = true;
-              }
-            });
+      const description =
+        (recipe[1]?.trim() || '').length >= 110
+          ? recipe[1]?.trim().substring(0, 111) + '...'
+          : recipe[1]?.trim() || ''; // Default to empty string if undefined
 
-            console.log("TEMP SELECTED ARRAY" + tempSelectedRecipesArray);
-  
-            if (dayIndex < 0 || dayIndex >= recipes.length) {
-              console.error('dayIndex is out of bounds');
-              return null; // Or handle the error appropriately
-            }
-          
-            // Map recipes to update the specific day with the new title
-            // const dailyRecipes: string[][] = recipes.map((subArray, idx) =>
-            //   idx === dayIndex ? [...subArray, title] : subArray
-            // );
-          
-            // Safe check for undefined values and conditional logic
-            const isTitleNotInDay = dailyRecipes[dayIndex]?.includes(title) === false;
+      // Determine if the recipe is selected
+      let isSelected = currentSelectedRecipes.some((selectedRecipe) => selectedRecipe[0] === title);
 
-    
-            return (
-              <View key={index}>
-                {/* {tempSelectedRecipesArray.length === 0 || !tempSelectedRecipesArray.includes(title) ? (  */}
-                {/* {( */}
-                {dailyRecipes[dayIndex] && isTitleNotInDay ? (
-                  <TouchableOpacity
-                    key={index}
-                    style={[
-                      styles.recipe,
-                      isSelected && { borderColor: '#00AA00', borderWidth: 2 },
-                    ]}
-                    
-                    onPress={async () => {
-                      
-                      
-                      // //(tempSelectedRecipesArray);
-  
-                      const safeTitle = title;
-  
-                      if (selectingRecipe) {
-                        
-                        
-                        if (isSelected) {
-                          // Remove from selected array
-                          const updatedArray = currentSelectedRecipes.filter(
-                            (item) => item[0] !== safeTitle,
-                          );
-                          setCurrentSelectedRecipes(updatedArray);
-  
-                          // // Remove from Firestore
-                          // try {
-                          //   const recipeDocRef = doc(curCollection, safeTitle);
-                          //   await deleteDoc(recipeDocRef);
-                          // } catch (error) {
-                          //   console.error('Error removing recipe: ', error);
-                          // }
-                        } else {
-                          // Add to selected array
-                          // setTempSelectedRecipesArray((prevArray) => [
-                          //   ...prevArray,
-                          //   safeTitle,
-                          // ]);
-                          console.log("ADDING: " + recipe);
-                          addRecipeToArray(recipe);
-                          
-  
-                          // Add to Firestore
-                          
-                        }
-                      }
-                    }}
-                  >
-                    <Text
-                      style={
-                        isSelected
-                          ? styles.recipeTitle
-                          : styles.unselectedRecipeTitle
-                      }
-                    >
-                      {title}
-                    </Text>
-                    <Text
-                      style={
-                        isSelected
-                          ? styles.recipeDescription
-                          : styles.unselectedRecipeDescription
-                      }
-                    >
-                      {description}
-                    </Text>
-                    <View style={styles.info}>
-                      <View
-                        style={
-                          isSelected
-                            ? styles.infoElement
-                            : styles.unselectedInfoElement
-                        }
-                      >
-                        <Ionicons name="alarm" size={18} color="#FFF5CD" />
-                        <Text style={styles.infoText}>{recipe[2]}</Text>
-                      </View>
-                      <Spacer size={10} />
-                      <View
-                        style={
-                          isSelected
-                            ? styles.infoElement
-                            : styles.unselectedInfoElement
-                        }
-                      >
-                        <Ionicons name="star" size={18} color="#FFF5CD" />
-                        <Text style={styles.infoText}>{recipe[3]}</Text>
-                      </View>
-                      <Spacer size={10} />
-                      <View
-                        style={
-                          isSelected
-                            ? styles.infoElement
-                            : styles.unselectedInfoElement
-                        }
-                      >
-                        <Ionicons name="flame" size={20} color="#FFF5CD" />
-                        <Text style={styles.infoText}>{recipe[4]}</Text>
-                      </View>
-                    </View>
-                  </TouchableOpacity>
-                ) : null}
-                {/* )} */}
+      console.log("TEMP SELECTED ARRAY:", tempSelectedRecipesArray);
+
+      // Safe check for undefined values and conditional logic
+      const isTitleNotInDay = dailyRecipes[dayIndex]?.includes(title) === false;
+
+      console.log(title + " is not in day? " + isTitleNotInDay);
+      console.log("RECIPES:", dailyRecipes);
+
+      return (
+        <View key={index}>
+          {recipes.length === 0 || !recipes.some(recipe => recipe[0] === title) ? (
+            <TouchableOpacity
+              key={index}
+              style={[
+                styles.recipe,
+                isSelected && { borderColor: '#00AA00', borderWidth: 2 },
+              ]}
+              onPress={async () => {
+                const safeTitle = title;
+
+                if (selectingRecipe) {
+                  if (isSelected) {
+                    // Remove from selected array
+                    const updatedArray = currentSelectedRecipes.filter(
+                      (item) => item[0] !== safeTitle,
+                    );
+                    setCurrentSelectedRecipes(updatedArray);
+
+                    // Remove from Firestore
+                    // try {
+                    //   const recipeDocRef = doc(curCollection, safeTitle);
+                    //   await deleteDoc(recipeDocRef);
+                    // } catch (error) {
+                    //   console.error('Error removing recipe: ', error);
+                    // }
+                  } else {
+                    // Add to selected array
+                    // setTempSelectedRecipesArray((prevArray) => [
+                    //   ...prevArray,
+                    //   safeTitle,
+                    // ]);
+                    console.log("ADDING: ", recipe);
+                    addRecipeToArray(recipe);
+
+                    // Add to Firestore
+                    // try {
+                    //   const recipeDocRef = doc(curCollection, safeTitle);
+                    //   await setDoc(recipeDocRef, recipe);
+                    // } catch (error) {
+                    //   console.error('Error adding recipe: ', error);
+                    // }
+                  }
+                }
+              }}
+            >
+              <Text
+                style={
+                  isSelected
+                    ? styles.recipeTitle
+                    : styles.unselectedRecipeTitle
+                }
+              >
+                {title}
+              </Text>
+              <Text
+                style={
+                  isSelected
+                    ? styles.recipeDescription
+                    : styles.unselectedRecipeDescription
+                }
+              >
+                {description}
+              </Text>
+              <View style={styles.info}>
+                <View
+                  style={
+                    isSelected
+                      ? styles.infoElement
+                      : styles.unselectedInfoElement
+                  }
+                >
+                  <Ionicons name="alarm" size={18} color="#FFF5CD" />
+                  <Text style={styles.infoText}>{recipe[2]}</Text>
+                </View>
+                <Spacer size={10} />
+                <View
+                  style={
+                    isSelected
+                      ? styles.infoElement
+                      : styles.unselectedInfoElement
+                  }
+                >
+                  <Ionicons name="star" size={18} color="#FFF5CD" />
+                  <Text style={styles.infoText}>{recipe[3]}</Text>
+                </View>
+                <Spacer size={10} />
+                <View
+                  style={
+                    isSelected
+                      ? styles.infoElement
+                      : styles.unselectedInfoElement
+                  }
+                >
+                  <Ionicons name="flame" size={20} color="#FFF5CD" />
+                  <Text style={styles.infoText}>{recipe[4]}</Text>
+                </View>
               </View>
-            );
+            </TouchableOpacity>
+          ) : null}
+         </View>
+          );
           })}
         </View>
       </ScrollView>
+
     );
   };
   
