@@ -76,7 +76,8 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     }).format(date);
   };
 
-  const currentDate = new Date();
+  const [currentDate, setCurrentDate] = useState(new Date());
+  // const currentDate = new Date();
   const day2 = new Date(currentDate);
   day2.setDate(day2.getDate() + 1);
 
@@ -162,6 +163,60 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   }
 
   const prevSelectingRecipeRef = useRef(selectingRecipe);
+
+  const updateRecipes = async () => {
+    try {
+      for (let day = 0; day < 7; day++) {
+        const currentDay = days[day];
+        const nextDay = days[(day + 1) % 7]; // Wrap around to the first day after the last day
+  
+        // Reference to the current day's collection
+        const curCollection = collection(db, `allUsers/${userId}/planner/${currentDay}/Recipes`);
+        const nextCollection = collection(db, `allUsers/${userId}/planner/${nextDay}/Recipes`);
+  
+        // Fetch recipes from the next day's collection
+        const nextDaySnapshot = await getDocs(nextCollection);
+        const recipesToAdd = nextDaySnapshot.docs.map(doc => doc.data());
+  
+        // Delete existing recipes from the current day's collection
+        const curCollectionSnapshot = await getDocs(curCollection);
+        for (const doc of curCollectionSnapshot.docs) {
+          await deleteDoc(doc.ref);
+        }
+  
+        // Add recipes to the current day's collection
+        for (const recipe of recipesToAdd) {
+          const safeTitle = (recipe.Title?.trim() || '').length >= 24
+            ? recipe.Title?.trim().substring(0, 25) + '...'
+            : recipe.Title?.trim() || '';
+  
+          const reciperef = doc(curCollection, safeTitle);
+          const newInfo = {
+            Servings: recipe.Info.Servings,
+            Time: recipe.Info.Time,
+            Complexity: recipe.Info.Complexity,
+            Calories: recipe.Info.Calories,
+            Meal: recipe.Info.Meal,
+          };
+  
+          await setDoc(reciperef, {
+            Title: recipe.Title,
+            Description: recipe.Description,
+            Info: newInfo,
+            Ingredients: recipe.Ingredients,
+            Directions: recipe.Directions,
+          });
+        }
+      }
+    } catch (error) {
+      console.error('Error updating recipes:', error);
+    }
+  };
+
+  
+  useEffect(() => {
+    updateRecipes();
+  }, [currentDate]);
 
   useEffect(() => {
     // Get the previous value of selectingRecipe
