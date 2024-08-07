@@ -111,7 +111,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     formatDate(day7),
   ];
 
-  const prevSelectingRecipeRef = useRef(selectingRecipe);
+  // const prevSelectingRecipeRef = useRef(selectingRecipe);
 
   // let currentSelectedRecipes: any[][] = [];
   
@@ -173,6 +173,21 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
       console.error('Error adding recipe: ', error);
     }
   }
+
+  const prevSelectingRecipeRef = useRef(selectingRecipe);
+
+  useEffect(() => {
+    // Get the previous value of selectingRecipe
+    const prevSelectingRecipe = prevSelectingRecipeRef.current;
+
+    // Update the ref with the current value
+    prevSelectingRecipeRef.current = selectingRecipe;
+
+    // Check if selectingRecipe changed from true to false
+    if (prevSelectingRecipe === true && selectingRecipe === false) {
+      setAddVisible(true);
+    }
+  }, [selectingRecipe]);
   
   useEffect(() => {
     console.log("CURRENT SELECTED RECIPES: ", currentSelectedRecipes);
@@ -613,12 +628,12 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                 <Text style={styles.buttonText}>Cancel</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                onPress={() => {
+                onPress={async () => {
                   setAddVisible(false);
                   setCardVisible(false);
                   
-                  currentSelectedRecipes.forEach(async (recipe) => {
-                    // //("HELLO");
+                  // currentSelectedRecipes.forEach(async (recipe) => {
+                  await Promise.all(currentSelectedRecipes.map(async (recipe) => {
                     try {
                       await addToFirestore(recipe);
       
@@ -650,7 +665,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                     } catch (error) {
                       console.error("Error adding recipe:", error);
                     }
-                  });
+                  }));
       
                   console.log("SETTING TO NULL")
                   
@@ -686,14 +701,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
         <View style={{ flex: 1 }} />
         <TouchableOpacity
           onPress={() => {
-            // if(selectingRecipe) {
-            //   console.log("CLICKING ADD");
-            //   console.log("Current:" + currentSelectedRecipes);
-            //   currentSelectedRecipes.forEach((recipe) => {
-            //     console.log("HELLO");
-            //     addToFirestore(recipe);
-            //   });
-            // }
+            
             if (selectingRecipe && tempSelectedRecipesArray.length > 0) {
               // selectedRecipesArray = [""];
               setAddVisible(true);
@@ -701,17 +709,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
               // setBlackout(false);
             }
             setSelectingRecipe(!selectingRecipe);
-
-            
-
-            // let newSelectedItemsArray = [''];
-            // tempSelectedRecipesArray.forEach((item) => {
-            //   // //(item); // Replace this with your desired action
-            //   // Perform your logic here
-            //   newSelectedItemsArray.push(item);
-            // });
-
-            
           }}
         >
           <Text
