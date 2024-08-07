@@ -41,24 +41,13 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   const { userId } = route.params as {
     userId: string;
   };
-
-  // let dailyRecipes: string[][] = [[], [], [], [], [], [], []];
-
-
   const [selectedCollectionName, setSelectedCollectionName] = useState<
     string | null
   >(null);
-  // let selectedRecipesArray: string[] = [];
   const [tempSelectedRecipesArray, setTempSelectedRecipesArray] = useState<
     string[]
   >([]);
-  const [selectedRecipesArray, setSelectedRecipesArray] = useState<string[]>(
-    [],
-  );
-  // let tempSelectedRecipesArray: string[] = [];
   const [currentSelectedRecipes, setCurrentSelectedRecipes] = useState<any[][]>([]);
-
-  const [dailyRecipes, setDailyRecipes] = useState<string[][]>([[], [], [], [], [], [], []]);
   const [editMode, setEditMode] = useState(false);
   const [recipes, setRecipes] = useState<string[][]>([]);
   const [selectedRecipes, setSelectedRecipes] = useState<number[]>([]);
@@ -71,7 +60,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   const [selectingRecipe, setSelectingRecipe] = useState<Boolean>(false);
   const [delVisible, setDelVisible] = useState(false);
   const [addVisible, setAddVisible] = useState(false);
-
   const [collectionRecipes, setCollectionRecipes] = useState<string[][]>([]);
 
   const formatDate = (date: number | Date | undefined) => {
@@ -113,7 +101,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
 
   const prevSelectingRecipeRef = useRef(selectingRecipe);
 
-  // let currentSelectedRecipes: any[][] = [];
   
   const addRecipeToArray = (recipe: any[]) => {
     const recipeDetails: any[] = [
@@ -127,19 +114,16 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
       recipe[7], // Ingredients
       recipe[8], // Directions
     ];
-    //("adding");
+
     // Create a temporary array and add the new recipe
     const updatedRecipes = [...currentSelectedRecipes, recipeDetails];
     
     // Update the state with the temporary array
     setCurrentSelectedRecipes(updatedRecipes);
-    
-    console.log("THE CURRENT RECIPES ARE" + currentSelectedRecipes);
   };
 
 
   const addToFirestore = async (recipe: any[]) => {
-    // //("ADDED!");
     try {
       const curCollection = collection(
         db,
@@ -176,32 +160,12 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   
   useEffect(() => {
     console.log("CURRENT SELECTED RECIPES: ", currentSelectedRecipes);
-  }, [currentSelectedRecipes]); // This runs every time currentSelectedRecipes changes
+  }, [currentSelectedRecipes]); 
 
   const clearRecipes = () => {
       console.log("SETTING TO NULL");
       setCurrentSelectedRecipes([]);
   };
-
-  // Effect to track changes in selectingRecipe
-  // useEffect(() => {
-  //   const prevSelectingRecipe = prevSelectingRecipeRef.current;
-  //   if (prevSelectingRecipe === true && selectingRecipe === false) {
-  //     // Code to execute when selectingRecipe changes from true to false
-  //     // //("CLICKING ADD");
-  //     // //("Current:", currentSelectedRecipes);
-  //     currentSelectedRecipes.forEach(async (recipe) => {
-  //       // //("HELLO");
-  //       try {
-  //         await addToFirestore(recipe);
-  //       } catch (error) {
-  //         console.error("Error adding recipe:", error);
-  //       }
-  //     });
-  //   }
-  //   // Update the ref to the current value of selectingRecipe
-  //   prevSelectingRecipeRef.current = selectingRecipe;
-  // }, [selectingRecipe, currentSelectedRecipes, addToFirestore]);
 
   useEffect(() => {
     const constFetchCollections = async () => {
@@ -387,13 +351,10 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
       easing: Easing.out(Easing.ease),
       useNativeDriver: true,
     }).start();
-    //TODO: confirmation
-    //ADD RECIPES HERE --> logic from collection page? keep track of date and collection users selects
   };
 
   const toggleRecipeCard = async (collectionName: string) => {
     setSelectedCollectionName(collectionName);
-    // //(tempSelectedRecipesArray);
 
     let arr = [''];
 
@@ -448,18 +409,8 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                 ? recipe[1]?.trim().substring(0, 111) + '...'
                 : recipe[1]?.trim() || ''; // Default to empty string if undefined
   
-            // Determine if the recipe is selected
             let isSelected = currentSelectedRecipes.some((selectedRecipe) => selectedRecipe[0].indexOf(title) != -1);
-            console.log("CURRENT: " + currentSelectedRecipes);
-            // isSelected = true;
-  
-            // console.log("TEMP SELECTED ARRAY:", tempSelectedRecipesArray);
-  
-            // Safe check for undefined values and conditional logic
-            const isTitleNotInDay = dailyRecipes[dayIndex]?.includes(title) === false;
-  
-            console.log(title + " is not in day? " + isTitleNotInDay);
-            console.log("RECIPES:", dailyRecipes);
+            
   
             return (
               <View key={index}>
@@ -475,19 +426,10 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   
                       if (selectingRecipe) {
                         if (isSelected) {
-                          // Remove from selected array
                           const updatedArray = currentSelectedRecipes.filter(
                             (item) => item[0] !== safeTitle,
                           );
                           setCurrentSelectedRecipes(updatedArray);
-  
-                          // Remove from Firestore
-                          // try {
-                          //   const recipeDocRef = doc(curCollection, safeTitle);
-                          //   await deleteDoc(recipeDocRef);
-                          // } catch (error) {
-                          //   console.error('Error removing recipe: ', error);
-                          // }
                         } else {
                           console.log("ADDING: ", recipe);
                           addRecipeToArray(recipe);
@@ -557,10 +499,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     );
   };
   
-  
-  
-  
-
   const DeletePopup = () => {
     return (
       <ModalComponent isVisible={delVisible} onBackdropPress={toggleModal}>
@@ -636,27 +574,13 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                       const updatedRecipes = recipes.map((subArray, index) =>
                         index === dayIndex ? [...subArray, title] : subArray
                       );
-      
-                      // Set the updated recipes to state
-                      setDailyRecipes(updatedRecipes);
-      
-                      // let dailyRecipes: string[][] = recipes.map((subArray, idx) =>
-                      //   idx === dayIndex ? [...subArray, title] : subArray
-                      // );
-      
-      
-                      console.log("TEMP:" + tempSelectedRecipesArray);
                       
                     } catch (error) {
                       console.error("Error adding recipe:", error);
                     }
                   });
-      
-                  console.log("SETTING TO NULL")
                   
                   clearRecipes();
-      
-                  console.log("CURRENT SELECTED RECIPEs" + currentSelectedRecipes)
                 }}
                 style={styles.popupButton}
               >
@@ -686,14 +610,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
         <View style={{ flex: 1 }} />
         <TouchableOpacity
           onPress={() => {
-            // if(selectingRecipe) {
-            //   console.log("CLICKING ADD");
-            //   console.log("Current:" + currentSelectedRecipes);
-            //   currentSelectedRecipes.forEach((recipe) => {
-            //     console.log("HELLO");
-            //     addToFirestore(recipe);
-            //   });
-            // }
             if (selectingRecipe && tempSelectedRecipesArray.length > 0) {
               // selectedRecipesArray = [""];
               setAddVisible(true);
@@ -701,17 +617,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
               // setBlackout(false);
             }
             setSelectingRecipe(!selectingRecipe);
-
-            
-
-            // let newSelectedItemsArray = [''];
-            // tempSelectedRecipesArray.forEach((item) => {
-            //   // //(item); // Replace this with your desired action
-            //   // Perform your logic here
-            //   newSelectedItemsArray.push(item);
-            // });
-
-            
           }}
         >
           <Text
