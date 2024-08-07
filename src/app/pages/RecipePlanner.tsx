@@ -28,7 +28,7 @@ import {
   setDoc,
 } from 'firebase/firestore/lite';
 import ModalComponent from 'react-native-modal';
-import { Spacer } from 'tamagui';
+import { Button, Spacer } from 'tamagui';
 
 import { db } from '../firebase';
 
@@ -178,10 +178,19 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
         const nextDaySnapshot = await getDocs(nextCollection);
         const recipesToAdd = nextDaySnapshot.docs.map(doc => doc.data());
   
-        // Delete existing recipes from the current day's collection
-        const curCollectionSnapshot = await getDocs(curCollection);
-        for (const doc of curCollectionSnapshot.docs) {
-          await deleteDoc(doc.ref);
+        // If it's the last day, clear the collection before adding new recipes
+        if (day === 6) {
+          // Set the last day's collection to be empty
+          const curCollectionSnapshot = await getDocs(curCollection);
+          for (const doc of curCollectionSnapshot.docs) {
+            await deleteDoc(doc.ref);
+          }
+        } else {
+          // Delete existing recipes from the current day's collection
+          const curCollectionSnapshot = await getDocs(curCollection);
+          for (const doc of curCollectionSnapshot.docs) {
+            await deleteDoc(doc.ref);
+          }
         }
   
         // Add recipes to the current day's collection
@@ -212,6 +221,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
       console.error('Error updating recipes:', error);
     }
   };
+  
 
   
   useEffect(() => {
@@ -851,7 +861,9 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
         )}
         {dayIndex >= 6 && <View style={{ width: 20 }}></View>}
       </View>
+      
       <View style={styles.editSection}>
+      
         <TouchableOpacity onPress={editMode ? toggleVisible : toggleEditMode}>
           <Text style={styles.editText}>{editMode ? 'Delete' : 'Edit'}</Text>
         </TouchableOpacity>
