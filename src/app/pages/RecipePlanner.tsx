@@ -42,22 +42,16 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     userId: string;
   };
 
-  // let dailyRecipes: string[][] = [[], [], [], [], [], [], []];
-
-
   const [selectedCollectionName, setSelectedCollectionName] = useState<
     string | null
   >(null);
-  // let selectedRecipesArray: string[] = [];
   const [tempSelectedRecipesArray, setTempSelectedRecipesArray] = useState<
     string[]
   >([]);
   const [selectedRecipesArray, setSelectedRecipesArray] = useState<string[]>(
     [],
   );
-  // let tempSelectedRecipesArray: string[] = [];
   const [currentSelectedRecipes, setCurrentSelectedRecipes] = useState<any[][]>([]);
-
   const [dailyRecipes, setDailyRecipes] = useState<string[][]>([[], [], [], [], [], [], []]);
   const [editMode, setEditMode] = useState(false);
   const [recipes, setRecipes] = useState<string[][]>([]);
@@ -110,10 +104,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     formatDate(day6),
     formatDate(day7),
   ];
-
-  // const prevSelectingRecipeRef = useRef(selectingRecipe);
-
-  // let currentSelectedRecipes: any[][] = [];
   
   const addRecipeToArray = (recipe: any[]) => {
     const recipeDetails: any[] = [
@@ -127,19 +117,16 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
       recipe[7], // Ingredients
       recipe[8], // Directions
     ];
-    //("adding");
+
     // Create a temporary array and add the new recipe
     const updatedRecipes = [...currentSelectedRecipes, recipeDetails];
     
     // Update the state with the temporary array
     setCurrentSelectedRecipes(updatedRecipes);
-    
-    console.log("THE CURRENT RECIPES ARE" + currentSelectedRecipes);
   };
 
 
   const addToFirestore = async (recipe: any[]) => {
-    // //("ADDED!");
     try {
       const curCollection = collection(
         db,
@@ -184,9 +171,13 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     prevSelectingRecipeRef.current = selectingRecipe;
 
     // Check if selectingRecipe changed from true to false
-    if (prevSelectingRecipe === true && selectingRecipe === false) {
+    if (prevSelectingRecipe === true && selectingRecipe === false && !(currentSelectedRecipes.length === 0)) {
       setAddVisible(true);
     }
+
+    console.log(currentSelectedRecipes.length === 0)
+    // const boolll = !currentSelectedRecipes?.length
+    // console.log("BOOL:" + boolll)
   }, [selectingRecipe]);
   
   useEffect(() => {
@@ -198,26 +189,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
       setCurrentSelectedRecipes([]);
   };
 
-  // Effect to track changes in selectingRecipe
-  // useEffect(() => {
-  //   const prevSelectingRecipe = prevSelectingRecipeRef.current;
-  //   if (prevSelectingRecipe === true && selectingRecipe === false) {
-  //     // Code to execute when selectingRecipe changes from true to false
-  //     // //("CLICKING ADD");
-  //     // //("Current:", currentSelectedRecipes);
-  //     currentSelectedRecipes.forEach(async (recipe) => {
-  //       // //("HELLO");
-  //       try {
-  //         await addToFirestore(recipe);
-  //       } catch (error) {
-  //         console.error("Error adding recipe:", error);
-  //       }
-  //     });
-  //   }
-  //   // Update the ref to the current value of selectingRecipe
-  //   prevSelectingRecipeRef.current = selectingRecipe;
-  // }, [selectingRecipe, currentSelectedRecipes, addToFirestore]);
-
+  
   useEffect(() => {
     const constFetchCollections = async () => {
       const allCollections = collection(db, `allUsers/${userId}/collections`);
