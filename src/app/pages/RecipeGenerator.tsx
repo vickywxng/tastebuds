@@ -86,24 +86,50 @@ export function SelectDemo() {
   );
 }
 
-const items: { name: string }[] = [
-  { name: 'Day 1' },
-  { name: 'Day 2' },
-  { name: 'Day 3' },
-  { name: 'Day 4' },
-  { name: 'Day 5' },
-  { name: 'Day 6' },
-  { name: 'Day 7' },
+const formatDate = (date: number | Date | undefined) => {
+  return new Intl.DateTimeFormat('en-US', {
+    weekday: 'long', // 'Monday'
+    month: 'long', // 'July'
+    day: 'numeric', // '22'
+  }).format(date);
+};
+
+const currentDate = new Date();
+const day2 = new Date(currentDate);
+day2.setDate(day2.getDate() + 1);
+
+const day3 = new Date(currentDate);
+day3.setDate(day3.getDate() + 2);
+
+const day4 = new Date(currentDate);
+day4.setDate(day4.getDate() + 3);
+
+const day5 = new Date(currentDate);
+day5.setDate(day5.getDate() + 4);
+
+const day6 = new Date(currentDate);
+day6.setDate(day6.getDate() + 5);
+
+const day7 = new Date(currentDate);
+day7.setDate(day7.getDate() + 6);
+
+const realDateArray = [
+  formatDate(currentDate),
+  formatDate(day2),
+  formatDate(day3),
+  formatDate(day4),
+  formatDate(day5),
+  formatDate(day6),
+  formatDate(day7),
 ];
 
-let selectedItem: string = items.length > 0 ? items[0]?.name || '' : '';
+let selectedItem: string =
+  realDateArray.length > 0 ? realDateArray[0] || '' : '';
 const setSelectedItem = (value: string) => {
   selectedItem = value;
 };
 
 export function SelectDemoItem(props: SelectProps) {
-  // const [selectedItem, setSelectedItem] = useState(items.length > 0 ? items[0]?.name || '' : '');
-
   const handleValueChange = (value: string) => {
     setSelectedItem(value);
     console.log(value);
@@ -183,21 +209,21 @@ export function SelectDemoItem(props: SelectProps) {
               {/* for longer lists memorizing these is useful */}
               {useMemo(
                 () =>
-                  items.map((item, i) => {
+                  realDateArray.map((date, i) => {
                     return (
                       <Select.Item
                         index={i}
-                        key={item.name}
-                        value={item.name.toLowerCase()}
+                        key={date}
+                        value={date.toLowerCase()}
                       >
-                        <Select.ItemText>{item.name}</Select.ItemText>
+                        <Select.ItemText>{date}</Select.ItemText>
                         <Select.ItemIndicator marginLeft="auto">
                           <Check size={16} />
                         </Select.ItemIndicator>
                       </Select.Item>
                     );
                   }),
-                [items],
+                realDateArray,
               )}
             </Select.Group>
             {/* Native gets an extra icon */}
@@ -387,34 +413,34 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
     const input =
       'Tell me all of the edible ingredients you see in this image and if possible, mention their quantity as well. I need the response generated in this way: Ingredients: (list of all ingredients seperated by comma)';
 
-    const openai = new OpenAI({
-      apiKey: process.env.EXPO_PUBLIC_API_KEY_OPENAI,
-    });
+    // // const openai = new OpenAI({
+    // //   apiKey: process.env.EXPO_PUBLIC_API_KEY_OPENAI,
+    // // });
 
-    const result = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      messages: [
-        {
-          role: 'user',
-          content: [
-            {
-              type: 'text',
-              text: input,
-            },
-            {
-              type: 'image_url',
-              image_url: {
-                url: imageUrl,
-              },
-            },
-          ],
-        },
-      ],
-    });
+    // // const result = await openai.chat.completions.create({
+    // //   model: 'gpt-4o',
+    // //   messages: [
+    // //     {
+    // //       role: 'user',
+    // //       content: [
+    // //         {
+    // //           type: 'text',
+    // //           text: input,
+    // //         },
+    // //         {
+    // //           type: 'image_url',
+    // //           image_url: {
+    // //             url: imageUrl,
+    // //           },
+    // //         },
+    // //       ],
+    // //     },
+    // //   ],
+    // // });
 
-    const ingredientsRaw = result.choices[0]?.message.content ?? '';
-    // const ingredientsRaw =
-    // 'Ingredients: Baguette (2), Apple (3 slices), Butter (two teaspoons)';
+    // // const ingredientsRaw = result.choices[0]?.message.content ?? '';
+    const ingredientsRaw =
+      'Ingredients: Baguette (2), Apple (3 slices), Butter (two teaspoons)';
     const ingredientsSplit = ingredientsRaw.split('Ingredients:');
     console.log(ingredientsSplit[1]);
     const ingredientsCleaned = ingredientsSplit[1];
@@ -752,53 +778,6 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
   };
 
   const calendarPopUP = () => {
-    const formatDate = (date: number | Date | undefined) => {
-      return new Intl.DateTimeFormat('en-US', {
-        weekday: 'long', // 'Monday'
-        month: 'long', // 'July'
-        day: 'numeric', // '22'
-      }).format(date);
-    };
-
-    const currentDate = new Date();
-    const day2 = new Date(currentDate);
-    day2.setDate(day2.getDate() + 1);
-
-    const day3 = new Date(currentDate);
-    day3.setDate(day3.getDate() + 2);
-
-    const day4 = new Date(currentDate);
-    day4.setDate(day4.getDate() + 3);
-
-    const day5 = new Date(currentDate);
-    day5.setDate(day5.getDate() + 4);
-
-    const day6 = new Date(currentDate);
-    day6.setDate(day6.getDate() + 5);
-
-    const day7 = new Date(currentDate);
-    day7.setDate(day7.getDate() + 6);
-
-    const realDateArray = [
-      formatDate(currentDate),
-      formatDate(day2),
-      formatDate(day3),
-      formatDate(day4),
-      formatDate(day5),
-      formatDate(day6),
-      formatDate(day7),
-    ];
-
-    const dayArray = [
-      'Day 1',
-      'Day 2',
-      'Day 3',
-      'Day 4',
-      'Day 5',
-      'Day 6',
-      'Day 7',
-    ];
-
     return (
       <View style={[styles.popUpContainer, { marginTop: 20 }]}>
         <Text
@@ -825,7 +804,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
               { marginBottom: 20 },
             ]}
           >
-            {dayArray.map((name) => (
+            {realDateArray.map((name) => (
               <TouchableOpacity
                 key={name}
                 onPress={() => [
@@ -850,7 +829,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
                       { marginLeft: 5 },
                     ]}
                   >
-                    {realDateArray[dayArray.indexOf(name)]}
+                    {name}
                   </Text>
                 </XStack>
               </TouchableOpacity>
@@ -1119,11 +1098,6 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
         }
       }
 
-      // setApplianceString(str);
-
-      //FIX THIS!!!
-      // setServingsAmount(selectedItem);
-
       let servingsAmountString = servingsAmount.toString();
 
       const inputText = makeInput(
@@ -1146,7 +1120,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
 
       const generatedText = result.choices[0]?.message.content ?? '';
 
-      console.log(process.env.EXPO_PUBLIC_API_KEY_OPENAI);
+      // console.log(process.env.EXPO_PUBLIC_API_KEY_OPENAI);
 
       // const generatedText =
       //   'Title: Creamy Potato Soup Description: A comforting and creamy potato soup made with simple ingredients, perfect for a quick and satisfying meal. Ingredients: 3 potatoes, 2 sticks of butter, 1 gal of milk Directions: Peel and dice the potatoes. In a large pot, melt the butter over medium heat. Add the diced potatoes and sauté for 2-3 minutes. Pour in the milk and bring to a gentle simmer. Cook for about 10 minutes or until the potatoes are tender. Use a potato masher or immersion blender to blend some of the potatoes to thicken the soup while leaving some chunks for texture. Season with salt and pepper to taste. Serve hot. Calories: Approximately 350 calories';

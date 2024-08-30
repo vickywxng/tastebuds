@@ -51,14 +51,23 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   const [selectedRecipesArray, setSelectedRecipesArray] = useState<string[]>(
     [],
   );
-  const [currentSelectedRecipes, setCurrentSelectedRecipes] = useState<any[][]>([]);
-  const [dailyRecipes, setDailyRecipes] = useState<string[][]>([[], [], [], [], [], [], []]);
+  const [currentSelectedRecipes, setCurrentSelectedRecipes] = useState<any[][]>(
+    [],
+  );
+  const [dailyRecipes, setDailyRecipes] = useState<string[][]>([
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
+  ]);
   const [editMode, setEditMode] = useState(false);
   const [recipes, setRecipes] = useState<string[][]>([]);
   const [selectedRecipes, setSelectedRecipes] = useState<number[]>([]);
   const [loading, setLoading] = useState(true);
   const [dayIndex, setDayIndex] = useState<number>(0);
-  const days = ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'];
   const [collectionNames, setCollectionNames] = useState<string[][]>([['']]);
   const [addRec, setAddRec] = useState<Boolean>(false);
   const [blackout, setBlackout] = useState<Boolean>(false);
@@ -104,7 +113,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     formatDate(day6),
     formatDate(day7),
   ];
-  
+
   const addRecipeToArray = (recipe: any[]) => {
     const recipeDetails: any[] = [
       recipe[0], // Title
@@ -120,24 +129,23 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
 
     // Create a temporary array and add the new recipe
     const updatedRecipes = [...currentSelectedRecipes, recipeDetails];
-    
+
     // Update the state with the temporary array
     setCurrentSelectedRecipes(updatedRecipes);
   };
-
 
   const addToFirestore = async (recipe: any[]) => {
     try {
       const curCollection = collection(
         db,
-        `allUsers/${userId}/planner/${days[dayIndex]}/Recipes`,
+        `allUsers/${userId}/planner/${realDateArray[dayIndex]}/Recipes`,
       );
 
       const title =
-              (recipe[0]?.trim() || '').length >= 24
-                ? recipe[0]?.trim().substring(0, 25) + '...'
-                : recipe[0]?.trim() || ''; // Default to empty string if undefined
-  
+        (recipe[0]?.trim() || '').length >= 24
+          ? recipe[0]?.trim().substring(0, 25) + '...'
+          : recipe[0]?.trim() || ''; // Default to empty string if undefined
+
       const safeTitle = title;
 
       const reciperef = doc(curCollection, safeTitle);
@@ -159,7 +167,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     } catch (error) {
       console.error('Error adding recipe: ', error);
     }
-  }
+  };
 
   const prevSelectingRecipeRef = useRef(selectingRecipe);
 
@@ -171,25 +179,28 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     prevSelectingRecipeRef.current = selectingRecipe;
 
     // Check if selectingRecipe changed from true to false
-    if (prevSelectingRecipe === true && selectingRecipe === false && !(currentSelectedRecipes.length === 0)) {
+    if (
+      prevSelectingRecipe === true &&
+      selectingRecipe === false &&
+      !(currentSelectedRecipes.length === 0)
+    ) {
       setAddVisible(true);
     }
 
-    console.log(currentSelectedRecipes.length === 0)
+    console.log(currentSelectedRecipes.length === 0);
     // const boolll = !currentSelectedRecipes?.length
     // console.log("BOOL:" + boolll)
   }, [selectingRecipe]);
-  
+
   useEffect(() => {
-    console.log("CURRENT SELECTED RECIPES: ", currentSelectedRecipes);
+    console.log('CURRENT SELECTED RECIPES: ', currentSelectedRecipes);
   }, [currentSelectedRecipes]); // This runs every time currentSelectedRecipes changes
 
   const clearRecipes = () => {
-      console.log("SETTING TO NULL");
-      setCurrentSelectedRecipes([]);
+    console.log('SETTING TO NULL');
+    setCurrentSelectedRecipes([]);
   };
 
-  
   useEffect(() => {
     const constFetchCollections = async () => {
       const allCollections = collection(db, `allUsers/${userId}/collections`);
@@ -235,7 +246,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
   const fetchRecipes = async (day: number) => {
     const curCollection = collection(
       db,
-      `allUsers/${userId}/planner/${days[day]}/Recipes`,
+      `allUsers/${userId}/planner/${realDateArray[day]}/Recipes`,
     );
 
     try {
@@ -287,7 +298,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
 
     const curCollection = collection(
       db,
-      `allUsers/${userId}/planner/${days[dayIndex]}/Recipes`,
+      `allUsers/${userId}/planner/${realDateArray[dayIndex]}/Recipes`,
     );
 
     const updatedArray = [...tempSelectedRecipesArray]; // Create a copy of the array
@@ -418,8 +429,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
     toggleCard();
   };
 
-  
-
   const showCollectionRecipes = () => {
     return (
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
@@ -429,28 +438,32 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
               (recipe[0]?.trim() || '').length >= 24
                 ? recipe[0]?.trim().substring(0, 25) + '...'
                 : recipe[0]?.trim() || ''; // Default to empty string if undefined
-  
+
             const description =
               (recipe[1]?.trim() || '').length >= 110
                 ? recipe[1]?.trim().substring(0, 111) + '...'
                 : recipe[1]?.trim() || ''; // Default to empty string if undefined
-  
+
             // Determine if the recipe is selected
-            let isSelected = currentSelectedRecipes.some((selectedRecipe) => selectedRecipe[0].indexOf(title) != -1);
-            console.log("CURRENT: " + currentSelectedRecipes);
+            let isSelected = currentSelectedRecipes.some(
+              (selectedRecipe) => selectedRecipe[0].indexOf(title) != -1,
+            );
+            console.log('CURRENT: ' + currentSelectedRecipes);
             // isSelected = true;
-  
+
             // console.log("TEMP SELECTED ARRAY:", tempSelectedRecipesArray);
-  
+
             // Safe check for undefined values and conditional logic
-            const isTitleNotInDay = dailyRecipes[dayIndex]?.includes(title) === false;
-  
-            console.log(title + " is not in day? " + isTitleNotInDay);
-            console.log("RECIPES:", dailyRecipes);
-  
+            const isTitleNotInDay =
+              dailyRecipes[dayIndex]?.includes(title) === false;
+
+            console.log(title + ' is not in day? ' + isTitleNotInDay);
+            console.log('RECIPES:', dailyRecipes);
+
             return (
               <View key={index}>
-                {recipes.length === 0 || !recipes.some(recipe => recipe[0] === title) ? (
+                {recipes.length === 0 ||
+                !recipes.some((recipe) => recipe[0] === title) ? (
                   <TouchableOpacity
                     key={recipe[0]} // Use a unique identifier if available
                     style={[
@@ -459,7 +472,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                     ]}
                     onPress={async () => {
                       const safeTitle = title;
-  
+
                       if (selectingRecipe) {
                         if (isSelected) {
                           // Remove from selected array
@@ -467,7 +480,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                             (item) => item[0] !== safeTitle,
                           );
                           setCurrentSelectedRecipes(updatedArray);
-  
+
                           // Remove from Firestore
                           // try {
                           //   const recipeDocRef = doc(curCollection, safeTitle);
@@ -476,7 +489,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                           //   console.error('Error removing recipe: ', error);
                           // }
                         } else {
-                          console.log("ADDING: ", recipe);
+                          console.log('ADDING: ', recipe);
                           addRecipeToArray(recipe);
                         }
                       }
@@ -543,10 +556,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
       </ScrollView>
     );
   };
-  
-  
-  
-  
 
   const DeletePopup = () => {
     return (
@@ -603,47 +612,49 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                 onPress={async () => {
                   setAddVisible(false);
                   setCardVisible(false);
-                  
+
                   // currentSelectedRecipes.forEach(async (recipe) => {
-                  await Promise.all(currentSelectedRecipes.map(async (recipe) => {
-                    try {
-                      await addToFirestore(recipe);
-      
-                      const title =
-                        (recipe[0]?.trim() || '').length >= 24
-                          ? recipe[0]?.trim().substring(0, 25) + '...'
-                          : recipe[0]?.trim() || ''; // Default to empty string if undefined
-            
-                      setTempSelectedRecipesArray((prevArray) => [
-                        ...prevArray,
-                        title, // Add the first element of recipe to the array
-                      ]);
-      
-                      // Update the recipes array
-                      const updatedRecipes = recipes.map((subArray, index) =>
-                        index === dayIndex ? [...subArray, title] : subArray
-                      );
-      
-                      // Set the updated recipes to state
-                      setDailyRecipes(updatedRecipes);
-      
-                      // let dailyRecipes: string[][] = recipes.map((subArray, idx) =>
-                      //   idx === dayIndex ? [...subArray, title] : subArray
-                      // );
-      
-      
-                      console.log("TEMP:" + tempSelectedRecipesArray);
-                      
-                    } catch (error) {
-                      console.error("Error adding recipe:", error);
-                    }
-                  }));
-      
-                  console.log("SETTING TO NULL")
-                  
+                  await Promise.all(
+                    currentSelectedRecipes.map(async (recipe) => {
+                      try {
+                        await addToFirestore(recipe);
+
+                        const title =
+                          (recipe[0]?.trim() || '').length >= 24
+                            ? recipe[0]?.trim().substring(0, 25) + '...'
+                            : recipe[0]?.trim() || ''; // Default to empty string if undefined
+
+                        setTempSelectedRecipesArray((prevArray) => [
+                          ...prevArray,
+                          title, // Add the first element of recipe to the array
+                        ]);
+
+                        // Update the recipes array
+                        const updatedRecipes = recipes.map((subArray, index) =>
+                          index === dayIndex ? [...subArray, title] : subArray,
+                        );
+
+                        // Set the updated recipes to state
+                        setDailyRecipes(updatedRecipes);
+
+                        // let dailyRecipes: string[][] = recipes.map((subArray, idx) =>
+                        //   idx === dayIndex ? [...subArray, title] : subArray
+                        // );
+
+                        console.log('TEMP:' + tempSelectedRecipesArray);
+                      } catch (error) {
+                        console.error('Error adding recipe:', error);
+                      }
+                    }),
+                  );
+
+                  console.log('SETTING TO NULL');
+
                   clearRecipes();
-      
-                  console.log("CURRENT SELECTED RECIPEs" + currentSelectedRecipes)
+
+                  console.log(
+                    'CURRENT SELECTED RECIPEs' + currentSelectedRecipes,
+                  );
                 }}
                 style={styles.popupButton}
               >
@@ -673,7 +684,6 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
         <View style={{ flex: 1 }} />
         <TouchableOpacity
           onPress={() => {
-            
             if (selectingRecipe && tempSelectedRecipesArray.length > 0) {
               // selectedRecipesArray = [""];
               setAddVisible(true);
@@ -839,7 +849,7 @@ const RecipePlanner: React.FC<Props> = ({ navigation }) => {
                   if (editMode) {
                     toggleRecipeSelection(index);
                   } else {
-                    goToInfo(recipe[0] + '', days[dayIndex] + '');
+                    goToInfo(recipe[0] + '', realDateArray[dayIndex] + '');
                   }
                 }}
               >
@@ -961,7 +971,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     color: '#E7D37F',
-    fontSize: 28,
+    fontSize: 24,
     fontWeight: 'bold',
     fontFamily: 'Arvo-Bold',
   },
