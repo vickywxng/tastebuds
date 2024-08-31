@@ -374,7 +374,7 @@ const RecipeCollection: React.FC<Props> = ({ navigation }) => {
             {/* Add more icons as needed */}
           </View>
           <TouchableOpacity style={styles.addButton} onPress={addNewFolder}>
-            <Text style={styles.buttonText}>Add Button</Text>
+            <Text style={styles.buttonText}>Add Collection</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.cancelButton}
