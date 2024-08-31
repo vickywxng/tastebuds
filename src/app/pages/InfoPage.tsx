@@ -420,16 +420,6 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
       formatDate(day7),
     ];
 
-    const dayArray = [
-      'Day 1',
-      'Day 2',
-      'Day 3',
-      'Day 4',
-      'Day 5',
-      'Day 6',
-      'Day 7',
-    ];
-
     return (
       <View style={[styles.popUpContainer, { marginTop: 20 }]}>
         <Text
@@ -456,7 +446,7 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
               { marginBottom: 20 },
             ]}
           >
-            {dayArray.map((name) => (
+            {realDateArray.map((name) => (
               <TouchableOpacity
                 key={name}
                 onPress={() => [
@@ -481,7 +471,7 @@ const InfoPage: React.FC<Props> = ({ navigation }) => {
                       { marginLeft: 5 },
                     ]}
                   >
-                    {realDateArray[dayArray.indexOf(name)]}
+                    {name}
                   </Text>
                 </XStack>
               </TouchableOpacity>
