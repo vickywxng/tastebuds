@@ -491,7 +491,7 @@ const RecipeGenerator: React.FC<Props> = ({ navigation }) => {
         <XStack style={styles.row}>
           <Text style={styles.modalTitleSmaller}>Ingredients</Text>
           <View style={{ width: 7 }} />
-          <Text style={styles.modalText}>include quantity (e.g. 2 eggs)</Text>
+          <Text style={styles.modalText}>optional: include quantity (e.g. 2 eggs)</Text>
         </XStack>
 
         <TextInput
