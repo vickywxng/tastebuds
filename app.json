@@ -1,9 +1,10 @@
 {
   "expo": {
-    "name": "Hello RN",
-    "slug": "hello-rn",
-    "scheme": "hello-rn",
-    "version": "0.0.0",
+    "name": "Tastebuds",
+    "slug": "tastebuds",
+    "owner": "teamtastebuds",
+    "scheme": "tastebuds",
+    "version": "0.0.1",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -41,7 +42,7 @@
         "origin": false
       },
       "eas": {
-        "projectId": "a4f2f969-db55-422f-b794-472077f78a16"
+        "projectId": "df551302-2994-4ad9-b95f-ae699f52a799"
       }
     }
   }

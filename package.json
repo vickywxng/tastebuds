@@ -1,6 +1,6 @@
 {
-  "name": "hello-rn",
-  "version": "0.0.0",
+  "name": "tastebuds",
+  "version": "0.0.1",
   "main": "src/index.ts",
   "scripts": {
     "start": "expo start",
